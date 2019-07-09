@@ -896,7 +896,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
             HTTPPostTask post = new HTTPPostTask(getActivity(), this);
 
-            post.userRequest(getString(R.string.plwait), 2, "submit_exam_result", jsonObject.toString());
+            post.userRequest(getString(R.string.plwait), 2, "submit_assignment_result", jsonObject.toString());
 
         }catch (Exception e){
             TraceUtils.logException(e);
