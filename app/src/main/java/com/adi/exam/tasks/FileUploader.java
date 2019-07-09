@@ -91,7 +91,7 @@ public class FileUploader {
 					dos = new DataOutputStream(conn.getOutputStream());
 
 					dos.writeBytes(twoHyphens + boundary + lineEnd);
-					dos.writeBytes("Content-Disposition: form-data; name=file;filename="
+					dos.writeBytes("Content-Disposition: form-data; name=photo_file;filename="
 							+ dummyName + "" + lineEnd);
 
 					dos.writeBytes(lineEnd);
