@@ -701,22 +701,6 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                json= new JSONObject();
-                json.put("student_question_time_id","");
-                json.put("student_id",activity.getStudentDetails().optInt("student_id"));
-                json.put("exam_id", data.optInt("exam_id"));
-                json.put("question_no",jsonObject.optString("sno"));
-                json.put("question_id",jsonObject.optString("question_id"));
-                json.put("topic_id",jsonObject.optString("topic_id"));
-                json.put("lesson_id","");
-                json.put("subject","");
-                json.put("given_option",jsonObject.optString("qstate"));
-                json.put("correct_option",jsonObject.optString("answer"));
-                json.put("result",jsonObject.optString("answer"));
-                json.put("question_time",60);
-                json.put("no_of_clicks","");
-                json.put("marked_for_review",jsonObject.optString("qstate"));
-                array.put(json);
                 //qstate = //0 = not visited, 1 = not answered, 2 = answered, 3 = marked for review, 4 = answered and marked for review
                 if (jsonObject.optString("qstate").equalsIgnoreCase("3")) {
 
@@ -795,12 +779,18 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             backup_result.put("total_questions_attempted", total_questions_attempted + "");
             backup_result.put("no_of_correct_answers", no_of_correct_answers + "");
             backup_result.put("score", score + "");
-            fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
-            fos.write(backup_result.toString().getBytes());
+            try {
+                fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
+                fos.write(backup_result.toString().getBytes());
+            }catch (Exception e){
+                TraceUtils.logException(e);
+            }
             String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
 
             App_Table table = new App_Table(activity);
-
+            json=table.getAssignmentResult(data.optInt("assignment_id"),activity.getStudentDetails().optInt("student_id"));
+            array.put(json);
+            backup_result.put("student_question_time",array);
             long val = table.insertSingleRecords(ASSIGNMENTRESULTS, "ASSIGNMENTRESULTS");
 
             if (val > 0) {
