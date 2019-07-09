@@ -52,6 +52,11 @@ public class AppSettings {
 
             properties.setProperty("submit_assignment_result", "https://bsecuresoftechsolutions.com/viswa/admin/submit_assignment_result");
 
+            properties.setProperty("get_student_details", "https://bsecuresoftechsolutions.com/viswa/get_student_details");
+
+            properties.setProperty("update_password", "https://bsecuresoftechsolutions.com/viswa/update_password");
+
+
 
         } catch (Exception e) {
 

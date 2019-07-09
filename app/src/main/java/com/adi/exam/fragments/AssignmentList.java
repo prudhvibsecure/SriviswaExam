@@ -20,6 +20,7 @@ import com.adi.exam.SriVishwa;
 import com.adi.exam.adapters.AssignmentListingAdapter;
 import com.adi.exam.adapters.ExamContentListingAdapter;
 import com.adi.exam.callbacks.IItemHandler;
+import com.adi.exam.common.AppPreferences;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.tasks.HTTPPostTask;
@@ -168,7 +169,13 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
             //TODO:////
 
-            post.userRequest(getString(R.string.plwait), 1, "checkassignment", "{\"course\":\"JEE MAINS 1st Year\",\"section\":\"C\"}"/*jsonObject.toString()*/);
+            JSONObject object = new JSONObject(AppPreferences.getInstance(getActivity()).getFromStore("studentDetails"));
+
+            JSONObject sobj = new JSONObject();
+            sobj.put("course",object.optString("program_name"));
+            sobj.put("section",object.optString("section"));
+
+            post.userRequest(getString(R.string.plwait), 1, "checkassignment", sobj.toString() /*"{\"course\":\"JEE MAINS\",\"section\":\"201\"}"*//*jsonObject.toString()*/);
 
 
         } catch (Exception e) {

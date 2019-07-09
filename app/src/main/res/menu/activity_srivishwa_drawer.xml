@@ -8,6 +8,12 @@
             android:id="@+id/nav_materials"
             android:icon="@drawable/ic_menu_send"
             android:title="@string/materials" />
+
+        <item
+            android:id="@+id/nav_changepwd"
+            android:icon="@drawable/ic_menu_logout"
+            android:title="@string/Change_Password" />
+
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_logout"

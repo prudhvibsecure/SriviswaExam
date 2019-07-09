@@ -29,7 +29,9 @@ import com.adi.exam.dialogfragments.ExitDialog;
 import com.adi.exam.dialogfragments.MessageDialog;
 import com.adi.exam.fragments.AllQuestions;
 import com.adi.exam.fragments.Assignment;
+import com.adi.exam.fragments.AssignmentHistory;
 import com.adi.exam.fragments.AssignmentList;
+import com.adi.exam.fragments.ChangePassword;
 import com.adi.exam.fragments.Dashboard;
 import com.adi.exam.fragments.ExamList;
 import com.adi.exam.fragments.ExamSubmitConfirmationPage;
@@ -207,6 +209,10 @@ public class SriVishwa extends AppCompatActivity
 
             SriVishwa.this.finish();
 
+        }else if (id == R.id.nav_changepwd) {
+
+            changePassword();
+
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -214,6 +220,12 @@ public class SriVishwa extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+
+    }
+
+    private void changePassword() {
+
+        swiftFragments(ChangePassword.newInstance(), "ChangePassword");
 
     }
 
@@ -272,6 +284,7 @@ public class SriVishwa extends AppCompatActivity
                     break;
 
                 case 4:
+                    showHistoryList();
                     break;
 
             }
@@ -475,7 +488,13 @@ public class SriVishwa extends AppCompatActivity
         swiftFragments(Assignment.newInstance(data), "assignment");
 
     }
+    public void showAssignmentResult(String toString) {
+        //i will witre code here now you can do before leave commit code
+    }
+    private void showHistoryList() {
 
+        swiftFragments(AssignmentHistory.newInstance(), "assignmenthistory");
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         try {

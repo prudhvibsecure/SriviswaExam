@@ -248,5 +248,10 @@
     <string name="ic">Invalid credentials</string>
 
     <string name="qnumber">Q. %1$s)</string>
+    <string name="id">Student Id</string>
+    <string name="oldpwd">Old Password</string>
+    <string name="newpassword">New Password</string>
+    <string name="cnfmpassword">Confirm Password</string>
+    <string name="Change_Password">Change Password</string>
 
 </resources>

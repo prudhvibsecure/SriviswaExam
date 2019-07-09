@@ -533,7 +533,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     }
 
-    private void showNextQuestion(int position) {
+    private void
+    showNextQuestion(int position) {
 
         try {
 
@@ -692,7 +693,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 JSONArray jsonArray = (JSONArray) results;
 
                 if (jsonArray.length() > 0) {
-
+                    int c = jsonArray.length();
                     if (adapter.getItems().length() == 0) {
 
                         for (int i = 0; i < jsonArray.length(); i++) {

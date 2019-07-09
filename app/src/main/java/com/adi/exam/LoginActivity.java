@@ -3,6 +3,7 @@ package com.adi.exam;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.provider.Settings;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,6 +18,8 @@ import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
 import com.adi.exam.common.NetworkInfoAPI;
+import com.adi.exam.controls.CustomEditText;
+import com.adi.exam.controls.CustomTextView;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.dialogfragments.MessageDialog;
 import com.adi.exam.tasks.HTTPPostTask;
@@ -28,6 +31,8 @@ import org.json.JSONObject;
 public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
     private NetworkInfoAPI network = null;
+    CustomTextView sname, sclass, batch, stuid;
+    CustomEditText user;
 
     //private PhoneComponent phncomp;
 
@@ -53,10 +58,16 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
         findViewById(R.id.iv_settings).setOnClickListener(onClick);
 
+        sname= findViewById(R.id.sname);
+        stuid = findViewById(R.id.stuid);
+        sclass = findViewById(R.id.sclass);
+        batch = findViewById(R.id.batch);
+        user = findViewById(R.id.et_username);
+
         network = new NetworkInfoAPI();
 
         network.initialize(this);
-
+        sendDeviceId();
         //phncomp = new PhoneComponent(this, this, 2);
 
     }
@@ -97,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
     }
 
     public void launchProfileActivity(String studentDetails) {
-        Intent intent = new Intent(this, ProfileActivity.class);
+        Intent intent = new Intent(this, SriVishwa.class);
         intent.putExtra("studentDetails", studentDetails);
         LoginActivity.this.finish();
         startActivity(intent);
@@ -221,6 +232,28 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
     }
 
+    //device id check
+
+    private void sendDeviceId() {
+
+        try {
+
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("device_id", getDevid());
+
+            HTTPPostTask post = new HTTPPostTask(this, this);
+
+            post.userRequest(getString(R.string.plwait), 3, "get_student_details", jsonObject.toString());
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+    }
+
     public void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
@@ -236,7 +269,9 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
             switch (requestType) {
                 case 1:
+
                     parseLoginResponse((String) results);
+
                     break;
 
 
@@ -259,6 +294,27 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
                     }
 
+                    break;
+
+                case 3:
+
+                    JSONObject object = new JSONObject(results.toString());
+                    if(object.optString("statuscode").equalsIgnoreCase("200"))
+                    {
+                        JSONObject student = object.getJSONObject("student_details");
+
+                        sname.setText(student.optString("student_name"));
+
+                        sclass.setText(student.optString("course"));
+
+                        batch.setText(student.optString("year"));
+
+                        stuid.setText(student.optString("username"));
+
+                        user.setText(student.optString("username"));
+
+                        AppPreferences.getInstance(this).addToStore("studentDetails", student.toString(), false);
+                    }
                     break;
 
                 default:
@@ -322,4 +378,10 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
     }
 
+    public String getDevid()
+    {
+        String android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        return android_id;
+    }
 }

@@ -20,42 +20,200 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:weightSum="1">
 
-                <ImageView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_5sdp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/logo" />
+                    android:layout_gravity="start|center_horizontal"
+                    android:orientation="vertical"
+                    android:layout_weight=".30">
 
-                <com.adi.exam.controls.CustomTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:text="@string/app_name"
-                    android:textAllCaps="true"
-                    android:textColor="@color/titlecolor"
-                    android:textSize="@dimen/_20sdp"
-                    app:fontType="2" />
 
-                <com.adi.exam.controls.CustomTextView
-                    android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp">
+
+                       <!-- <com.adi.exam.controls.CustomTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/name"
+                            android:textColor="@color/spinnergray"
+                            android:textSize="18sp"
+                            app:fontType="1" />
+-->
+                        <com.adi.exam.controls.CustomTextView
+                            android:id="@+id/sname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:padding="@dimen/_2sdp"
+                            android:text=""
+                            android:textColor="@color/spinnergray"
+                            android:textSize="16sp"
+                            app:fontType="1" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp">
+
+                       <!-- <com.adi.exam.controls.CustomTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/classtxt"
+                            android:textColor="@color/spinnergray"
+                            android:textSize="18sp"
+                            app:fontType="1" />
+-->
+                        <com.adi.exam.controls.CustomTextView
+                            android:id="@+id/sclass"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:padding="@dimen/_2sdp"
+                            android:text=""
+                            android:textColor="@color/spinnergray"
+                            android:textSize="16sp"
+                            app:fontType="1" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp">
+
+                       <!-- <com.adi.exam.controls.CustomTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/batch"
+                            android:textColor="@color/spinnergray"
+                            android:textSize="18sp"
+                            app:fontType="1" />
+-->
+                        <com.adi.exam.controls.CustomTextView
+                            android:id="@+id/batch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:padding="@dimen/_2sdp"
+                            android:text=""
+                            android:textColor="@color/spinnergray"
+                            android:textSize="16sp"
+                            app:fontType="1" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp">
+
+                       <!-- <com.adi.exam.controls.CustomTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/id"
+                            android:textColor="@color/spinnergray"
+                            android:textSize="18sp"
+                            app:fontType="1" />-->
+
+                        <com.adi.exam.controls.CustomTextView
+                            android:id="@+id/stuid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:padding="@dimen/_2sdp"
+                            android:text=""
+                            android:textColor="@color/spinnergray"
+                            android:textSize="16sp"
+                            app:fontType="1" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:text="@string/iitma"
-                    android:textColor="@color/titlecolor"
-                    android:textSize="@dimen/_18sdp"
-                    app:fontType="1" />
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:layout_weight=".40"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/logo" />
+
+                    <com.adi.exam.controls.CustomTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:text="@string/app_name"
+                        android:textAllCaps="true"
+                        android:textColor="@color/titlecolor"
+                        android:textSize="@dimen/_20sdp"
+                        app:fontType="2" />
+
+                    <com.adi.exam.controls.CustomTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:text="@string/iitma"
+                        android:textColor="@color/titlecolor"
+                        android:textSize="@dimen/_18sdp"
+                        app:fontType="1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30">
+
+                </LinearLayout>
 
             </LinearLayout>
+
 
             <com.adi.exam.controls.CustomTextView
                 android:layout_width="wrap_content"
