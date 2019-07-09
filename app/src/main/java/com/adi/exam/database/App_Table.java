@@ -487,4 +487,98 @@ public class App_Table {
 
     }
 
+    public JSONObject getExamsResult(int exam_id, int student_id) {
+        JSONObject jsonObject = null;
+        try {
+
+            if (database != null) {
+
+                SQLiteDatabase db = database.getWritableDatabase();
+
+                Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME_TABLE WHERE student_id='" + student_id + "' and exam_id='" + exam_id + "'",
+                        null);
+
+                if (cursor != null) {
+
+                    while (cursor.moveToNext()) {
+
+                        jsonObject = new JSONObject();
+
+                        String[] resultsColumns = cursor.getColumnNames();
+
+                        for (String key : resultsColumns) {
+
+                            String value = cursor.getString(cursor
+                                    .getColumnIndexOrThrow(key));
+
+                            if (value != null)
+                                jsonObject.put(key, value);
+
+                        }
+
+                    }
+
+                    cursor.close();
+
+                }
+
+                db.close();
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+        return jsonObject;
+    }
+
+    public JSONObject getAssignmentResult(int assign_id, int student_id) {
+        JSONObject jsonObject = null;
+        try {
+
+            if (database != null) {
+
+                SQLiteDatabase db = database.getWritableDatabase();
+
+                Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME_TABLE WHERE assignment_id='" + assign_id + "' and student_id='" + student_id + "'",
+                        null);
+
+                if (cursor != null) {
+
+                    while (cursor.moveToNext()) {
+
+                        jsonObject = new JSONObject();
+
+                        String[] resultsColumns = cursor.getColumnNames();
+
+                        for (String key : resultsColumns) {
+
+                            String value = cursor.getString(cursor
+                                    .getColumnIndexOrThrow(key));
+
+                            if (value != null)
+                                jsonObject.put(key, value);
+
+                        }
+
+                    }
+
+                    cursor.close();
+
+                }
+
+                db.close();
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+        return jsonObject;
+    }
+
 }
