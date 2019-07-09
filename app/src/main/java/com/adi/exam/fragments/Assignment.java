@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,10 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adi.exam.R;
 import com.adi.exam.SriVishwa;
 import com.adi.exam.adapters.QuestionNumberListingAdapter;
+import com.adi.exam.callbacks.IFileUploadCallback;
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
+import com.adi.exam.common.AppSettings;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.database.PhoneComponent;
+import com.adi.exam.tasks.FileUploader;
+import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -34,9 +39,12 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
 import java.util.Locale;
 
-public class Assignment extends ParentFragment implements View.OnClickListener, IItemHandler {
+import static android.content.Context.MODE_PRIVATE;
+
+public class Assignment extends ParentFragment implements View.OnClickListener, IItemHandler, IFileUploadCallback {
 
     private OnFragmentInteractionListener mFragListener;
 
@@ -65,10 +73,15 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
     private RadioGroup rg_options;
 
     private JSONObject data = new JSONObject();
-
+    private JSONArray array=new JSONArray();
     private ImageLoader imageLoader;
 
     private TextView tv_timer;
+    private JSONObject json;
+
+    private FileOutputStream fos = null;
+
+    private static final String FILE_NAME = System.currentTimeMillis()+"_assign_Result.txt";
 
     public Assignment() {
         // Required empty public constructor
@@ -687,6 +700,23 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                json= new JSONObject();
+                json.put("student_question_time_id","");
+                json.put("student_id",activity.getStudentDetails().optInt("student_id"));
+                json.put("exam_id", data.optInt("exam_id"));
+                json.put("question_no",jsonObject.optString("sno"));
+                json.put("question_id",jsonObject.optString("question_id"));
+                json.put("topic_id",jsonObject.optString("topic_id"));
+                json.put("lesson_id","");
+                json.put("subject","");
+                json.put("given_option",jsonObject.optString("qstate"));
+                json.put("correct_option",jsonObject.optString("answer"));
+                json.put("result",jsonObject.optString("answer"));
+                json.put("question_time",60);
+                json.put("no_of_clicks","");
+                json.put("marked_for_review",jsonObject.optString("qstate"));
+                array.put(json);
                 //qstate = //0 = not visited, 1 = not answered, 2 = answered, 3 = marked for review, 4 = answered and marked for review
                 if (jsonObject.optString("qstate").equalsIgnoreCase("3")) {
 
@@ -745,7 +775,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             data.put("total_answered_and_marked_for_review", total_answered_and_marked_for_review);
 
             JSONObject ASSIGNMENTRESULTS = new JSONObject();
-
+            JSONObject backup_result = new JSONObject();
             int assignment_result_id = AppPreferences.getInstance(activity).getIntegerFromStore("assignment_result_id");
 
             AppPreferences.getInstance(activity).addIntegerToStore("student_exam_result_id", ++assignment_result_id, false);
@@ -758,6 +788,17 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             ASSIGNMENTRESULTS.put("no_of_correct_answers", no_of_correct_answers + "");
             ASSIGNMENTRESULTS.put("score", score + "");
 
+            backup_result.put("assignment_result_id", assignment_result_id);
+            backup_result.put("assignment_id", data.optInt("assignment_id"));
+            backup_result.put("student_id", activity.getStudentDetails().optInt("student_id"));
+            backup_result.put("total_questions", adapter.getCount() + "");
+            backup_result.put("total_questions_attempted", total_questions_attempted + "");
+            backup_result.put("no_of_correct_answers", no_of_correct_answers + "");
+            backup_result.put("score", score + "");
+            fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
+            fos.write(backup_result.toString().getBytes());
+            String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
+
             App_Table table = new App_Table(activity);
 
             long val = table.insertSingleRecords(ASSIGNMENTRESULTS, "ASSIGNMENTRESULTS");
@@ -767,7 +808,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                 activity.setAllQuestions(jsonArray);
 
                 activity.showExamSubmitConfirmationPage(data, assignment_result_id, 2);
-
+                startUploadBackUp(path,FILE_NAME);
                 return;
 
             }
@@ -781,7 +822,12 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
         }
 
     }
-
+    private void startUploadBackUp(String path,String file_name) {
+        String url= AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+        FileUploader uploader = new FileUploader(getActivity(), this);
+        uploader.setFileName(file_name, file_name);
+        uploader.userRequest("", 11, url, path);
+    }
     private void showTimer(long millisInFuture) {
 
         new CountDownTimer(millisInFuture, 1000) {
@@ -808,4 +854,52 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
     }
 
 
+    @Override
+    public void onStateChange(int what, int arg1, int arg2, Object obj, int reqID) {
+        try {
+
+            switch (what) {
+
+                case -1: // failed
+
+                    Toast.makeText(getActivity()
+                            , "Failed To Send", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case 1: // progressBar
+                    break;
+
+                case 0: // success
+                    JSONObject object = new JSONObject(obj.toString());
+                    //     {"status":"0","status_description":"File Uploaded Successfully","attachname":"1552318451_Screenshot_20181203-194010_20190311_090349.png"}
+                    dataSendServer(object.optString("file_name"));
+                    //sendImage();
+                    break;
+
+                default:
+                    break;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO: handle exception
+        }
+
+    }
+    private void dataSendServer(String file_name) {
+        try{
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("assignment_id", data.optInt("assignment_id"));
+            jsonObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
+            jsonObject.put("file_name", file_name);
+
+            HTTPPostTask post = new HTTPPostTask(getActivity(), this);
+
+            post.userRequest(getString(R.string.plwait), 2, "submit_exam_result", jsonObject.toString());
+
+        }catch (Exception e){
+            TraceUtils.logException(e);
+        }
+    }
 }
