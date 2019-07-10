@@ -1,5 +1,6 @@
 package com.adi.exam;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -33,6 +35,7 @@ import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
 import com.adi.exam.fragments.AssignmentHistory;
 import com.adi.exam.fragments.AssignmentList;
+import com.adi.exam.fragments.BITSATTemplates;
 import com.adi.exam.fragments.ChangePassword;
 import com.adi.exam.fragments.Dashboard;
 import com.adi.exam.fragments.ExamList;
@@ -173,8 +176,19 @@ public class SriVishwa extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            if (tempFrag instanceof ExamTemplates){
 
-            super.onBackPressed();
+            }else {
+           /* Fragment f = getSupportFragmentManager().findFragmentById(R.id.container);
+            if(f instanceof(ExamTemplates.class)) {
+
+            }
+            else {*/
+
+                super.onBackPressed();
+            }
+
+           // }
         }
     }
 
@@ -280,6 +294,10 @@ public class SriVishwa extends AppCompatActivity
                     break;
 
                 case 2:
+
+                    Intent in  = new Intent(this, ExamHistory.class);
+                    startActivity(in);
+
                     break;
 
                 case 3:
@@ -451,6 +469,7 @@ public class SriVishwa extends AppCompatActivity
             } else if (jsonObject.optString("course").equalsIgnoreCase("3")) { //BITSAT
 
                 //localPath = "file:///android_asset/BITSAT/bitsat0.html";
+               // swiftFragments(BITSATTemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("4") || jsonObject.optString("course").equalsIgnoreCase("8")) { //EAMCET
 
@@ -513,6 +532,9 @@ public class SriVishwa extends AppCompatActivity
                 if (fragStack.size() > 0) {
 
                     ParentFragment pf = fragStack.peek();
+                    if (pf instanceof ExamTemplates){
+                        return true;
+                    }
 
                     if (pf.back())
                         return true;

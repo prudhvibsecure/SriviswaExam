@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -90,6 +91,9 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     private FileOutputStream fos = null;
 
+    private TabLayout tl_subjects;
+
+    private long timeTaken4Question = 0;
     private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
 
     public ExamTemplates() {
@@ -140,6 +144,31 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
         layout = inflater.inflate(R.layout.fragment_examtemplates, container, false);
 
+        layout.setFocusableInTouchMode(true);
+
+        layout.requestFocus();
+
+        layout.setOnKeyListener(new View.OnKeyListener() {
+                               @Override
+                               public boolean onKey(View v, int keyCode, KeyEvent event) {
+                                   if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                                       if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+                                           return true;
+                                       }
+                                       if(keyCode == KeyEvent.KEYCODE_HOME){
+
+                                           return true;
+                                       }
+
+                                   }
+
+                                   return false;
+                               }
+                           });
+
+        activity.getSupportActionBar().setHomeButtonEnabled(false);
+
         tv_timer = layout.findViewById(R.id.tv_timer);
 
         rg_options = layout.findViewById(R.id.rg_options);
@@ -182,58 +211,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
         layout.findViewById(R.id.tv_next).setOnClickListener(this);
 
-        TabLayout tl_subjects = layout.findViewById(R.id.tl_subjects);
-
-        tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-
-                int tabPosition = tab.getPosition();
-
-                if (tabPosition == 0) {
-
-                    updateQuestionTime();
-
-                    showNextQuestion(0);
-
-                    return;
-
-                }
-
-                String noOfQuestions = data.optString("no_of_questions");
-
-                if (noOfQuestions.contains(",")) {
-
-                    String temp1[] = noOfQuestions.split(",");
-
-                    int questionIndex = 0;
-
-                    for (int i = 0; i < tabPosition; i++) {
-
-                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
-
-                    }
-
-                    updateQuestionTime();
-
-                    showNextQuestion(questionIndex);
-
-                }
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-
-        });
+        tl_subjects = layout.findViewById(R.id.tl_subjects);
 
         adapter = new QuestionNumberListingAdapter(activity);
 
@@ -286,8 +264,59 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             tl_subjects.addTab(tl_subjects.newTab().setCustomView(textView));
 
         }
+        tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
-        showTimer((data.optInt("duration") * 60 * 60 * 1000));
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                int tabPosition = tab.getPosition();
+
+                if (tabPosition == 0) {
+
+                    updateQuestionTime();
+
+                    showNextQuestion(0);
+
+                    return;
+
+                }
+
+                String noOfQuestions = data.optString("no_of_questions");
+
+                if (noOfQuestions.contains(",")) {
+
+                    String temp1[] = noOfQuestions.split(",");
+
+                    int questionIndex = 0;
+
+                    for (int i = 0; i < tabPosition; i++) {
+
+                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                    }
+
+                    updateQuestionTime();
+
+                    showNextQuestion(questionIndex);
+
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+        });
+//        String  dat=data.optString("duration").trim();
+//        long time = (long) Double.parseDouble(dat);
+        showTimer((data.optInt("duration_sec") * 1000));
 
         return layout;
     }
@@ -358,8 +387,64 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
             if (currentExamId != -1) {
 
+                App_Table table = new App_Table(activity);
+
                 JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
-                //TODO: add card here
+
+                String iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "'";
+
+                JSONArray jsonArray = table.getRecords(iwhereClause, "STUDENTQUESTIONTIME");
+
+                if (jsonArray.length() > 0) {
+
+                    long timeTaken = 0;
+
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(jsonArray.length() - 1);
+
+                    String question_time = jsonObject1.optString("question_time").trim();
+
+                    if (question_time.length() > 0) {
+
+                        timeTaken = Long.parseLong(question_time);
+
+                    }
+
+                    timeTaken = timeTaken + timeTaken4Question;
+
+                    jsonObject1.put("question_time", timeTaken);
+
+                    iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
+
+                    table.checkNInsertARecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
+
+                    return;
+                }
+
+                // {"question_id":"827","topic_id":"51","topic_name":"To find equations of locus - Problems connected to it","question_name":"5841.PNG","question_name1":"NULL","question_name2":"NULL","question_name3":"NULL","option_a":"5842.PNG","option_b":"5843.PNG","option_c":"5844.PNG","option_d":"5845.PNG","answer":"c","solution1":"6301.PNG","solution2":"NULL","solution3":"NULL","solution4":"NULL","difficulty":"0.0","status":"1.0","qstate":2,"qanswer":"a","sno":1}
+                // {"exam_id":"4","exam_name":"JEE Test Exam","course":"1","subjects":"Mathematics,Physics,Chemistry","no_of_questions":"15,15,15","marks_per_question":"1","negative_marks":"0.25","duration":"2","question_details":{"question_paper_id":"34","exam_id":"4","exam_date":"07\/08\/2019","from_time":"08:00 AM","to_time":"10:00 AM","subjects":"Mathematics 1A,Mathematics 1B,Physics","topicids":"1,2,3,4,5,6,7,8,9,10,11,12,13,51,52,54,56,57,58,59,60,61,62,63,64,683,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116"}}
+
+                int student_question_time_id = AppPreferences.getInstance(activity).getIntegerFromStore("student_question_time_id");
+
+                AppPreferences.getInstance(activity).addIntegerToStore("student_question_time_id", ++student_question_time_id, false);
+
+                JSONObject questionTimeObject = new JSONObject();
+
+                questionTimeObject.put("student_question_time_id", student_question_time_id);
+                questionTimeObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
+                questionTimeObject.put("exam_id", data.optInt("exam_id"));
+                questionTimeObject.put("question_no", currentExamId);
+                questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
+                questionTimeObject.put("topic_id", jsonObject.optInt("topic_id"));
+                questionTimeObject.put("lesson_id", "");
+                questionTimeObject.put("subject", ((TextView) (tl_subjects.getTabAt(tl_subjects.getSelectedTabPosition()).getCustomView())).getText().toString());
+                questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
+                questionTimeObject.put("correct_option", jsonObject.optString("answer"));
+                questionTimeObject.put("result", "");
+                questionTimeObject.put("question_time", timeTaken4Question + "");
+                questionTimeObject.put("no_of_clicks", "0");
+                questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "YES" : "NO");
+
+                table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
 
             }
 
@@ -497,7 +582,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                     break;
 
                 case R.id.tv_submit:
-
+                    activity.onKeyDown(4,null);
                     showResults();
 
                     break;
@@ -1052,4 +1137,5 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             TraceUtils.logException(e);
         }
     }
+
 }

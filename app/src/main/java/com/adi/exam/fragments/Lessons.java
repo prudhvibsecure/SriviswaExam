@@ -163,7 +163,7 @@ public class Lessons extends ParentFragment implements IItemHandler, View.OnClic
 
             PhoneComponent phncomp = new PhoneComponent(this, mActivity, 1);
 
-            phncomp.defineWhereClause("subject=\"" + jsonObject.optString("course_subject") + "\"");
+            phncomp.defineWhereClause("subject='" + jsonObject.optString("course_subject").trim() + "'");
 
             phncomp.executeLocalDBInBackground("LESSONS");
 

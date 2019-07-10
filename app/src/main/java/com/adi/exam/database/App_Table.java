@@ -495,7 +495,7 @@ public class App_Table {
 
                 SQLiteDatabase db = database.getWritableDatabase();
 
-                Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME_TABLE WHERE student_id='" + student_id + "' and exam_id='" + exam_id + "'",
+                Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME WHERE student_id='" + student_id + "' and exam_id='" + exam_id + "'",
                         null);
 
                 if (cursor != null) {
@@ -626,5 +626,57 @@ public class App_Table {
 
         }
         return jsonObject;
+    }
+    public JSONArray getRecords(String whereClause, String tableName) {
+
+        JSONArray jsonArray = new JSONArray();
+
+        try {
+
+            if (database != null) {
+
+                SQLiteDatabase db = database.getWritableDatabase();
+
+                Cursor cursor = db.query(tableName, null, whereClause,
+                        null, null, null, null);
+
+                if (cursor != null) {
+
+                    while (cursor.moveToNext()) {
+
+                        JSONObject jsonObject = new JSONObject();
+
+                        String[] resultsColumns = cursor.getColumnNames();
+
+                        for (String key : resultsColumns) {
+
+                            String value = cursor.getString(cursor
+                                    .getColumnIndexOrThrow(key));
+
+                            if (value != null)
+                                jsonObject.put(key, value);
+
+                        }
+
+                        jsonArray.put(jsonObject);
+
+                    }
+
+                    cursor.close();
+
+                }
+
+                db.close();
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+        return jsonArray;
+
     }
 }

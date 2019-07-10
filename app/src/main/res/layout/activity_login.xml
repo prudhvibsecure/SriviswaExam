@@ -261,7 +261,6 @@
                         android:longClickable="false"
                         android:maxLength="14"
                         android:singleLine="true"
-
                         customtv:fontType="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>

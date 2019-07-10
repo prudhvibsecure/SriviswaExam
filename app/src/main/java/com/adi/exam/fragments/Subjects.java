@@ -133,7 +133,7 @@ public class Subjects extends ParentFragment implements IItemHandler, View.OnCli
 
             PhoneComponent phncomp = new PhoneComponent(this, mActivity, 1);
 
-            phncomp.defineWhereClause("course_name=\"" + mActivity.getStudentDetails().optString("program_name") + "\"");
+            phncomp.defineWhereClause("course_name='" + mActivity.getStudentDetails().optString("program_name").trim() + "'");
 
             phncomp.executeLocalDBInBackground("COURSES");
 

@@ -104,16 +104,22 @@ public class ChangePassword extends ParentFragment implements IItemHandler {
                 cnfmpassword = et_cnfmpassword.getText().toString().trim();
 
                 if(newpassword.length() == 0) {
+
                     showokPopUp("Alert", "Please Enter New Password");
                     return;
+
                 }
                 if(cnfmpassword.length() == 0) {
+
                     showokPopUp("Alert", "Please Confirm Password");
                     return;
+
                 }
                 if(!newpassword.equals(cnfmpassword)) {
+
                     showokPopUp("Alert", "Passwords Did'nt Match");
                     return;
+
                 }
 
                 changePassword();
@@ -160,6 +166,7 @@ public class ChangePassword extends ParentFragment implements IItemHandler {
 
                         JSONObject object = new JSONObject(results.toString());
                         if(object.optString("statuscode").equalsIgnoreCase("200")) {
+
                             Toast.makeText(getActivity(), object.optString("statusdescription"), Toast.LENGTH_SHORT).show();
                             mActivity.onKeyDown(4,null);
                             //showokPopUp("Success", object.optString("statusdescription"));
