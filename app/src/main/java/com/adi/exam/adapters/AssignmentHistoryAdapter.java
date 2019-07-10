@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -81,7 +82,7 @@ public class AssignmentHistoryAdapter extends RecyclerView.Adapter<AssignmentHis
             TextDrawable ic1 = builder.build(tdText, color);
 
             contactViewHolder.iv_iconexamcontent.setImageDrawable(ic1);
-
+            contactViewHolder.row_vv.setOnClickListener(onClickListener);
         } catch (Exception e) {
 
             TraceUtils.logException(e);
@@ -96,7 +97,7 @@ public class AssignmentHistoryAdapter extends RecyclerView.Adapter<AssignmentHis
 
         View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_exam_item, viewGroup,
                 false);
-
+        itemView.setOnClickListener(onClickListener);
         return new ContactViewHolder(itemView);
     }
 
@@ -133,7 +134,7 @@ public class AssignmentHistoryAdapter extends RecyclerView.Adapter<AssignmentHis
     class ContactViewHolder extends RecyclerView.ViewHolder {
 
         ImageView iv_iconexamcontent;
-
+        LinearLayout row_vv;
         TextView tv_title;
 
 
@@ -143,6 +144,7 @@ public class AssignmentHistoryAdapter extends RecyclerView.Adapter<AssignmentHis
             iv_iconexamcontent = v.findViewById(R.id.iv_iconexam);
 
             tv_title = v.findViewById(R.id.tv_examtitle);
+            row_vv = v.findViewById(R.id.ll_exam);
 
         }
     }

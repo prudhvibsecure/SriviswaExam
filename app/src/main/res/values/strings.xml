@@ -217,6 +217,8 @@
 
     <string name="nt">No topics</string>
 
+    <string name="ntas">No Assignments</string>
+
     <string name="lessons">Lessons</string>
 
     <string name="topics">Topics</string>
@@ -248,10 +250,16 @@
     <string name="ic">Invalid credentials</string>
 
     <string name="qnumber">Q. %1$s)</string>
+
     <string name="id">Student Id</string>
+
     <string name="oldpwd">Old Password</string>
+
     <string name="newpassword">New Password</string>
+
     <string name="cnfmpassword">Confirm Password</string>
+
     <string name="Change_Password">Change Password</string>
+    <string name="asn_history">Assignments History</string>
 
 </resources>

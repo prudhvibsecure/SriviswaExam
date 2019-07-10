@@ -11,6 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adi.exam.R;
@@ -70,7 +73,13 @@ public class ChangePassword extends ParentFragment implements IItemHandler {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
+        mListener.onFragmentInteraction(mActivity.getString(R.string.Change_Password), false);
+
+    }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -200,5 +209,10 @@ public class ChangePassword extends ParentFragment implements IItemHandler {
                 Settings.Secure.ANDROID_ID);
         return android_id;
     }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
 
+    }
 }

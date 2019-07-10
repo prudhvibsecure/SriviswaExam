@@ -24,10 +24,12 @@ import androidx.fragment.app.FragmentTransaction;
 import com.adi.exam.callbacks.IDialogCallbacks;
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
+import com.adi.exam.database.App_Table;
 import com.adi.exam.dialogfragments.AppUpdateDialog;
 import com.adi.exam.dialogfragments.ExitDialog;
 import com.adi.exam.dialogfragments.MessageDialog;
 import com.adi.exam.fragments.AllQuestions;
+import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
 import com.adi.exam.fragments.AssignmentHistory;
 import com.adi.exam.fragments.AssignmentList;
@@ -488,8 +490,10 @@ public class SriVishwa extends AppCompatActivity
         swiftFragments(Assignment.newInstance(data), "assignment");
 
     }
-    public void showAssignmentResult(String toString) {
-        //i will witre code here now you can do before leave commit code
+    public void showAssignmentResult(String id,String subject) {
+        App_Table table=new App_Table(this);
+        Object results = table.getAssignmentHistoryResult(id);
+        swiftFragments(AssignResultsPage.newInstance(results.toString()), "assignment");
     }
     private void showHistoryList() {
 

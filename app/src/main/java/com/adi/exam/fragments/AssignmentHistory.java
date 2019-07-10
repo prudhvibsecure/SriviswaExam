@@ -1,5 +1,6 @@
 package com.adi.exam.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.adi.exam.R;
 import com.adi.exam.SriVishwa;
 import com.adi.exam.adapters.AssignmentHistoryAdapter;
 import com.adi.exam.adapters.AssignmentListingAdapter;
+import com.adi.exam.adapters.MaterialAdapter;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.utils.TraceUtils;
 
@@ -24,13 +26,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class AssignmentHistory extends ParentFragment implements View.OnClickListener {
-    private OnFragmentInteractionListener mFragListener;
+    private OnFragmentInteractionListener mListener;
     private ProgressBar progressBar;
     private AssignmentHistoryAdapter adapterContent;
     private TextView tv_content_txt;
     private App_Table table;
     private SriVishwa activity;
-
+    private View layout;
+    private RecyclerView mRecyclerView;
     public AssignmentHistory() {
         // Required empty public constructor
     }
@@ -44,18 +47,41 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
         super.onCreate(savedInstanceState);
 
     }
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
 
+        mListener = (OnFragmentInteractionListener) context;
+
+        activity = (SriVishwa) context;
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mListener.onFragmentInteraction(activity.getString(R.string.asn_history), false);
+
+
+    }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View layout = inflater.inflate(R.layout.fragment_examlist, container, false);
+        layout = inflater.inflate(R.layout.fragment_examlist, container, false);
         table = new App_Table(getActivity());
         progressBar = layout.findViewById(R.id.pb_content_bar);
 
         tv_content_txt = layout.findViewById(R.id.tv_content_txt);
 
-        tv_content_txt.setText(R.string.cydhaen);
+        tv_content_txt.setText(R.string.ntas);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
 
@@ -81,14 +107,26 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
     }
 
     private void checkAssignment() {
-        JSONObject jsonObject = table.getAssignmentHistoryList();
-        try {
-            JSONArray array = new JSONArray(jsonObject);
-            adapterContent.setItems(array);
-            adapterContent.notifyDataSetChanged();
+        Object results = table.getAssignmentHistoryList();
+        JSONArray array=new JSONArray();
 
-        } catch (Exception e) {
-            TraceUtils.logException(e);
+        if (results!=null) {
+            array.put(results);
+            try {
+                tv_content_txt.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+
+                if (array.length()>0) {
+                    adapterContent.setItems(array);
+                    adapterContent.notifyDataSetChanged();
+                }
+
+            } catch (Exception e) {
+                TraceUtils.logException(e);
+            }
+        }else{
+            progressBar.setVisibility(View.GONE);
+            tv_content_txt.setVisibility(View.VISIBLE);
         }
 
     }
@@ -99,11 +137,10 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
 
             switch (view.getId()) {
 
-                case R.id.tv_examtitle:
+                case R.id.ll_exam:
+                    JSONObject jsonObject1 = adapterContent.getItems().getJSONObject(0);
 
-                    JSONObject jsonObject1 = adapterContent.getItems().getJSONObject((int) view.getTag());
-
-                    activity.showAssignmentResult(jsonObject1.toString());
+                    activity.showAssignmentResult(jsonObject1.optString("assignment_id"),jsonObject1.optString("subject"));
 
                     break;
 
@@ -115,4 +152,12 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
 
         }
     }
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+
+        mListener.onFragmentInteraction(activity.getString(R.string.asn_history), false);
+
+    }
+
 }

@@ -581,4 +581,50 @@ public class App_Table {
         return jsonObject;
     }
 
+    public JSONObject getAssignmentHistoryResult(String id) {
+        JSONObject jsonObject = null;
+        try {
+
+            if (database != null) {
+
+                SQLiteDatabase db = database.getWritableDatabase();
+
+                Cursor cursor = db.rawQuery("SELECT * FROM ASSIGNMENTRESULTS WHERE assignment_id='" + id +"'",
+                        null);
+
+                if (cursor != null) {
+
+                    while (cursor.moveToNext()) {
+
+                        jsonObject = new JSONObject();
+
+                        String[] resultsColumns = cursor.getColumnNames();
+
+                        for (String key : resultsColumns) {
+
+                            String value = cursor.getString(cursor
+                                    .getColumnIndexOrThrow(key));
+
+                            if (value != null)
+                                jsonObject.put(key, value);
+
+                        }
+
+                    }
+
+                    cursor.close();
+
+                }
+
+                db.close();
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+        return jsonObject;
+    }
 }
