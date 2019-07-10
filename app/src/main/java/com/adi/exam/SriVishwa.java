@@ -71,6 +71,8 @@ public class SriVishwa extends AppCompatActivity
 
     private JSONArray allQuestions = new JSONArray();
 
+    ParentFragment tempFrag = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,6 +173,7 @@ public class SriVishwa extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+
             super.onBackPressed();
         }
     }
@@ -211,7 +214,7 @@ public class SriVishwa extends AppCompatActivity
 
             SriVishwa.this.finish();
 
-        }else if (id == R.id.nav_changepwd) {
+        } else if (id == R.id.nav_changepwd) {
 
             changePassword();
 
@@ -329,7 +332,7 @@ public class SriVishwa extends AppCompatActivity
 
         FragmentTransaction trans = manager.beginTransaction();
 
-        ParentFragment tempFrag = (ParentFragment) manager.findFragmentByTag(tag);
+        tempFrag = (ParentFragment) manager.findFragmentByTag(tag);
         if (tempFrag != null) {
 
             if (tempFrag.isAdded() && tempFrag.isVisible())
@@ -490,15 +493,18 @@ public class SriVishwa extends AppCompatActivity
         swiftFragments(Assignment.newInstance(data), "assignment");
 
     }
-    public void showAssignmentResult(String id,String subject) {
-        App_Table table=new App_Table(this);
+
+    public void showAssignmentResult(String id, String subject) {
+        App_Table table = new App_Table(this);
         Object results = table.getAssignmentHistoryResult(id);
         swiftFragments(AssignResultsPage.newInstance(results.toString()), "assignment");
     }
+
     private void showHistoryList() {
 
         swiftFragments(AssignmentHistory.newInstance(), "assignmenthistory");
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         try {
