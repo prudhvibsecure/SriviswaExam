@@ -16,14 +16,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ViewMaterial"
+            android:label="@string/title_activity_view_material"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".ExamHistory"></activity>
+        <activity android:name=".ExamHistory" />
 
         <service android:name=".services.MyFirebaseMessagingService">
             <intent-filter>

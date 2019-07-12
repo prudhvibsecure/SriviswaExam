@@ -44,7 +44,7 @@ public class Database extends SQLiteOpenHelper {
 
     private final String DOWNLOAD_QUEUE = "CREATE TABLE IF NOT EXISTS DOWNLOADQUEUE(material_data_id INTEGER, material_original_name TEXT, material_unique_name TEXT, downloadurl TEXT, downloadstatus TEXT, savedpath TEXT, mimetype TEXT, errorMsg TEXT);";
 
-    Database(Context context) {
+    public Database(Context context) {
         super(context, APP_DATABASE_NAME, null, APP_DATABASE_VERSION);
     }
 

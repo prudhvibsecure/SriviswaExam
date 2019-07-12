@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adi.exam.R;
 import com.adi.exam.SriVishwa;
+import com.adi.exam.ViewMaterial;
 import com.adi.exam.adapters.MaterialsAdapter;
 import com.adi.exam.callbacks.IDialogCallbacks;
 import com.adi.exam.callbacks.IItemHandler;
@@ -70,6 +71,8 @@ public class Materials extends ParentFragment implements IItemHandler, View.OnCl
     private final Messenger mMessenger = new Messenger(new IncomingHandler());
 
     private boolean mIsBound;
+
+    private String url="";
 
 
     public Materials() {
@@ -270,7 +273,10 @@ public class Materials extends ParentFragment implements IItemHandler, View.OnCl
 
             }
 
-            initDownload(selectedJSON);
+            Intent in = new Intent(getActivity(), ViewMaterial.class);
+            in.putExtra("url", url);
+            startActivity(in);
+            //initDownload(selectedJSON);
 
         } catch (Exception e) {
 
@@ -301,6 +307,8 @@ public class Materials extends ParentFragment implements IItemHandler, View.OnCl
                             JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                             jsonObject1.put("downloadurl", downloadlink + jsonObject1.optString("material_unique_name"));
+
+                            url = downloadlink + jsonObject1.optString("material_unique_name");
 
                             jsonObject1.put("downloadstatus", "");
 
