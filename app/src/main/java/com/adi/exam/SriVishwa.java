@@ -50,6 +50,8 @@ import com.adi.exam.fragments.ParentFragment;
 import com.adi.exam.fragments.ResultsPage;
 import com.adi.exam.fragments.Subjects;
 import com.adi.exam.fragments.Topics;
+import com.adi.exam.services.ApkFileDownloader;
+import com.adi.exam.services.DownloadService;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
 import com.google.android.material.navigation.NavigationView;
@@ -983,13 +985,12 @@ public class SriVishwa extends AppCompatActivity
                 break;
 
             case R.id.tv_updateok:
-
-                //lauchExternalBrowser("market://details?id=" + getPackageName());
-
-                //closeActivity();
-                //downloadapk();
-                //installApk();
-
+                File mediaStorage = new File(Environment.getExternalStorageDirectory()
+                        .toString());
+                if (!mediaStorage.exists()) {
+                    mediaStorage.mkdirs();
+                }
+                startService(ApkFileDownloader.getDownloadService(this, "https://bsecuresoftechsolutions.com/viswa/assets/upload/version/", String.valueOf(mediaStorage), "viswa_1.2.apk"));
                 break;
 
         }
@@ -1030,43 +1031,5 @@ public class SriVishwa extends AppCompatActivity
                 : vals1.length == vals2.length ? 0 : 1;
 
     }
-
-   /* private void downloadapk(){
-        try {
-            URL url = new URL("https://bsecuresoftechsolutions.com/viswa/assets/upload/version/viswa_1.2.apk");
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setDoOutput(true);
-            urlConnection.connect();
-
-            File sdcard = Environment.getExternalStorageDirectory();
-            File file = new File(sdcard, "viswa_1.2.apk");
-
-            FileOutputStream fileOutput = new FileOutputStream(file);
-            InputStream inputStream = urlConnection.getInputStream();
-
-            byte[] buffer = new byte[1024];
-            int bufferLength = 0;
-
-            while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
-                fileOutput.write(buffer, 0, bufferLength);
-            }
-            fileOutput.close();
-            *//*SriVishwa.checkUnknownSourceEnability();
-            this.initiateInstallation();*//*
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void installApk(){
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.fromFile(new File("/sdcard/viswa_1.2.apk"));
-        intent.setDataAndType(uri, "application/vnd.android.package-archive");
-        startActivity(intent);
-    }*/
 
 }
