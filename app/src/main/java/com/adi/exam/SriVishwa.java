@@ -1,6 +1,9 @@
 package com.adi.exam;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -21,7 +24,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -37,7 +39,6 @@ import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
 import com.adi.exam.fragments.AssignmentHistory;
 import com.adi.exam.fragments.AssignmentList;
-import com.adi.exam.fragments.BITSATTemplates;
 import com.adi.exam.fragments.ChangePassword;
 import com.adi.exam.fragments.Dashboard;
 import com.adi.exam.fragments.ExamList;
@@ -51,21 +52,15 @@ import com.adi.exam.fragments.ResultsPage;
 import com.adi.exam.fragments.Subjects;
 import com.adi.exam.fragments.Topics;
 import com.adi.exam.services.ApkFileDownloader;
-import com.adi.exam.services.DownloadService;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
+import com.adi.exam.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Stack;
 
 public class SriVishwa extends AppCompatActivity
@@ -94,6 +89,7 @@ public class SriVishwa extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_srivishwa);
+
 
         toolbar = findViewById(R.id.toolbar);
 
@@ -175,6 +171,9 @@ public class SriVishwa extends AppCompatActivity
 
         ((TextView) header.findViewById(R.id.tv_classbatch)).setText(studentDetails.optString("roll_no"));
 
+        IntentFilter apk=new IntentFilter("com.attach.apk");
+        apk.setPriority(1);
+        registerReceiver(mBroadcastReceiverAttach,apk);
     }
 
     public JSONObject getStudentDetails() {
@@ -1032,4 +1031,30 @@ public class SriVishwa extends AppCompatActivity
 
     }
 
+    private BroadcastReceiver mBroadcastReceiverAttach = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("com.attach.apk")) {
+
+                String a_name = intent.getStringExtra("attachname");
+                String type = Utils.getMimeType(a_name);
+                if (type.startsWith("application/vnd.android.package-archive")) {
+                    String path = Environment.getExternalStorageDirectory()
+                            .toString() + "/" + a_name.trim();
+
+                    Uri paths = Uri.fromFile(new File(path));
+                    Intent intent_n = new Intent(Intent.ACTION_VIEW);
+                    intent_n.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent_n.setDataAndType(paths, type);
+                    startActivity(intent_n.createChooser(intent_n, "Open with"));
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mBroadcastReceiverAttach);
+        super.onDestroy();
+    }
 }
