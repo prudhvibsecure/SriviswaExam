@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -128,6 +129,7 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
             } else {
                 progressBar.setVisibility(View.GONE);
                 tv_content_txt.setVisibility(View.VISIBLE);
+
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -143,7 +145,6 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
 
                 case R.id.ll_exam:
                     JSONObject jsonObject1 = adapterContent.getItems().getJSONObject((int) view.getTag());
-
                     activity.showAssignmentResult(jsonObject1.optString("assignment_id"),jsonObject1.optString("subject"));
 
                     break;

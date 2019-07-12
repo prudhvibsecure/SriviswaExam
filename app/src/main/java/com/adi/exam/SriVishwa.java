@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,6 +57,13 @@ import com.google.android.material.navigation.NavigationView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Stack;
 
 public class SriVishwa extends AppCompatActivity
@@ -289,6 +298,8 @@ public class SriVishwa extends AppCompatActivity
 
                     if (checkPermission("android.permission.READ_EXTERNAL_STORAGE", 100) == 1) {
 
+                        File my_file=new File(Environment.getExternalStorageDirectory(),".allimages");
+                        my_file.mkdir();
                         swiftFragments(ExamList.newInstance(), "examlist");
 
                     }
@@ -518,7 +529,11 @@ public class SriVishwa extends AppCompatActivity
     public void showAssignmentResult(String id, String subject) {
         App_Table table = new App_Table(this);
         Object results = table.getAssignmentHistoryResult(id);
-        swiftFragments(AssignResultsPage.newInstance(results.toString()), "assignment");
+        if (results!=null) {
+            swiftFragments(AssignResultsPage.newInstance(results.toString()), "assignment");
+        }else{
+            Toast.makeText(this, "Please Start Your Assignment", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showHistoryList() {
@@ -972,6 +987,8 @@ public class SriVishwa extends AppCompatActivity
                 //lauchExternalBrowser("market://details?id=" + getPackageName());
 
                 //closeActivity();
+                //downloadapk();
+                //installApk();
 
                 break;
 
@@ -1013,5 +1030,43 @@ public class SriVishwa extends AppCompatActivity
                 : vals1.length == vals2.length ? 0 : 1;
 
     }
+
+   /* private void downloadapk(){
+        try {
+            URL url = new URL("https://bsecuresoftechsolutions.com/viswa/assets/upload/version/viswa_1.2.apk");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setDoOutput(true);
+            urlConnection.connect();
+
+            File sdcard = Environment.getExternalStorageDirectory();
+            File file = new File(sdcard, "viswa_1.2.apk");
+
+            FileOutputStream fileOutput = new FileOutputStream(file);
+            InputStream inputStream = urlConnection.getInputStream();
+
+            byte[] buffer = new byte[1024];
+            int bufferLength = 0;
+
+            while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
+                fileOutput.write(buffer, 0, bufferLength);
+            }
+            fileOutput.close();
+            *//*SriVishwa.checkUnknownSourceEnability();
+            this.initiateInstallation();*//*
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void installApk(){
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(new File("/sdcard/viswa_1.2.apk"));
+        intent.setDataAndType(uri, "application/vnd.android.package-archive");
+        startActivity(intent);
+    }*/
 
 }

@@ -20,6 +20,10 @@ import com.adi.exam.utils.TraceUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentListingAdapter.ContactViewHolder> {
 
     private JSONArray array = new JSONArray();
@@ -126,6 +130,24 @@ public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentL
 
                 contactViewHolder.tv_examtime.setText(mContext.getString(R.string.time, question_details.optString("from_time").trim() + " - " + question_details.optString("to_time").trim()));
 
+                Timestamp timestamp = Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd")
+                        .format(new Date()) // get the current date as String
+                        .concat(question_details.optString("from_time").trim())
+                );
+                Timestamp timestamp1 = Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd")
+                        .format(new Date()) // get the current date as String
+                        .concat(question_details.optString("to_time").trim())
+                );
+                long time = System.currentTimeMillis();
+                String com_ll = String.valueOf(timestamp);
+                String com_ll1 = String.valueOf(timestamp1);
+                long tkl = Long.parseLong(com_ll);
+                long tk2 = Long.parseLong(com_ll1);
+                if (time >= tkl) {
+                    contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+                } else if (time == tk2) {
+                    contactViewHolder.tv_startexam.setVisibility(View.GONE);
+                }
             }
 
         } catch (Exception e) {

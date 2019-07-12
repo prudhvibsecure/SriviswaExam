@@ -172,7 +172,9 @@
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            app:fontType="1" />
+            app:fontType="1"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"/>
 
     </LinearLayout>
 

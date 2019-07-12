@@ -41,6 +41,8 @@ import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -93,7 +95,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     private JSONObject json;
 
-   // private int check = 0;
+    private int check = 0;
 
     private long questionStartTime = 0;
 
@@ -102,6 +104,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
     private TabLayout tl_subjects;
 
     private long timeTaken4Question = 0;
+
+    AssetManager assetManager;
 
     private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
 
@@ -153,29 +157,29 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                              Bundle savedInstanceState) {
 
         layout = inflater.inflate(R.layout.fragment_examtemplates, container, false);
+        assetManager =getActivity().getAssets();
+       layout.setFocusableInTouchMode(true);
 
-        layout.setFocusableInTouchMode(true);
+       layout.requestFocus();
 
-        layout.requestFocus();
+       layout.setOnKeyListener(new View.OnKeyListener() {
+                              @Override
+                              public boolean onKey(View v, int keyCode, KeyEvent event) {
+                                  if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                                      if (keyCode == KeyEvent.KEYCODE_BACK) {
 
-        layout.setOnKeyListener(new View.OnKeyListener() {
-                               @Override
-                               public boolean onKey(View v, int keyCode, KeyEvent event) {
-                                   if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                                       if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                          return true;
+                                      }
+                                      if(keyCode == KeyEvent.KEYCODE_HOME){
 
-                                           return true;
-                                       }
-                                       if(keyCode == KeyEvent.KEYCODE_HOME){
+                                          return true;
+                                      }
 
-                                           return true;
-                                       }
+                                  }
 
-                                   }
-
-                                   return false;
-                               }
-                           });
+                                  return false;
+                              }
+                          });
 
         activity.getSupportActionBar().setHomeButtonEnabled(false);
 
@@ -445,16 +449,26 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("question_no", currentExamId);
                 questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
                 questionTimeObject.put("topic_id", jsonObject.optInt("topic_id"));
-                questionTimeObject.put("lesson_id", jsonObject.optString("lesson_id"));
+                questionTimeObject.put("lesson_id", getLessonID(jsonObject.optInt("topic_id")));
                 questionTimeObject.put("subject", ((TextView) (tl_subjects.getTabAt(tl_subjects.getSelectedTabPosition()).getCustomView())).getText().toString());
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
-                questionTimeObject.put("result", "");
+                String res = "";
+                if(jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer")))
+                {
+                    res = "0";
+                }
+                else
+                {
+                   res = "1";
+                }
+                questionTimeObject.put("result", res );
                 questionTimeObject.put("question_time", timeTaken4Question + "");
-                questionTimeObject.put("no_of_clicks", "0");
+                questionTimeObject.put("no_of_clicks", check++);
                 questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "YES" : "NO");
 
                 table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
+                check=0;
 
             }
 
@@ -465,6 +479,37 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
         }
 
 
+    }
+
+    private int getLessonID(int tid) {
+        int lesson_id = 0;
+        Database database = new Database(getActivity());
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from TOPICS where topic_id="+ tid;
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            lesson_id = cursor.getInt(cursor.getColumnIndex("lessons_id"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+      return lesson_id;
     }
 
     @Override
@@ -628,8 +673,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     }
 
-    private void
-    showNextQuestion(int position) {
+    private void showNextQuestion(int position) {
 
         try {
 
@@ -648,27 +692,88 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             tv_questionno.setText(getString(R.string.questionno, jsonObject.optString("sno")));
 
             iv_question.setImageResource(jsonObject.optInt("qid"));
+            Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
+                @Override
+                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
+                }
+            }).build();
+            picasso.load("file:///android_asset/allimages/"+jsonObject.optString("question_name"))
+                    .into(iv_question, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
+                        }
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_b"), iv_option2);
+                        @Override
+                        public void onError() {
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_a"))
+                    .into(iv_option1, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
+                        }
 
+                        @Override
+                        public void onError() {
 
-           /* imageLoader.displayImage("file:///android_asset/allimages/" +jsonObject.optString("question_name"), iv_question);
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_b"))
+                    .into(iv_option2, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_a"), iv_option1);
+                        }
 
-            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_b"), iv_option2);
+                        @Override
+                        public void onError() {
 
-            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_c"), iv_option3);
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_c"))
+                    .into(iv_option3, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_d"), iv_option4);*/
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_d"))
+                    .into(iv_option4, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_b"), iv_option2);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
+
+//            imageLoader.displayImage("file:///android_asset/allimages/"+jsonObject.optString("question_name"), iv_question);
+//
+//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_a"), iv_option1);
+//
+//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_b"), iv_option2);
+//
+//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_c"), iv_option3);
+//
+//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_d"), iv_option4);
 
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
@@ -877,18 +982,16 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
                 for (int i = 0; i < temp.length; i++) {
                     array.put(getQuestion(temp[i]));
-                   /* phncomp.defineWhereClause("question_id=" + temp[i]);
 
-                    phncomp.executeLocalDBInBackground("QUESTIONS");*/
-                    whereQuestions = whereQuestions + "'" + temp[i] + "',";
+                   // whereQuestions = whereQuestions + "'" + temp[i] + "',";
 
                 }
 
                 setData(array);
 
-                whereQuestions = whereQuestions.trim();
+               /* whereQuestions = whereQuestions.trim();
 
-                whereQuestions = whereQuestions.substring(0, whereQuestions.length() - 1);
+                whereQuestions = whereQuestions.substring(0, whereQuestions.length() - 1);*/
 
             }
 
@@ -1048,12 +1151,9 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             backup_result.put("total_questions_attempted", total_questions_attempted + "");
             backup_result.put("no_of_correct_answers", no_of_correct_answers + "");
             backup_result.put("score", score + "");
-           /* backup_result.put("percentage", "");
+            backup_result.put("percentage", "");
             backup_result.put("accuracy", "");
-            backup_result.put("exam_type", "");*/
-            backup_result.put("percentage", data.optString("percentage"));
-            backup_result.put("accuracy", data.optString("accuracy"));
-            backup_result.put("exam_type", data.optString("exam_type"));
+            backup_result.put("exam_type", "");
 
 
             App_Table table = new App_Table(activity);

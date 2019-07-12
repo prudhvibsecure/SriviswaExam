@@ -2,6 +2,7 @@ package com.adi.exam.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,29 @@ public class Dashboard extends ParentFragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+        view.setFocusableInTouchMode(true);
+
+        view.requestFocus();
+
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        activity.finish();
+                    }
+                    if(keyCode == KeyEvent.KEYCODE_HOME){
+
+                        return true;
+                    }
+
+                }
+
+                return false;
+            }
+        });
+
 
         Context context = view.getContext();
 

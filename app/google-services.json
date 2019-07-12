@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "485600942431",
-    "firebase_url": "https://sri-vishwa.firebaseio.com",
-    "project_id": "sri-vishwa",
-    "storage_bucket": "sri-vishwa.appspot.com"
+    "project_number": "393458351886",
+    "firebase_url": "https://sriviswa-17b94.firebaseio.com",
+    "project_id": "sriviswa-17b94",
+    "storage_bucket": "sriviswa-17b94.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:485600942431:android:2a1df4670c606095",
+        "mobilesdk_app_id": "1:393458351886:android:677fb95388a2171a",
         "android_client_info": {
-          "package_name": "com.adi.exam"
+          "package_name": "com.adi.exams"
         }
       },
       "oauth_client": [
         {
-          "client_id": "485600942431-51mvrevt51u2gvchuapb3am9mq8t9u7m.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.adi.exam",
-            "certificate_hash": "3258db4b8d675eac53debee8da2e1b343c87eb38"
-          }
-        },
-        {
-          "client_id": "485600942431-sl0ourq0msj2gel7t5gmkd5ovpajia18.apps.googleusercontent.com",
+          "client_id": "393458351886-7l393lv1b6mve5alfkesvicnsr3t63hc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAyFzgW19AfzLr1gRFc2IT0tF4cbxufqvs"
+          "current_key": "AIzaSyCF7Ec1dkwclbdgd3XISEqoR8lmstyI_G0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "485600942431-sl0ourq0msj2gel7t5gmkd5ovpajia18.apps.googleusercontent.com",
+              "client_id": "393458351886-7l393lv1b6mve5alfkesvicnsr3t63hc.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

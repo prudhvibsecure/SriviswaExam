@@ -1,7 +1,10 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -27,6 +30,7 @@ import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
 import com.adi.exam.database.App_Table;
+import com.adi.exam.database.Database;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.tasks.FileUploader;
 import com.adi.exam.tasks.HTTPPostTask;
@@ -35,6 +39,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -426,7 +432,70 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
             iv_question.setImageResource(jsonObject.optInt("qid"));
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
+            Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
+                @Override
+                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+
+                }
+            }).build();
+            picasso.load("file:///android_asset/allimages/"+jsonObject.optString("question_name"))
+                    .into(iv_question, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_a"))
+                    .into(iv_option1, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_b"))
+                    .into(iv_option2, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_c"))
+                    .into(iv_option3, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_d"))
+                    .into(iv_option4, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+
+           /* imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
 
@@ -434,7 +503,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);*/
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
@@ -892,4 +961,6 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             TraceUtils.logException(e);
         }
     }
+
+
 }
