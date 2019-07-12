@@ -65,24 +65,25 @@ public class AssignmentHistoryAdapter extends RecyclerView.Adapter<AssignmentHis
 
             int color = generator.getColor(title);
 
-            String tdText = title;
+//            String tdText = title;
 
-            if (title.contains(" ")) {
+//            if (title.contains(" ")) {
+//
+//                String[] tempArray = title.split(" ");
+//
+//                tdText = tempArray[0].charAt(0) + "" + tempArray[1].charAt(0);
+//
+//            } else if (title.length() > 1) {
 
-                String[] tempArray = title.split(" ");
+            title = title.substring(0, 1);
 
-                tdText = tempArray[0].charAt(0) + "" + tempArray[1].charAt(0);
+         //   }
 
-            } else if (title.length() > 1) {
-
-                tdText = title.substring(0, 1);
-
-            }
-
-            TextDrawable ic1 = builder.build(tdText, color);
+            TextDrawable ic1 = builder.build(title, color);
 
             contactViewHolder.iv_iconexamcontent.setImageDrawable(ic1);
             contactViewHolder.row_vv.setOnClickListener(onClickListener);
+            contactViewHolder.row_vv.setTag(position);
         } catch (Exception e) {
 
             TraceUtils.logException(e);

@@ -106,17 +106,17 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
 
             String tdText = title;
 
-            if (title.contains(" ")) {
-
-                String[] tempArray = title.split(" ");
-
-                tdText = tempArray[0].charAt(0) + "" + tempArray[1].charAt(0);
-
-            } else if (title.length() > 1) {
-
-                tdText = title.substring(0, 1);
-
-            }
+//            if (title.contains(" ")) {
+//
+//                String[] tempArray = title.split(" ");
+//
+//                tdText = tempArray[0].charAt(0) + "" + tempArray[1].charAt(0);
+//
+//            } else if (title.length() > 1) {
+//
+//                tdText = title.substring(0, 1);
+//
+//            }
 
             TextDrawable ic1 = builder.build(tdText, color);
 

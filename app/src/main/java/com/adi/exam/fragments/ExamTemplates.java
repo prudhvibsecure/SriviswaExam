@@ -96,6 +96,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
     private long timeTaken4Question = 0;
     private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
 
+    private boolean isVisible=false;
     public ExamTemplates() {
         // Required empty public constructor
     }

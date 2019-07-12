@@ -109,7 +109,7 @@ public class AssignResultsPage extends ParentFragment implements IItemHandler, V
 
                 PhoneComponent phncomp = new PhoneComponent(this, activity, 1);
 
-                phncomp.defineWhereClause("assignment_result_id = '" + activity.getStudentDetails().optInt("assignment_result_id") + "' AND student_id = '" + activity.getStudentDetails().optInt("student_id") + "' AND assignment_id = '" + examDetails.optString("assignment_id") + "'");
+                phncomp.defineWhereClause("assignment_result_id = '" + examDetails.optString("assignment_result_id") + "' AND student_id = '" + activity.getStudentDetails().optInt("student_id") + "' AND assignment_id = '" + examDetails.optString("assignment_id") + "'");
 
                 phncomp.executeLocalDBInBackground("ASSIGNMENTRESULTS");
 

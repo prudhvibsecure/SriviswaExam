@@ -75,8 +75,6 @@ public class ResultsPage extends ParentFragment implements IItemHandler, View.On
 
                 examDetails = new JSONObject(getArguments().getString("examDetails"));
 
-                examDetails = new JSONObject(getArguments().getString("examDetails"));
-
                 type = getArguments().getInt("type");
 
             }

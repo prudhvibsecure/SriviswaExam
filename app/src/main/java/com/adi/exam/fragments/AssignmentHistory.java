@@ -107,26 +107,30 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
     }
 
     private void checkAssignment() {
-        Object results = table.getAssignmentHistoryList();
-        JSONArray array=new JSONArray();
+        try {
+            Object results = table.getAssignmentHistoryList();
 
-        if (results!=null) {
-            array.put(results);
-            try {
-                tv_content_txt.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
+            if (results != null) {
+                JSONObject object = new JSONObject(results.toString());
+                JSONArray array = object.getJSONArray("assign_body");
+                try {
+                    tv_content_txt.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
 
-                if (array.length()>0) {
-                    adapterContent.setItems(array);
-                    adapterContent.notifyDataSetChanged();
+                    if (array.length() > 0) {
+                        adapterContent.setItems(array);
+                        adapterContent.notifyDataSetChanged();
+                    }
+
+                } catch (Exception e) {
+                    TraceUtils.logException(e);
                 }
-
-            } catch (Exception e) {
-                TraceUtils.logException(e);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                tv_content_txt.setVisibility(View.VISIBLE);
             }
-        }else{
-            progressBar.setVisibility(View.GONE);
-            tv_content_txt.setVisibility(View.VISIBLE);
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
@@ -138,7 +142,7 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
             switch (view.getId()) {
 
                 case R.id.ll_exam:
-                    JSONObject jsonObject1 = adapterContent.getItems().getJSONObject(0);
+                    JSONObject jsonObject1 = adapterContent.getItems().getJSONObject((int) view.getTag());
 
                     activity.showAssignmentResult(jsonObject1.optString("assignment_id"),jsonObject1.optString("subject"));
 

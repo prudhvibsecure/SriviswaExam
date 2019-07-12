@@ -438,12 +438,12 @@ public class App_Table {
     }
     public JSONObject getAssignmentHistoryList() {
 
-        JSONObject jsonObject = null;
+        JSONObject jsonObject = new JSONObject();
 
         try {
 
             if (database != null) {
-
+                JSONArray array = new JSONArray();
                 SQLiteDatabase db = database.getWritableDatabase();
 
                 Cursor cursor = db.rawQuery("SELECT * FROM ASSIGNMENT",
@@ -453,7 +453,8 @@ public class App_Table {
 
                     while (cursor.moveToNext()) {
 
-                        jsonObject = new JSONObject();
+                        JSONObject obj = new JSONObject();
+
 
                         String[] resultsColumns = cursor.getColumnNames();
 
@@ -462,13 +463,12 @@ public class App_Table {
                             String value = cursor.getString(cursor
                                     .getColumnIndexOrThrow(key));
 
-                            if (value != null)
-                                jsonObject.put(key, value);
+                            obj.put(key, value);
 
                         }
-
+                        array.put(obj);
                     }
-
+                    jsonObject.put("assign_body", array);
                     cursor.close();
 
                 }
@@ -542,7 +542,7 @@ public class App_Table {
 
                 SQLiteDatabase db = database.getWritableDatabase();
 
-                Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME_TABLE WHERE assignment_id='" + assign_id + "' and student_id='" + student_id + "'",
+                Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME WHERE assignment_id='" + assign_id + "' and student_id='" + student_id + "'",
                         null);
 
                 if (cursor != null) {
