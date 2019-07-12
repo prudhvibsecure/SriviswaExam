@@ -436,6 +436,7 @@ public class App_Table {
         return jsonObject;
 
     }
+
     public JSONObject getAssignmentHistoryList() {
 
         JSONObject jsonObject = new JSONObject();
@@ -488,11 +489,12 @@ public class App_Table {
     }
 
     public JSONObject getExamsResult(int exam_id, int student_id) {
-        JSONObject jsonObject = null;
+
+        JSONObject jsonObject = new JSONObject();
         try {
 
             if (database != null) {
-
+                JSONArray jsonArray = new JSONArray();
                 SQLiteDatabase db = database.getWritableDatabase();
 
                 Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME WHERE student_id='" + student_id + "' and exam_id='" + exam_id + "'",
@@ -502,7 +504,7 @@ public class App_Table {
 
                     while (cursor.moveToNext()) {
 
-                        jsonObject = new JSONObject();
+                        JSONObject obb = new JSONObject();
 
                         String[] resultsColumns = cursor.getColumnNames();
 
@@ -511,13 +513,13 @@ public class App_Table {
                             String value = cursor.getString(cursor
                                     .getColumnIndexOrThrow(key));
 
-                            if (value != null)
-                                jsonObject.put(key, value);
+                            obb.put(key, value);
 
                         }
+                        jsonArray.put(obb);
 
                     }
-
+                    jsonObject.put("student_question_time", jsonArray);
                     cursor.close();
 
                 }
@@ -589,7 +591,7 @@ public class App_Table {
 
                 SQLiteDatabase db = database.getWritableDatabase();
 
-                Cursor cursor = db.rawQuery("SELECT * FROM ASSIGNMENTRESULTS WHERE assignment_id='" + id +"'",
+                Cursor cursor = db.rawQuery("SELECT * FROM ASSIGNMENTRESULTS WHERE assignment_id='" + id + "'",
                         null);
 
                 if (cursor != null) {
@@ -627,6 +629,7 @@ public class App_Table {
         }
         return jsonObject;
     }
+
     public JSONArray getRecords(String whereClause, String tableName) {
 
         JSONArray jsonArray = new JSONArray();
