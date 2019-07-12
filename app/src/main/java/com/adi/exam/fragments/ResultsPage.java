@@ -1,7 +1,9 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.adi.exam.R;
 import com.adi.exam.SriVishwa;
 import com.adi.exam.callbacks.IDialogCallbacks;
 import com.adi.exam.callbacks.IItemHandler;
+import com.adi.exam.controls.CustomTextView;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.utils.TraceUtils;
 
@@ -36,6 +39,8 @@ public class ResultsPage extends ParentFragment implements IItemHandler, View.On
     private TableLayout tl_results;
 
     private TextView tv_scoore, tv_tqval, tv_taval, tv_caval, tv_icaval;
+
+    private CustomTextView tv_submit;
 
     private JSONArray allQuestions = new JSONArray();
 
@@ -95,6 +100,26 @@ public class ResultsPage extends ParentFragment implements IItemHandler, View.On
 
         View layout = inflater.inflate(R.layout.fragment_exam_resultspage, container, false);
 
+        layout.setFocusableInTouchMode(true);
+
+        layout.requestFocus();
+
+        layout.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+                      startActivity(new Intent(activity, SriVishwa.class));
+
+                    }
+
+                }
+
+                return false;
+            }
+        });
+
         tl_results = layout.findViewById(R.id.tl_results);
 
         tv_scoore = layout.findViewById(R.id.tv_scoore);
@@ -114,6 +139,15 @@ public class ResultsPage extends ParentFragment implements IItemHandler, View.On
         allQuestions = activity.getAllQuestions();
 
         tv_tqval.setText(allQuestions.length() + "");
+
+        tv_submit = layout.findViewById(R.id.tv_submit);
+
+        tv_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(activity, SriVishwa.class));
+            }
+        });
 
         try {
 

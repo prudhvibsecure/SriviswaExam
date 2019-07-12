@@ -76,6 +76,8 @@ public class SriVishwa extends AppCompatActivity
 
     ParentFragment tempFrag = null;
 
+    public int check = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -534,6 +536,11 @@ public class SriVishwa extends AppCompatActivity
                     ParentFragment pf = fragStack.peek();
                     if (pf instanceof ExamTemplates){
                         return true;
+                    }
+
+                    if(pf instanceof ResultsPage)
+                    {
+                        startActivity(new Intent(this, SriVishwa.class));
                     }
 
                     if (pf.back())

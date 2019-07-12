@@ -161,6 +161,19 @@
             android:layout_height="match_parent"
             android:layout_margin="5dp" />
 
+        <com.adi.exam.controls.CustomTextView
+            android:id="@+id/tv_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_bg_submit"
+            android:gravity="center"
+            android:text="@string/dashboard"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            app:fontType="1" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

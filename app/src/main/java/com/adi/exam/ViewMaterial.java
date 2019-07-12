@@ -1,9 +1,15 @@
 package com.adi.exam;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JsResult;
@@ -12,25 +18,20 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.adi.exam.common.AppPreferences;
+public class ViewMaterial extends AppCompatActivity {
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-public class ExamHistory extends AppCompatActivity {
-
-    private String student_id;
+    private String student_id, url;
 
     private WebView wv_content = null;
 
     private WebSettings webSettings = null;
 
-    private JSONObject studentdetails;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exam_history);
+        setContentView(R.layout.activity_view_material);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
 
@@ -40,18 +41,14 @@ public class ExamHistory extends AppCompatActivity {
 
         }
 
-        try {
-
-            studentdetails = new JSONObject(AppPreferences.getInstance(this).getFromStore("studentDetails"));
-
-            student_id = studentdetails.optString("student_id");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        Intent in = getIntent();
+        if(in!= null)
+        {
+           url = in.getStringExtra("url");
         }
 
-        wv_content = (WebView) findViewById(R.id.webview);
-        wv_content.loadUrl("https://bsecuresoftechsolutions.com/viswa/analysis?student_id="+student_id);
+        wv_content = findViewById(R.id.webview);
+        wv_content.loadUrl("https://docs.google.com/gview?embedded=true&url="+url);
         wv_content.getSettings().setAllowFileAccess(true);
         wv_content.getSettings().setSupportZoom(true);
         wv_content.setVerticalScrollBarEnabled(true);
@@ -68,8 +65,8 @@ public class ExamHistory extends AppCompatActivity {
         wv_content.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         wv_content.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        wv_content.setWebViewClient(new MyWebViewClient());
-        wv_content.setWebChromeClient(new MyWebChromeClient());
+        wv_content.setWebViewClient(new ViewMaterial.MyWebViewClient());
+        wv_content.setWebChromeClient(new ViewMaterial.MyWebChromeClient());
 
         wv_content.getSettings().setJavaScriptEnabled(true);
         wv_content.getSettings().setLoadWithOverviewMode(true);
@@ -79,8 +76,8 @@ public class ExamHistory extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setSupportZoom(true);
         webSettings.setBuiltInZoomControls(true);
-
     }
+
 
     private class MyWebChromeClient extends WebChromeClient {
         @Override

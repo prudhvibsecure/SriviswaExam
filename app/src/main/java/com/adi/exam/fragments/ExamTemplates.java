@@ -1,6 +1,10 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -30,6 +34,7 @@ import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
 import com.adi.exam.database.App_Table;
+import com.adi.exam.database.Database;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.tasks.FileUploader;
 import com.adi.exam.tasks.HTTPPostTask;
@@ -38,6 +43,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
@@ -87,6 +93,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     private JSONObject json;
 
+   // private int check = 0;
+
     private long questionStartTime = 0;
 
     private FileOutputStream fos = null;
@@ -94,6 +102,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
     private TabLayout tl_subjects;
 
     private long timeTaken4Question = 0;
+
     private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
 
     public ExamTemplates() {
@@ -435,7 +444,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("question_no", currentExamId);
                 questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
                 questionTimeObject.put("topic_id", jsonObject.optInt("topic_id"));
-                questionTimeObject.put("lesson_id", "");
+                questionTimeObject.put("lesson_id", jsonObject.optString("lesson_id"));
                 questionTimeObject.put("subject", ((TextView) (tl_subjects.getTabAt(tl_subjects.getSelectedTabPosition()).getCustomView())).getText().toString());
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
@@ -649,6 +658,18 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
 
+
+           /* imageLoader.displayImage("file:///android_asset/allimages/" +jsonObject.optString("question_name"), iv_question);
+
+            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_a"), iv_option1);
+
+            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_b"), iv_option2);
+
+            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_c"), iv_option3);
+
+            imageLoader.displayImage("file:///android_asset/allimages/" + jsonObject.optString("option_d"), iv_option4);*/
+
+
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
                 ((RadioButton) rg_options.findViewById(R.id.rb_first)).setChecked(true);
@@ -851,12 +872,18 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             if (questions.contains(",")) {
 
                 String[] temp = questions.split(",");
+                JSONArray array = new JSONArray();
 
                 for (int i = 0; i < temp.length; i++) {
+                    array.put(getQuestion(temp[i]));
+                   /* phncomp.defineWhereClause("question_id=" + temp[i]);
 
+                    phncomp.executeLocalDBInBackground("QUESTIONS");*/
                     whereQuestions = whereQuestions + "'" + temp[i] + "',";
 
                 }
+
+                setData(array);
 
                 whereQuestions = whereQuestions.trim();
 
@@ -864,9 +891,9 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
             }
 
-            phncomp.defineWhereClause("question_id IN (" + whereQuestions + ")");
+           /* phncomp.defineWhereClause("question_id IN (" + whereQuestions + ")");
 
-            phncomp.executeLocalDBInBackground("QUESTIONS");
+            phncomp.executeLocalDBInBackground("QUESTIONS");*/
 
         } catch (Exception e) {
 
@@ -1020,18 +1047,28 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             backup_result.put("total_questions_attempted", total_questions_attempted + "");
             backup_result.put("no_of_correct_answers", no_of_correct_answers + "");
             backup_result.put("score", score + "");
-            backup_result.put("percentage", "");
+           /* backup_result.put("percentage", "");
             backup_result.put("accuracy", "");
-            backup_result.put("exam_type", "");
+            backup_result.put("exam_type", "");*/
+            backup_result.put("percentage", data.optString("percentage"));
+            backup_result.put("accuracy", data.optString("accuracy"));
+            backup_result.put("exam_type", data.optString("exam_type"));
 
 
             App_Table table = new App_Table(activity);
+
             json=table.getExamsResult(data.optInt("exam_id"),activity.getStudentDetails().optInt("student_id"));
+
             array.put(json);
+
             backup_result.put("student_question_time",array);
+
             fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
+
             fos.write(backup_result.toString().getBytes());
+
             String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
+
             long val = table.insertSingleRecords(STUDENTEXAMRESULT, "STUDENTEXAMRESULT");
 
             if (val > 0) {
@@ -1039,7 +1076,9 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 activity.setAllQuestions(jsonArray);
 
                 activity.showExamSubmitConfirmationPage(data, student_exam_result_id, 1);
+
                 startUploadBackUp(path,FILE_NAME);
+
                 return;
 
             }
@@ -1055,9 +1094,13 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
     }
 
     private void startUploadBackUp(String path,String file_name) {
-       String url= AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+
+        String url= AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+
         FileUploader uploader = new FileUploader(getActivity(), this);
+
         uploader.setFileName(file_name, file_name);
+
         uploader.userRequest("", 11, url, path);
     }
 
@@ -1075,34 +1118,43 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             public void onFinish() {
                 tv_timer.setText("00:00:00");
             }
+
         }.start();
 
     }
 
     private String convertSecondsToHMmSs(long seconds) {
+
         long s = seconds % 60;
+
         long m = (seconds / 60) % 60;
+
         long h = (seconds / (60 * 60)) % 24;
+
         return String.format(Locale.ENGLISH, "%d:%02d:%02d", h, m, s);
+
     }
 
 
     @Override
     public void onStateChange(int what, int arg1, int arg2, Object obj, int reqID) {
+
         try {
 
             switch (what) {
 
                 case -1: // failed
 
-                    Toast.makeText(getActivity()
-                            , "Failed To Send", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Failed To Send", Toast.LENGTH_SHORT).show();
+
                     break;
 
                 case 1: // progressBar
+
                     break;
 
                 case 0: // success
+
                     JSONObject object = new JSONObject(obj.toString());
                     //     {"status":"0","status_description":"File Uploaded Successfully","attachname":"1552318451_Screenshot_20181203-194010_20190311_090349.png"}
                     dataSendServer(object.optString("file_name"));
@@ -1114,19 +1166,23 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
             // TODO: handle exception
         }
 
-
     }
 
     private void dataSendServer(String file_name) {
+
         try{
+
             JSONObject jsonObject = new JSONObject();
 
             jsonObject.put("exam_id", data.optInt("exam_id"));
+
             jsonObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
+
             jsonObject.put("file_name", file_name);
 
             HTTPPostTask post = new HTTPPostTask(getActivity(), this);
@@ -1134,8 +1190,126 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             post.userRequest(getString(R.string.plwait), 2, "submit_exam_result", jsonObject.toString());
 
         }catch (Exception e){
+
             TraceUtils.logException(e);
+
         }
     }
 
+    public JSONObject getQuestion(String qid)
+    {
+        JSONObject obj = new JSONObject();
+        try {
+            Database database = new Database(activity);
+            SQLiteDatabase db;
+            if (database != null) {
+
+                String cursor_q = "select * from QUESTIONS where question_id="+ Integer.parseInt(qid);
+
+                db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+
+                            obj.put("question_id", cursor.getString(cursor.getColumnIndex("question_id")));
+                            obj.put("topic_id" , cursor.getString(cursor.getColumnIndex("topic_id")));
+                            obj.put("topic_name", cursor.getString(cursor.getColumnIndex("topic_name")));
+                            obj.put("question_name", cursor.getString(cursor.getColumnIndex("question_name")));
+                            obj.put("question_name1", cursor.getString(cursor.getColumnIndex("question_name1")));
+                            obj.put("question_name2", cursor.getString(cursor.getColumnIndex("question_name2")));
+                            obj.put("question_name3", cursor.getString(cursor.getColumnIndex("question_name3")));
+                            obj.put("option_a", cursor.getString(cursor.getColumnIndex("option_a")));
+                            obj.put("option_b", cursor.getString(cursor.getColumnIndex("option_b")));
+                            obj.put("option_c",cursor.getString(cursor.getColumnIndex("option_c")));
+                            obj.put("option_d", cursor.getString(cursor.getColumnIndex("option_d")));
+                            obj.put("answer", cursor.getString(cursor.getColumnIndex("answer")));
+                            obj.put("solution1", cursor.getString(cursor.getColumnIndex("solution1")));
+                            obj.put("solution2", cursor.getString(cursor.getColumnIndex("solution2")));
+                            obj.put("solution3", cursor.getString(cursor.getColumnIndex("solution3")));
+                            obj.put("solution4", cursor.getString(cursor.getColumnIndex("solution4")));
+                            obj.put("difficulty", cursor.getString(cursor.getColumnIndex("difficulty")));
+                            obj.put("status", cursor.getString(cursor.getColumnIndex("status")));
+
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        return obj;
+    }
+
+    public void setData(JSONArray jsonArray)
+    {
+        if (jsonArray.length() > 0) {
+            int c = jsonArray.length();
+            if (adapter.getItems().length() == 0) {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = jsonArray.getJSONObject(i);
+
+
+                    jsonObject.put("qstate", 0); //0 = not visited, 1 = not answered, 2 = answered, 3 = marked review, 4 = answered and marked for review, 5 = visited
+
+                    jsonObject.put("qanswer", "");
+
+                    jsonObject.put("sno", i + 1);
+
+                    if (i == 0) {
+
+                        jsonObject.put("qstate", 1);
+
+                    }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                adapter.setItems(jsonArray);
+
+            } else {
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = jsonArray.getJSONObject(i);
+
+
+                    jsonObject.put("qstate", 0); //0 = not visited, 1 = not answered, 2 = answered, 3 = marked review, 4 = answered and marked for review, 5 = visited
+
+                    jsonObject.put("qanswer", "");
+
+                    jsonObject.put("sno", adapter.getCount() + 1);
+
+                    adapter.getItems().put(jsonArray.getJSONObject(i));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+
+            adapter.notifyDataSetChanged();
+
+            showNextQuestion(0);
+
+        }
+
+    }
 }
