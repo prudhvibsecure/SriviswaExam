@@ -30,7 +30,9 @@ import androidx.fragment.app.FragmentTransaction;
 import com.adi.exam.callbacks.IDialogCallbacks;
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
+import com.adi.exam.common.AppSettings;
 import com.adi.exam.database.App_Table;
+import com.adi.exam.database.Database;
 import com.adi.exam.dialogfragments.AppUpdateDialog;
 import com.adi.exam.dialogfragments.ExitDialog;
 import com.adi.exam.dialogfragments.MessageDialog;
@@ -39,6 +41,7 @@ import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
 import com.adi.exam.fragments.AssignmentHistory;
 import com.adi.exam.fragments.AssignmentList;
+import com.adi.exam.fragments.BITSATTemplates;
 import com.adi.exam.fragments.ChangePassword;
 import com.adi.exam.fragments.Dashboard;
 import com.adi.exam.fragments.ExamList;
@@ -53,6 +56,7 @@ import com.adi.exam.fragments.Subjects;
 import com.adi.exam.fragments.Topics;
 import com.adi.exam.services.ApkFileDownloader;
 import com.adi.exam.tasks.HTTPPostTask;
+import com.adi.exam.utils.PrefUtils;
 import com.adi.exam.utils.TraceUtils;
 import com.adi.exam.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
@@ -60,12 +64,20 @@ import com.google.android.material.navigation.NavigationView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 public class SriVishwa extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ParentFragment.OnFragmentInteractionListener, Dashboard.OnListFragmentInteractionListener, View.OnClickListener, IItemHandler, AppUpdateDialog.IUpdateCallback {
-
+    private final List blockedKeys = new ArrayList(Arrays.asList(new Integer[]{Integer.valueOf(25), Integer.valueOf(24)}));
     private Toolbar toolbar;
 
     private ActionBarDrawerToggle toggle;
@@ -83,6 +95,8 @@ public class SriVishwa extends AppCompatActivity
     ParentFragment tempFrag = null;
 
     public int check = 0;
+    public String myData = "";
+    App_Table app_table;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +104,7 @@ public class SriVishwa extends AppCompatActivity
 
         setContentView(R.layout.activity_srivishwa);
 
-
+        app_table = new App_Table(this);
         toolbar = findViewById(R.id.toolbar);
 
         toolbar.setTitle(R.string.dashboard);
@@ -171,9 +185,9 @@ public class SriVishwa extends AppCompatActivity
 
         ((TextView) header.findViewById(R.id.tv_classbatch)).setText(studentDetails.optString("roll_no"));
 
-        IntentFilter apk=new IntentFilter("com.attach.apk");
+        IntentFilter apk = new IntentFilter("com.attach.apk");
         apk.setPriority(1);
-        registerReceiver(mBroadcastReceiverAttach,apk);
+        registerReceiver(mBroadcastReceiverAttach, apk);
     }
 
     public JSONObject getStudentDetails() {
@@ -188,9 +202,9 @@ public class SriVishwa extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (tempFrag instanceof ExamTemplates){
+            if (tempFrag instanceof ExamTemplates) {
 
-            }else {
+            } else {
            /* Fragment f = getSupportFragmentManager().findFragmentById(R.id.container);
             if(f instanceof(ExamTemplates.class)) {
 
@@ -200,7 +214,7 @@ public class SriVishwa extends AppCompatActivity
                 super.onBackPressed();
             }
 
-           // }
+            // }
         }
     }
 
@@ -298,9 +312,6 @@ public class SriVishwa extends AppCompatActivity
                 case 1:
 
                     if (checkPermission("android.permission.READ_EXTERNAL_STORAGE", 100) == 1) {
-
-                        File my_file=new File(Environment.getExternalStorageDirectory(),".allimages");
-                        my_file.mkdir();
                         swiftFragments(ExamList.newInstance(), "examlist");
 
                     }
@@ -309,7 +320,7 @@ public class SriVishwa extends AppCompatActivity
 
                 case 2:
 
-                    Intent in  = new Intent(this, ExamHistory.class);
+                    Intent in = new Intent(this, ExamHistory.class);
                     startActivity(in);
 
                     break;
@@ -481,12 +492,12 @@ public class SriVishwa extends AppCompatActivity
                 swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("3")) { //BITSAT
-
+                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/BITSAT/bitsat0.html";
-               // swiftFragments(BITSATTemplates.newInstance(data), "examtemplate");
+                // swiftFragments(BITSATTemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("4") || jsonObject.optString("course").equalsIgnoreCase("8")) { //EAMCET
-
+                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/EAMCET/eamcet.html";
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("5")) { //NEET
@@ -494,15 +505,15 @@ public class SriVishwa extends AppCompatActivity
                 swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("6")) { //AIIMS
-
+                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/AIIMS/aiims.html";
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("7")) { //JIPMER
-
+                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/JIPMER/jipmer.html";
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("9")) { //KVPY
-
+                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/KVPY/kvpy.html";
 
             }
@@ -530,9 +541,9 @@ public class SriVishwa extends AppCompatActivity
     public void showAssignmentResult(String id, String subject) {
         App_Table table = new App_Table(this);
         Object results = table.getAssignmentHistoryResult(id);
-        if (results!=null) {
+        if (results != null) {
             swiftFragments(AssignResultsPage.newInstance(results.toString()), "assignment");
-        }else{
+        } else {
             Toast.makeText(this, "Please Start Your Assignment", Toast.LENGTH_SHORT).show();
         }
     }
@@ -550,17 +561,21 @@ public class SriVishwa extends AppCompatActivity
                 if (fragStack.size() > 0) {
 
                     ParentFragment pf = fragStack.peek();
-                    if (pf instanceof ExamTemplates){
+                    if (pf instanceof ExamTemplates) {
                         return true;
                     }
 
-                    if(pf instanceof ResultsPage)
-                    {
+                    if (pf instanceof ResultsPage) {
                         startActivity(new Intent(this, SriVishwa.class));
                     }
 
-                    if (pf.back())
-                        return true;
+                    if (pf instanceof Dashboard) {
+                        PrefUtils.setKioskModeActive(false, getApplicationContext());
+                        finish();
+                    } else {
+                        if (pf.back())
+                            return true;
+                    }
 
                     fragStack.pop();
 
@@ -1048,13 +1063,79 @@ public class SriVishwa extends AppCompatActivity
                     intent_n.setDataAndType(paths, type);
                     startActivity(intent_n.createChooser(intent_n, "Open with"));
                 }
+                if (type.startsWith("text/plain")) {
+                    String path = Environment.getExternalStorageDirectory()
+                            .toString() + "/" + a_name.trim();
+                    try {
+                        FileInputStream fis = new FileInputStream(path);
+                        DataInputStream in = new DataInputStream(fis);
+                        BufferedReader br =
+                                new BufferedReader(new InputStreamReader(in));
+                        String strLine;
+                        while ((strLine = br.readLine()) != null) {
+                            myData = myData + strLine;
+                        }
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+
+                    }
+                    if (myData.length() > 0) {
+                        try {
+                            JSONArray jsonArray = new JSONArray(myData);
+                            app_table.insertMultipleRecords(jsonArray, "QUESTIONS");
+                        } catch (Exception e) {
+                            TraceUtils.logException(e);
+                        }
+                    }
+                }
+            }
+        }
+    };
+    private BroadcastReceiver mBroadcastQuestion = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("com.file.data")) {
+
+                String a_name = intent.getStringExtra("filename");
+                questionFile(a_name);
             }
         }
     };
 
+    private void questionFile(String a_name) {
+        File mediaStorage = new File(Environment.getExternalStorageDirectory()
+                .toString());
+        if (!mediaStorage.exists()) {
+            mediaStorage.mkdirs();
+        }
+
+        startService(ApkFileDownloader.getDownloadService(getApplicationContext(), AppSettings.getInstance().getPropertyValue("download_qs"), String.valueOf(mediaStorage), a_name));
+    }
+
+    @Override
+    protected void onResume() {
+        registerReceiver(mBroadcastQuestion, new IntentFilter("com.file.data"));
+        super.onResume();
+    }
+
     @Override
     protected void onDestroy() {
         unregisterReceiver(mBroadcastReceiverAttach);
+        unregisterReceiver(mBroadcastQuestion);
         super.onDestroy();
+    }
+    public boolean dispatchKeyEvent(KeyEvent keyEvent) {
+        if (this.blockedKeys.contains(Integer.valueOf(keyEvent.getKeyCode()))) {
+            return true;
+        }
+        return super.dispatchKeyEvent(keyEvent);
+    }
+
+    public void onWindowFocusChanged(boolean z) {
+        super.onWindowFocusChanged(z);
+        if (!z) {
+            sendBroadcast(new Intent("android.intent.action.CLOSE_SYSTEM_DIALOGS"));
+        }
     }
 }

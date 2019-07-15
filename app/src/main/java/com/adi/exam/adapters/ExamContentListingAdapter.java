@@ -21,7 +21,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentListingAdapter.ContactViewHolder> {
@@ -130,24 +132,39 @@ public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentL
 
                 contactViewHolder.tv_examtime.setText(mContext.getString(R.string.time, question_details.optString("from_time").trim() + " - " + question_details.optString("to_time").trim()));
 
-                Timestamp timestamp = Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd")
+                String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
                         .format(new Date()) // get the current date as String
-                        .concat(question_details.optString("from_time").trim())
+                        .concat(question_details.optString("from_time").trim()
                 );
-                Timestamp timestamp1 = Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd")
+                String timestamp1 = new SimpleDateFormat("dd-MM-yyyy ")
                         .format(new Date()) // get the current date as String
-                        .concat(question_details.optString("to_time").trim())
+                        .concat(question_details.optString("to_time").trim()
                 );
+                DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+                Date date1 = (Date)formatter.parse(timestamp);
+                Date date2 = (Date)formatter.parse(timestamp1);
                 long time = System.currentTimeMillis();
-                String com_ll = String.valueOf(timestamp);
-                String com_ll1 = String.valueOf(timestamp1);
-                long tkl = Long.parseLong(com_ll);
-                long tk2 = Long.parseLong(com_ll1);
-                if (time >= tkl) {
-                    contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
-                } else if (time == tk2) {
+                long tkl = date1.getTime();
+                long tk2 = date2.getTime();
+                Date c = Calendar.getInstance().getTime();
+                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                String c_date=df.format(c);
+                String exdt=question_details.optString("exam_date").trim();
+                if (c_date.equalsIgnoreCase(exdt)) {
+                   // contactViewHolder.tv_startexam.setEnabled(true);
+                    boolean result = inRange(tkl, tk2, time);
+                    if (result) {
+                        contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+                    }
+                }else {
                     contactViewHolder.tv_startexam.setVisibility(View.GONE);
+                   // contactViewHolder.tv_startexam.setEnabled(false);
                 }
+//                if (time >= tkl && tk2<=time) {
+//                    contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+//                } else {
+//                    contactViewHolder.tv_startexam.setVisibility(View.GONE);
+//                }
             }
 
         } catch (Exception e) {
@@ -157,7 +174,10 @@ public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentL
         }
 
     }
-
+    boolean inRange(long low, long high, long x)
+    {
+        return ((x-high)*(x-low) <= 0);
+    }
     @NonNull
     @Override
     public ContactViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {

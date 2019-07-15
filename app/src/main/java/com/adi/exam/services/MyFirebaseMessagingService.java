@@ -2,15 +2,25 @@ package com.adi.exam.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.text.Html;
+import android.util.Log;
 
 import com.adi.exam.common.AppPreferences;
+import com.adi.exam.database.Database;
 import com.adi.exam.utils.TraceUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.Map;
+
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    String m_type;
     public MyFirebaseMessagingService() {
 
     }
@@ -39,25 +49,44 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
 
-            TraceUtils.logE("Message data payload: ", "" + remoteMessage.getData());
 
-            /* if (*//* Check if data needs to be processed by long running job *//* true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
-            }*/
+            try {
+
+                Map<String, String> params = remoteMessage.getData();
+                Object object = new JSONObject(params);
+                sendPushNotification(object);
+            } catch (Exception e) {
+                TraceUtils.logException(e);
+            }
+
 
         }
-
-        // Check if message contains a notification payload.
-        /*if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-        }*/
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
+    private void sendPushNotification(Object json) {
+        try {
+            //getting the json data
+            JSONObject data = new JSONObject(json.toString());
+            String data_silent = data.optString("silent");
+            if (data_silent.equalsIgnoreCase("true")) {
 
+                String message_data = data.getString("message");
+                JSONObject object = new JSONObject(message_data);
+                String title_msg = object.optString("msg_det");
+                String arry_data[] = title_msg.split(",");
+                m_type = arry_data[0];
+                if (m_type.equalsIgnoreCase("QF")) {
+                    String file_name = arry_data[1];
+                    Intent filedata=new Intent("com.file.data");
+                    filedata.putExtra("filename",file_name);
+                    sendBroadcast(filedata);
+                }
+
+            }
+        } catch (JSONException e) {
+            TraceUtils.logException(e);
+        } catch (Exception e) {
+            TraceUtils.logException(e);
+        }
+
+    }
 }

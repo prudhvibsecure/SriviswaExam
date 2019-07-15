@@ -157,29 +157,6 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                              Bundle savedInstanceState) {
 
         layout = inflater.inflate(R.layout.fragment_examtemplates, container, false);
-        assetManager =getActivity().getAssets();
-       layout.setFocusableInTouchMode(true);
-
-       layout.requestFocus();
-
-       layout.setOnKeyListener(new View.OnKeyListener() {
-                              @Override
-                              public boolean onKey(View v, int keyCode, KeyEvent event) {
-                                  if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                                      if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-                                          return true;
-                                      }
-                                      if(keyCode == KeyEvent.KEYCODE_HOME){
-
-                                          return true;
-                                      }
-
-                                  }
-
-                                  return false;
-                              }
-                          });
 
         activity.getSupportActionBar().setHomeButtonEnabled(false);
 

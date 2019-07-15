@@ -4,7 +4,9 @@ package com.adi.exam;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
@@ -15,6 +17,7 @@ import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.NetworkInfoAPI;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.dialogfragments.MessageDialog;
+import com.adi.exam.utils.PrefUtils;
 import com.adi.exam.utils.TraceUtils;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -27,15 +30,18 @@ import org.apache.poi.ss.usermodel.Row;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /*import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;*/
 
-public class SplashActivity extends AppCompatActivity implements
-        IDialogCallbacks {
-
+public class SplashActivity extends AppCompatActivity implements IDialogCallbacks {
+    private final List blockedKeys = new ArrayList(Arrays.asList(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP));
     private NetworkInfoAPI networkInfoAPI = null;
 
     @Override
@@ -44,9 +50,9 @@ public class SplashActivity extends AppCompatActivity implements
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         setContentView(R.layout.activity_splashscreen);
-
+        PrefUtils.setKioskModeActive(true, getApplicationContext());
         String networkType = getNetWorkObject().execute("getConnectionInfo");
 
         if (networkType.equalsIgnoreCase("none")) {
@@ -66,9 +72,10 @@ public class SplashActivity extends AppCompatActivity implements
             webview = null;
 
         }
-
-        if (!AppPreferences.getInstance(this).getBooleanFromStore("exceldone")) {
-
+       boolean flag= AppPreferences.getInstance(this).getBooleanFromStore("exceldone");
+        if (!flag) {
+            File folder = new File(Environment.getExternalStorageDirectory(), ".allimages");
+            folder.mkdir();
             loadData();
 
         } else {
@@ -308,6 +315,13 @@ public class SplashActivity extends AppCompatActivity implements
         }
 
     }
-
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (blockedKeys.contains(event.getKeyCode())) {
+            return true;
+        } else {
+            return super.dispatchKeyEvent(event);
+        }
+    }
 }
 

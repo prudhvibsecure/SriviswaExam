@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import android.provider.Settings;
 import android.text.method.PasswordTransformationMethod;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -28,8 +29,12 @@ import com.adi.exam.utils.TraceUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class LoginActivity extends AppCompatActivity implements IItemHandler {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+public class LoginActivity extends AppCompatActivity implements IItemHandler {
+    private final List blockedKeys = new ArrayList(Arrays.asList(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP));
     private NetworkInfoAPI network = null;
     CustomTextView sname, sclass, batch, stuid;
     CustomEditText user;
@@ -110,8 +115,8 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
     public void launchProfileActivity(String studentDetails) {
         Intent intent = new Intent(this, SriVishwa.class);
         intent.putExtra("studentDetails", studentDetails);
-        LoginActivity.this.finish();
         startActivity(intent);
+        LoginActivity.this.finish();
     }
 
     public void launchRegistrationActivity() {
@@ -383,5 +388,25 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         String android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return android_id;
+    }
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(!hasFocus) {
+            // Close every kind of system dialog
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
+        }
+    }
+    public boolean dispatchKeyEvent(KeyEvent keyEvent) {
+        if (this.blockedKeys.contains(Integer.valueOf(keyEvent.getKeyCode()))) {
+            return true;
+        }
+        return super.dispatchKeyEvent(keyEvent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

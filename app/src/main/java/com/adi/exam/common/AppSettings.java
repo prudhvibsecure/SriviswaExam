@@ -56,6 +56,8 @@ public class AppSettings {
 
             properties.setProperty("update_password", "https://bsecuresoftechsolutions.com/viswa/update_password");
 
+            properties.setProperty("download_qs", "https://bsecuresoftechsolutions.com/viswa/assets/upload/quest_uploads/");
+
 
 
         } catch (Exception e) {

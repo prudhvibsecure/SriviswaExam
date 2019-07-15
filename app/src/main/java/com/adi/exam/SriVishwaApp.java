@@ -1,28 +1,33 @@
 package com.adi.exam;
 
 import android.app.Activity;
-import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.webkit.WebView;
 
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import com.adi.exam.broadcasts.OnScreenOffReceiver;
+import com.adi.exam.services.KioskService;
 import com.adi.exam.utils.TraceUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import java.util.ArrayList;
 
-
-public class SriVishwaApp extends MultiDexApplication implements Application.ActivityLifecycleCallbacks {
+public class SriVishwaApp extends MultiDexApplication implements ActivityLifecycleCallbacks {
 
     private static boolean isInterestingActivityVisible;
 
     private static SriVishwaApp instance;
-
+    private OnScreenOffReceiver onScreenOffReceiver;
+    private WakeLock wakeLock;
     public SriVishwaApp() {
         super();
         instance = this;
@@ -59,6 +64,8 @@ public class SriVishwaApp extends MultiDexApplication implements Application.Act
         } catch (Exception e) {
             TraceUtils.logException(e);
         }
+        registerKioskModeScreenOffReceiver();
+        startKioskService();
     }
 
     @Override
@@ -107,6 +114,21 @@ public class SriVishwaApp extends MultiDexApplication implements Application.Act
     public static SriVishwaApp get() {
         return instance;
     } //TODO:/// check how to avoid this call
+    private void registerKioskModeScreenOffReceiver() {
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        onScreenOffReceiver = new OnScreenOffReceiver();
+        registerReceiver(this.onScreenOffReceiver, intentFilter);
+    }
+    public WakeLock getWakeLock() {
+        if (this.wakeLock == null) {
 
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "wakeup");
+        }
+        return this.wakeLock;
+    }
+    private void startKioskService() {
+        startService(new Intent(this, KioskService.class));
+    }
 
 }

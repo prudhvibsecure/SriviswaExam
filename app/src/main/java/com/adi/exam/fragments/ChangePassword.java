@@ -2,14 +2,14 @@ package com.adi.exam.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.Settings;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.provider.Settings.Secure;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -212,8 +212,8 @@ public class ChangePassword extends ParentFragment implements IItemHandler {
 
     public String getDevid()
     {
-        String android_id = Settings.Secure.getString(getActivity().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+        String android_id  = Secure.getString(getContext().getContentResolver(),
+                Secure.ANDROID_ID);
         return android_id;
     }
     @Override

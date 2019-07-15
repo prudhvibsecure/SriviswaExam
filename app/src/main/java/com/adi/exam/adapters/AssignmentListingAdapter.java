@@ -20,6 +20,11 @@ import com.adi.exam.utils.TraceUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentListingAdapter.ContactViewHolder> {
 
     private JSONArray array = new JSONArray();
@@ -114,13 +119,41 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
 //
 //            } else if (title.length() > 1) {
 //
-//                tdText = title.substring(0, 1);
+                tdText = title.substring(0, 1);
 //
 //            }
 
             TextDrawable ic1 = builder.build(tdText, color);
 
             contactViewHolder.iv_iconexamcontent.setImageDrawable(ic1);
+
+            String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
+                    .format(new Date()) // get the current date as String
+                    .concat(jsonObject.optString("from_time").trim()
+                    );
+            String timestamp1 = new SimpleDateFormat("dd-MM-yyyy ")
+                    .format(new Date()) // get the current date as String
+                    .concat(jsonObject.optString("to_time").trim()
+                    );
+            DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+            Date date1 = (Date)formatter.parse(timestamp);
+            Date date2 = (Date)formatter.parse(timestamp1);
+            long time = System.currentTimeMillis();
+            long tkl = date1.getTime();
+            long tk2 = date2.getTime();
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            String c_date=df.format(c);
+            if (c_date.equalsIgnoreCase(jsonObject.optString("exam_date").trim())) {
+                // contactViewHolder.tv_startexam.setEnabled(true);
+                boolean result = inRange(tkl, tk2, time);
+                if (result) {
+                    contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+                }
+            }else {
+                contactViewHolder.tv_startexam.setVisibility(View.GONE);
+                // contactViewHolder.tv_startexam.setEnabled(false);
+            }
 
         } catch (Exception e) {
 
@@ -129,7 +162,10 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
         }
 
     }
-
+    boolean inRange(long low, long high, long x)
+    {
+        return ((x-high)*(x-low) <= 0);
+    }
     @NonNull
     @Override
     public ContactViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {

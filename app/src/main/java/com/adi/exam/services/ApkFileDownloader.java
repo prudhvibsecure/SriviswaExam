@@ -53,14 +53,6 @@ public class ApkFileDownloader extends IntentService {
         String downloadPath = intent.getStringExtra(DOWNLOAD_PATH);
         String destinationPath = intent.getStringExtra(DESTINATION_PATH);
         String f_name = intent.getStringExtra(FILE_NAME);
-//        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.notification_channel_id))
-//                .setSmallIcon(R.mipmap.ic_download_file)
-//                .setContentTitle(f_name)
-//                .setContentText("Downloading File...")
-//                .setAutoCancel(true);
-//        notificationManager.notify(0, notificationBuilder.build());
 
         initDownload(downloadPath, destinationPath, f_name);
 
@@ -68,11 +60,10 @@ public class ApkFileDownloader extends IntentService {
 
     private void initDownload(String downloadPath, String destinationPath, String f_name) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://bsecuresoftechsolutions.com/viswa/assets/upload/version/")
+                .baseUrl("https://bsecuresoftechsolutions.com/viswa/assets/upload/")
                 .build();
-      //  https://bsecuresoftechsolutions.com/viswa/assets/upload/version/viswa_1.2.apk
         DownloadAPIs retrofitInterface = retrofit.create(DownloadAPIs.class);
-        Call<ResponseBody> request = retrofitInterface.downloadFile("https://bsecuresoftechsolutions.com/viswa/assets/upload/version/" + f_name);
+        Call<ResponseBody> request = retrofitInterface.downloadFile(downloadPath + f_name);
         try {
             downloadFile(request.execute().body(), f_name, downloadPath);
         } catch (IOException e) {
@@ -124,31 +115,7 @@ public class ApkFileDownloader extends IntentService {
 
     }
 
-    private void sendNotification(Download download) {
-
-//        sendIntent(download);
-//        notificationBuilder.setProgress(100, download.getProgress(), false);
-//        notificationBuilder.setContentText("Downloading file " + download.getCurrentFileSize() + "/" + totalFileSize + " MB");
-//        notificationManager.notify(0, notificationBuilder.build());
-    }
-
-    private void sendIntent(Download download) {
-////
-//        Intent intent = new Intent(ChatSingle.MESSAGE_PROGRESS);
-//        intent.putExtra("download", download);
-//        LocalBroadcastManager.getInstance(DownloadService.this).sendBroadcast(intent);
-    }
-
     private void onDownloadComplete(String file_name, String downloadPath) {
-
-//        Download download = new Download();
-//        download.setProgress(100);
-//        sendIntent(download);
-//
-//        notificationManager.cancel(0);
-//        notificationBuilder.setProgress(0, 0, false);
-//        notificationBuilder.setContentText("File Downloaded");
-//        notificationManager.notify(0, notificationBuilder.build());
 
         file_name_nv=file_name;
         getstartshow(file_name_nv);
@@ -160,12 +127,6 @@ public class ApkFileDownloader extends IntentService {
             Intent task=new Intent("com.attach.apk");
             task.putExtra("attachname",file_name_nv);
             sendBroadcast(task);
-//            String type = Utils.getMimeType(file_name_nv);
-//            Intent intent = new Intent(Intent.ACTION_VIEW);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            intent.setData(Uri.parse(ContentValues.Images));
-//            intent.setDataAndType(Uri.parse(ContentValues.Images), type);
-//            getApplicationContext().startActivity(Intent.createChooser(intent, "Open with"));
         } catch (Exception e) {
             e.printStackTrace();
         }

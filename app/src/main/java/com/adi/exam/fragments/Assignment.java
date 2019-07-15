@@ -841,13 +841,19 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             ASSIGNMENTRESULTS.put("no_of_correct_answers", no_of_correct_answers + "");
             ASSIGNMENTRESULTS.put("score", score + "");
 
-            backup_result.put("assignment_result_id", assignment_result_id);
-            backup_result.put("assignment_id", data.optInt("assignment_id"));
-            backup_result.put("student_id", activity.getStudentDetails().optInt("student_id"));
-            backup_result.put("total_questions", adapter.getCount() + "");
-            backup_result.put("total_questions_attempted", total_questions_attempted + "");
-            backup_result.put("no_of_correct_answers", no_of_correct_answers + "");
-            backup_result.put("score", score + "");
+
+
+            App_Table table = new App_Table(activity);
+            json=table.getAssignmentResult(data.optInt("assignment_id"),activity.getStudentDetails().optInt("student_id"));
+            json.put("assignment_result_id", assignment_result_id);
+            json.put("assignment_id", data.optInt("assignment_id"));
+            json.put("student_id", activity.getStudentDetails().optInt("student_id"));
+            json.put("total_questions", adapter.getCount() + "");
+            json.put("total_questions_attempted", total_questions_attempted + "");
+            json.put("no_of_correct_answers", no_of_correct_answers + "");
+            json.put("score", score + "");
+//            array.put(json);
+//            backup_result.put("student_question_time",array);
             try {
                 fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
                 fos.write(backup_result.toString().getBytes());
@@ -855,11 +861,6 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                 TraceUtils.logException(e);
             }
             String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
-
-            App_Table table = new App_Table(activity);
-            json=table.getAssignmentResult(data.optInt("assignment_id"),activity.getStudentDetails().optInt("student_id"));
-            array.put(json);
-            backup_result.put("student_question_time",array);
             long val = table.insertSingleRecords(ASSIGNMENTRESULTS, "ASSIGNMENTRESULTS");
 
             if (val > 0) {

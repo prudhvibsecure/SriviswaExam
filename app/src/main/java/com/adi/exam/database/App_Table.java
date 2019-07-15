@@ -537,11 +537,11 @@ public class App_Table {
     }
 
     public JSONObject getAssignmentResult(int assign_id, int student_id) {
-        JSONObject jsonObject = null;
+        JSONObject jsonObject = new JSONObject();
         try {
 
             if (database != null) {
-
+                JSONArray jsonArray = new JSONArray();
                 SQLiteDatabase db = database.getWritableDatabase();
 
                 Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME WHERE assignment_id='" + assign_id + "' and student_id='" + student_id + "'",
@@ -551,7 +551,7 @@ public class App_Table {
 
                     while (cursor.moveToNext()) {
 
-                        jsonObject = new JSONObject();
+                        JSONObject json = new JSONObject();
 
                         String[] resultsColumns = cursor.getColumnNames();
 
@@ -560,13 +560,13 @@ public class App_Table {
                             String value = cursor.getString(cursor
                                     .getColumnIndexOrThrow(key));
 
-                            if (value != null)
-                                jsonObject.put(key, value);
+
+                            json.put(key, value);
 
                         }
 
                     }
-
+                    jsonObject.put("student_question_time", jsonArray);
                     cursor.close();
 
                 }
