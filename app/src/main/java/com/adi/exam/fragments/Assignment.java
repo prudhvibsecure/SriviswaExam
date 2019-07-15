@@ -432,7 +432,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
             iv_question.setImageResource(jsonObject.optInt("qid"));
 
-            Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
+            /*Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
                 @Override
                 public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
 
@@ -494,8 +494,8 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                         }
                     });
-
-           /* imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
+*/
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
 
@@ -503,7 +503,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);*/
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 

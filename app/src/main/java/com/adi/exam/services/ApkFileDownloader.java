@@ -41,7 +41,7 @@ public class ApkFileDownloader extends IntentService {
 
 
     public static Intent getDownloadService(final Context callingClassContext, final String downloadPath, final String destinationPath, String f_name) {
-        return new Intent(callingClassContext, DownloadService.class)
+        return new Intent(callingClassContext, ApkFileDownloader.class)
                 .putExtra(DOWNLOAD_PATH, downloadPath)
                 .putExtra(DESTINATION_PATH, destinationPath)
                 .putExtra(FILE_NAME, f_name);

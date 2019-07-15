@@ -26,7 +26,7 @@ public class Database extends SQLiteOpenHelper {
 
     private String STUDENTQUESTIONPAPER_TABLE = "CREATE TABLE STUDENTQUESTIONPAPER(student_question_paper_id INTEGER, question_paper_id INTEGER, subject TEXT, questions TEXT, options TEXT)";
 
-    private String ASSIGNMENTS_TABLE = "CREATE TABLE ASSIGNMENTS(assignment_id INTEGER, assignment_name TEXT, no_of_questions TEXT, from_time TEXT, to_time TEXT, duration TEXT, class_name TEXT, subject TEXT, lessons TEXT, topics TEXT, questions TEXT)";
+    private String ASSIGNMENTS_TABLE = "CREATE TABLE ASSIGNMENTS(assignment_id INTEGER, assignment_name TEXT, no_of_questions TEXT, from_time TEXT, to_time TEXT, duration TEXT, class_name TEXT, subject TEXT, lessons TEXT, topics TEXT, questions TEXT,duration_sec TEXT)";
 
     private String STUDENTEXAMRESULT_TABLE = "CREATE TABLE STUDENTEXAMRESULT(student_exam_result_id INTEGER, student_id INTEGER, exam_id INTEGER, exam_name TEXT, exam_date TEXT, total_questions TEXT, total_questions_attempted TEXT, no_of_correct_answers TEXT, score TEXT, percentage TEXT, accuracy TEXT, exam_type TEXT)";
 

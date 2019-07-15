@@ -669,7 +669,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             tv_questionno.setText(getString(R.string.questionno, jsonObject.optString("sno")));
 
             iv_question.setImageResource(jsonObject.optInt("qid"));
-            Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
+           /* Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
                 @Override
                 public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
 
@@ -730,27 +730,18 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                         public void onError() {
 
                         }
-                    });
+                    });*/
 
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_b"), iv_option2);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
 
-//            imageLoader.displayImage("file:///android_asset/allimages/"+jsonObject.optString("question_name"), iv_question);
-//
-//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_a"), iv_option1);
-//
-//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_b"), iv_option2);
-//
-//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_c"), iv_option3);
-//
-//            imageLoader.displayImage("file:///android_asset/allimages/"+ jsonObject.optString("option_d"), iv_option4);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
+
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_b"), iv_option2);
+
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
+
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
+
 
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {

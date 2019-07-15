@@ -1,6 +1,7 @@
 
 package com.adi.exam;
 
+import android.app.LauncherActivity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -85,7 +86,14 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
                 @Override
                 public void run() {
 
-                    lauchLoginActivity(LoginActivity.class);
+                    if(!AppPreferences.getInstance(SplashActivity.this).getFromStore("studentDetails").equalsIgnoreCase(""))
+                    {
+                        lauchLoginActivity(SriVishwa.class);
+                    }else
+                    {
+
+                        lauchLoginActivity(LoginActivity.class);
+                    }
 
                 }
 
