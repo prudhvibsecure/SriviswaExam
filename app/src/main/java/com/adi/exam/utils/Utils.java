@@ -7,17 +7,33 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.util.DisplayMetrics;
 import android.webkit.MimeTypeMap;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Utils {
 
     private static Dialog dialog = null;
     private Context context;
+
 
     public static String urlEncode(String sUrl) {
         int i = 0;
@@ -142,6 +158,22 @@ public class Utils {
             return false;
         }
 
+    }
+    public static void encrypt(String image) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        // Here you read the cleartext.
+
+//        FileInputStream fis = new FileInputStream(new File(image));
+//        new File(image).delete();
+//        FileOutputStream fos = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/imag/" + "enc_"+ enc);
+//        Cipher encipher = Cipher.getInstance("AES");
+//        encipher.init(Cipher.ENCRYPT_MODE, skey);
+//        CipherInputStream cis = new CipherInputStream(fis, encipher);
+//        int read;
+//        while ((read = cis.read()) != -1) {
+//            fos.write((char) read);
+//            fos.flush();
+//        }
+//        fos.close();
     }
 
 }

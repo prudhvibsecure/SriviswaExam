@@ -48,8 +48,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -401,7 +412,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                     }
 
                     timeTaken = timeTaken + timeTaken4Question;
-
+                    timeTaken4Question=timeTaken;
                     jsonObject1.put("question_time", timeTaken);
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
@@ -431,12 +442,10 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
                 String res = "";
-                if(jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer")))
-                {
+                if(jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
                     res = "0";
                 }
-                else
-                {
+                else {
                    res = "1";
                 }
                 questionTimeObject.put("result", res );
@@ -731,6 +740,11 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
                         }
                     });*/
+            decrypt("enc_"+jsonObject.optString("question_name"));
+            decrypt("enc_"+jsonObject.optString("option_a"));
+            decrypt("enc_"+jsonObject.optString("option_b"));
+            decrypt("enc_"+jsonObject.optString("option_c"));
+            decrypt("enc_"+jsonObject.optString("option_d"));
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
 
@@ -1391,5 +1405,23 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
         }
 
+    }
+    public  void decrypt(String imageName) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        KeyGenerator kgen = KeyGenerator.getInstance("AES");
+        byte[] keyBytes = "12345678".getBytes();
+        SecretKey skey = kgen.generateKey();
+        FileInputStream encfis = new FileInputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + "enc_"+ imageName);
+        FileOutputStream decfos = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + imageName);
+
+        Cipher decipher = Cipher.getInstance("AES");
+        decipher.init(Cipher.DECRYPT_MODE, skey);
+
+        CipherOutputStream cos = new CipherOutputStream(decfos, decipher);
+        int read;
+        while ((read = encfis.read()) != -1) {
+            cos.write(read);
+            cos.flush();
+        }
+        cos.close();
     }
 }
