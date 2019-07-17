@@ -263,5 +263,17 @@
     <string name="asn_history">Assignments History</string>
     <string name="title_activity_view_material">ViewMaterial</string>
     <string name="wifisettings">Wifi Settings</string>
+    <string name="ethbf">Exam time has been finished</string>
+    <string name="ewsi">Exam will start in %1$s</string>
+
+    <string name="indays">Exam will start in %1$s Day(s)</string>
+
+    <string name="inhours">Exam will start in %1$s Hours %2$s Mins and %3$s Secs</string>
+
+    <string name="inmins">Exam will start in %1$s Mins %2$s Secs</string>
+
+    <string name="insecs">Exam will start in %1$s Secs</string>
+
+    <string name="yhadwte">You have already done with this exam.</string>
 
 </resources>

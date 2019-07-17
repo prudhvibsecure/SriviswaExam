@@ -20,6 +20,7 @@ import com.adi.exam.database.App_Table;
 import com.adi.exam.dialogfragments.MessageDialog;
 import com.adi.exam.utils.PrefUtils;
 import com.adi.exam.utils.TraceUtils;
+import com.adi.exam.utils.Utils;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -55,7 +56,11 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
         setContentView(R.layout.activity_splashscreen);
         PrefUtils.setKioskModeActive(true, getApplicationContext());
         String networkType = getNetWorkObject().execute("getConnectionInfo");
-
+        try {
+            Utils.encrypt();
+        }catch (Exception e){
+            TraceUtils.logException(e);
+        }
         if (networkType.equalsIgnoreCase("none")) {
 
             showokPopUp(R.drawable.pop_ic_info, getString(R.string.alert), getString(R.string.nipcyns), 1, this, false);
@@ -73,7 +78,7 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
             webview = null;
 
         }
-       boolean flag= AppPreferences.getInstance(this).getBooleanFromStore("exceldone");
+        boolean flag= AppPreferences.getInstance(this).getBooleanFromStore("exceldone");
         if (!flag) {
             File folder = new File(Environment.getExternalStorageDirectory(), ".allimages");
             folder.mkdir();
@@ -273,8 +278,14 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
 
                         App_Table table = new App_Table(SplashActivity.this);
 
+
+
                         String[] cloumnsNames = table.getColumnNames("STUDENTS");
                         readExcelFileFromAssets(cloumnsNames, 0/*"student"*/, "STUDENTS", table);
+
+
+                        cloumnsNames = table.getColumnNames("COURSES");
+                        readExcelFileFromAssets(cloumnsNames, 4/*"student"*/, "COURSES", table);
 
 
                         cloumnsNames = table.getColumnNames("TOPICS");
@@ -288,9 +299,6 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
                         cloumnsNames = table.getColumnNames("QUESTIONS");
                         readExcelFileFromAssets(cloumnsNames, 3/*"student"*/, "QUESTIONS", table);
 
-
-                        cloumnsNames = table.getColumnNames("COURSES");
-                        readExcelFileFromAssets(cloumnsNames, 4/*"student"*/, "COURSES", table);
 
 
                     } catch (Exception ex) {

@@ -253,7 +253,6 @@ public class SriVishwa extends AppCompatActivity
 
         } else if (id == R.id.nav_logout) {
 
-            //AppPreferences.getInstance(this).getFromStore("studentDetails");
             AppPreferences.getInstance(this).clearSharedPreferences(true);
             SriVishwa.this.finish();
 
@@ -263,12 +262,12 @@ public class SriVishwa extends AppCompatActivity
 
         }else if (id == R.id.nav_wifisettings) {
 
-            if (checkPermission("android.permission.ACCESS_FINE_LOCATION", 300) == 1) {
+            /*if (checkPermission("android.permission.CHANGE_WIFI_STATE", 300) == 1) {
 
                 showWiFiSettings();
 
             }
-
+*/
             //showWiFiSettings();
 
         }
@@ -378,6 +377,7 @@ public class SriVishwa extends AppCompatActivity
                     break;
 
                 case R.id.tv_cancel:
+                    PrefUtils.setKioskModeActive(false, getApplicationContext());
                     break;
 
             }
@@ -1033,12 +1033,15 @@ public class SriVishwa extends AppCompatActivity
                 break;
 
             case R.id.tv_updateok:
-                File mediaStorage = new File(Environment.getExternalStorageDirectory()
-                        .toString());
-                if (!mediaStorage.exists()) {
-                    mediaStorage.mkdirs();
+                if (checkPermission("android.permission.READ_EXTERNAL_STORAGE", 100) == 1) {
+                    File mediaStorage = new File(Environment.getExternalStorageDirectory()
+                            .toString());
+                    if (!mediaStorage.exists()) {
+                        mediaStorage.mkdirs();
+                    }
+                    startService(ApkFileDownloader.getDownloadService(this, "https://bsecuresoftechsolutions.com/viswa/assets/upload/version/", String.valueOf(mediaStorage), "viswa_1.2.apk"));
                 }
-                startService(ApkFileDownloader.getDownloadService(this, "https://bsecuresoftechsolutions.com/viswa/assets/upload/version/", String.valueOf(mediaStorage), "viswa_1.2.apk"));
+
                 break;
 
         }
@@ -1083,46 +1086,75 @@ public class SriVishwa extends AppCompatActivity
     private BroadcastReceiver mBroadcastReceiverAttach = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("com.attach.apk")) {
+            try {
+                if (intent.getAction().equals("com.attach.apk")) {
+                    String a_name = intent.getStringExtra("attachname");
+                    String type = Utils.getMimeType(a_name);
+                    if (type.startsWith("application/vnd.android.package-archive")) {
+                        String path = Environment.getExternalStorageDirectory()
+                                .toString() + "/" + a_name.trim();
 
-                String a_name = intent.getStringExtra("attachname");
-                String type = Utils.getMimeType(a_name);
-                if (type.startsWith("application/vnd.android.package-archive")) {
-                    String path = Environment.getExternalStorageDirectory()
-                            .toString() + "/" + a_name.trim();
-
-                    Uri paths = Uri.fromFile(new File(path));
-                    Intent intent_n = new Intent(Intent.ACTION_VIEW);
-                    intent_n.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent_n.setDataAndType(paths, type);
-                    startActivity(intent_n.createChooser(intent_n, "Open with"));
-                }
-                if (type.startsWith("text/plain")) {
-                    String path = Environment.getExternalStorageDirectory()
-                            .toString() + "/" + a_name.trim();
-                    try {
-                        FileInputStream fis = new FileInputStream(path);
-                        DataInputStream in = new DataInputStream(fis);
-                        BufferedReader br =
-                                new BufferedReader(new InputStreamReader(in));
-                        String strLine;
-                        while ((strLine = br.readLine()) != null) {
-                            myData = myData + strLine;
-                        }
-                        in.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-
+                        Uri paths = Uri.fromFile(new File(path));
+                        Intent intent_n = new Intent(Intent.ACTION_VIEW);
+                        intent_n.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent_n.setDataAndType(paths, type);
+                        startActivity(intent_n);
                     }
-                    if (myData.length() > 0) {
+                    if (type.startsWith("text/plain")) {
+                        String path = Environment.getExternalStorageDirectory()
+                                .toString() + "/" + a_name.trim();
                         try {
-                            JSONArray jsonArray = new JSONArray(myData);
-                            app_table.insertMultipleRecords(jsonArray, "QUESTIONS");
-                        } catch (Exception e) {
-                            TraceUtils.logException(e);
+                            FileInputStream fis = new FileInputStream(path);
+                            DataInputStream in = new DataInputStream(fis);
+                            BufferedReader br =
+                                    new BufferedReader(new InputStreamReader(in));
+                            String strLine;
+                            while ((strLine = br.readLine()) != null) {
+                                myData = myData + strLine;
+                            }
+                            in.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+
+                        }
+                        if (myData.length() > 0) {
+                            try {
+                                final JSONArray jsonArray = new JSONArray(myData);
+                                app_table.insertMultipleRecords(jsonArray, "QUESTIONS");
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            if (jsonArray.length() > 0) {
+                                                for (int i = 0; i < jsonArray.length(); i++) {
+                                                    JSONObject oo = jsonArray.getJSONObject(i);
+                                                    String d_urls[] = {
+                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("question_name"),
+                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_a"),
+                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_b"),
+                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_c"),
+                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_d"),
+                                                    };
+                                                    new DownloadFilesToMemory(d_urls, getApplicationContext()).execute();
+
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+
+
+                            } catch (Exception e) {
+                                TraceUtils.logException(e);
+                            }
                         }
                     }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     };

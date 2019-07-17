@@ -6,6 +6,7 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -18,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 import com.adi.exam.SplashActivity;
 import com.adi.exam.utils.PrefUtils;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class KioskService extends Service {
@@ -72,7 +74,7 @@ public class KioskService extends Service {
            // }
         }
     }
-    private boolean isForeground() {
+    /*private boolean isForeground() {
         ActivityManager activityManager = (ActivityManager) getSystemService("activity");
         if (Build.VERSION.SDK_INT <= 20) {
             return ((RunningTaskInfo) activityManager.getRunningTasks(1).get(0)).topActivity.getPackageName().equals(getPackageName());
@@ -112,5 +114,69 @@ public class KioskService extends Service {
         intent2.setPackage(getPackageName());
         ((AlarmManager) getApplicationContext().getSystemService(NotificationCompat.CATEGORY_ALARM)).set(3, SystemClock.elapsedRealtime() + 1000, PendingIntent.getService(getApplicationContext(), 1, intent2, 1073741824));
         super.onTaskRemoved(intent);
+    }*/
+
+    private boolean isForeground() {
+        boolean isInForeground = false;
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+            List<RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    for (String activeProcess : processInfo.pkgList) {
+                        if (activeProcess.equals(getPackageName())) {
+                            isInForeground = true;
+                        }
+                    }
+                }
+            }
+        } else {
+            List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+            ComponentName componentInfo = taskInfo.get(0).topActivity;
+            if (componentInfo.getPackageName().equals(getPackageName())) {
+                isInForeground = true;
+            }
+        }
+
+        return isInForeground;
     }
+
+    private boolean isInBackground() {
+        ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        ComponentName componentInfo = taskInfo.get(0).topActivity;
+        return (!ctx.getApplicationContext().getPackageName().equals(componentInfo.getPackageName()));
+    }
+
+    private void restoreApp() {
+        // Restart activity
+        Intent i = new Intent(ctx, SplashActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ctx.startActivity(i);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+
+        Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
+        restartServiceIntent.setPackage(getPackageName());
+
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmService.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                restartServicePendingIntent);
+
+        super.onTaskRemoved(rootIntent);
+
+    }
+
 }

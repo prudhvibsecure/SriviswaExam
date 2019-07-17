@@ -23,10 +23,15 @@ import com.adi.exam.database.App_Table;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
+import com.adi.exam.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 public class ExamList extends ParentFragment implements View.OnClickListener, IItemHandler {
 
     //TODO: error handling -> make use of tv_content_txt
@@ -88,7 +93,11 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
         adapterContent.setOnClickListener(this);
 
         rv_content_list.setAdapter(adapterContent);
-
+        try {
+            Utils.decrypt();
+        }catch (Exception e){
+            TraceUtils.logException(e);
+        }
         checkQuestionPaper();
 
         return layout;
@@ -134,8 +143,151 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
             switch (view.getId()) {
 
                 case R.id.tv_startexam:
-
                     JSONObject jsonObject1 = adapterContent.getItems().getJSONObject((int) view.getTag());
+
+                    App_Table table = new App_Table(activity);
+
+                    String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") + "'";
+
+                    boolean isRecordExits = table.isRecordExits(iwhereClause, "STUDENTEXAMRESULT");
+
+                    if (isRecordExits) {
+
+                        activity.showokPopUp(R.drawable.pop_ic_failed, "", activity.getString(R.string.yhadwte));
+
+                        return;
+
+                    }
+
+                    JSONObject question_details = jsonObject1.getJSONObject("question_details");
+
+                    String dateTime = question_details.optString("exam_date").trim() + " " + question_details.optString("from_time").trim();
+
+                    Date examDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime);
+
+                    Calendar c = Calendar.getInstance();
+
+                    SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+
+                    String formattedDate1 = df1.format(c.getTime());
+
+                    Date currentDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(formattedDate1);
+
+                    long[] diff = getDifference(currentDateTime, examDateTime);
+
+                    if (diff[0] > 0) {
+
+                        activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.indays, diff[0] + ""));
+
+                        return;
+
+                    }
+
+                    if (diff[1] > 0) {
+
+                        activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.inhours, diff[1] + "", diff[2] + "", diff[3] + ""));
+
+                        return;
+
+                    }
+
+                    if (diff[2] > 0) {
+
+                        activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.inmins, diff[2] + "", diff[3] + ""));
+
+                        return;
+
+                    }
+
+                    if (diff[3] > 0) {
+
+                        activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.insecs, diff[3] + ""));
+
+                        return;
+
+                    }
+
+                    if (diff[0] < 0) {
+
+                        activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.ethbf));
+
+                        return;
+
+                    }
+
+                    if (diff[1] < 0) {
+
+                        long hoursInSecs = diff[1] * 60 * 60;
+
+                        long minsInSecs = diff[2] * 60;
+
+                        long secInSecs = diff[3];
+
+                        long totalDelay = Math.abs(hoursInSecs) + Math.abs(minsInSecs) + Math.abs(secInSecs);
+
+                        long duration_secs = jsonObject1.optLong("duration_sec");
+
+                        long leftOverSeconds = duration_secs - totalDelay;
+
+                        if (leftOverSeconds < 0) {
+
+                            activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.ethbf));
+
+                            return;
+
+                        } else {
+
+                            jsonObject1.put("duration_sec", leftOverSeconds);
+
+                        }
+
+                    } else if (diff[2] < 0) {
+
+                        long minsInSecs = diff[2] * 60;
+
+                        long secInSecs = diff[3];
+
+                        long totalDelay = Math.abs(minsInSecs) + Math.abs(secInSecs);
+
+                        long duration_secs = jsonObject1.optLong("duration_sec");
+
+                        long leftOverSeconds = duration_secs - totalDelay;
+
+                        if (leftOverSeconds < 0) {
+
+                            activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.ethbf));
+
+                            return;
+
+                        } else {
+
+                            jsonObject1.put("duration_sec", leftOverSeconds);
+
+                        }
+
+                    } else if (diff[3] < 0) {
+
+                        long secInSecs = diff[3];
+
+                        long totalDelay = Math.abs(secInSecs);
+
+                        long duration_secs = jsonObject1.optLong("duration_sec");
+
+                        long leftOverSeconds = duration_secs - totalDelay;
+
+                        if (leftOverSeconds < 0) {
+
+                            activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.ethbf));
+
+                            return;
+
+                        } else {
+
+                            jsonObject1.put("duration_sec", leftOverSeconds);
+
+                        }
+
+                    }
 
                     activity.showInstructionsScreen(jsonObject1, true);
 
@@ -395,23 +547,63 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
     }
 
-   /* private void showSubCategories(JSONObject jsonObject) {
+    /* private void showSubCategories(JSONObject jsonObject) {
 
-        try {
+         try {
 
-            PhoneComponent phncomp = new PhoneComponent(this, activity, 4);
+             PhoneComponent phncomp = new PhoneComponent(this, activity, 4);
 
-            phncomp.defineWhereClause("exam_id = '" + jsonObject.optString("exam_id") + "' ");
+             phncomp.defineWhereClause("exam_id = '" + jsonObject.optString("exam_id") + "' ");
 
-            phncomp.executeLocalDBInBackground("QUESTIONPAPER");
+             phncomp.executeLocalDBInBackground("QUESTIONPAPER");
 
 
-        } catch (Exception e) {
+         } catch (Exception e) {
 
-            TraceUtils.logException(e);
+             TraceUtils.logException(e);
 
-        }
+         }
 
-    }*/
+     }*/
+    private long[] getDifference(Date startDate, Date endDate) {
+        //milliseconds
 
+        long[] vals = new long[4];
+
+        long different = endDate.getTime() - startDate.getTime();
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = different / daysInMilli;
+
+        vals[0] = elapsedDays;
+
+        different = different % daysInMilli;
+
+        long elapsedHours = different / hoursInMilli;
+
+        vals[1] = elapsedHours;
+
+        different = different % hoursInMilli;
+
+        long elapsedMinutes = different / minutesInMilli;
+
+        vals[2] = elapsedMinutes;
+
+        different = different % minutesInMilli;
+
+        long elapsedSeconds = different / secondsInMilli;
+
+        vals[3] = elapsedSeconds;
+
+       /* System.out.printf(
+                "%d days, %d hours, %d minutes, %d seconds%n",
+                elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);*/
+
+        return vals;
+
+    }
 }

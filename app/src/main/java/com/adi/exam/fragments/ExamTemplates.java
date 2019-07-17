@@ -53,6 +53,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.crypto.Cipher;
@@ -115,6 +118,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
     private TabLayout tl_subjects;
 
     private long timeTaken4Question = 0;
+
+    private Date edate, sdate;
 
     AssetManager assetManager;
 
@@ -320,6 +325,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 //        long time = (long) Double.parseDouble(dat);
         showTimer((data.optInt("duration_sec") * 1000));
 
+        sdate = new Date();
+
         return layout;
     }
 
@@ -383,6 +390,14 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
     }
 
     private void updateQuestionTime() {
+
+        edate = new Date();
+
+        Long minutes = ((edate.getTime()- sdate.getTime())/(60*1000)) * 60;
+        timeTaken4Question = minutes + (edate.getTime()- sdate.getTime())/1000;
+
+        sdate = edate;
+        edate = null;
 
 
         try {

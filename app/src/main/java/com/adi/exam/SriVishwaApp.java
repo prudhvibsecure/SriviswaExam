@@ -20,14 +20,16 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-
 public class SriVishwaApp extends MultiDexApplication implements ActivityLifecycleCallbacks {
 
     private static boolean isInterestingActivityVisible;
 
     private static SriVishwaApp instance;
+
     private OnScreenOffReceiver onScreenOffReceiver;
-    private WakeLock wakeLock;
+
+    private PowerManager.WakeLock wakeLock;
+
     public SriVishwaApp() {
         super();
         instance = this;
@@ -119,16 +121,15 @@ public class SriVishwaApp extends MultiDexApplication implements ActivityLifecyc
         onScreenOffReceiver = new OnScreenOffReceiver();
         registerReceiver(this.onScreenOffReceiver, intentFilter);
     }
-    public WakeLock getWakeLock() {
-        if (this.wakeLock == null) {
+    public PowerManager.WakeLock getWakeLock() {
+        if (wakeLock == null) {
 
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
             wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "wakeup");
         }
-        return this.wakeLock;
+        return wakeLock;
     }
     private void startKioskService() {
         startService(new Intent(this, KioskService.class));
     }
-
 }

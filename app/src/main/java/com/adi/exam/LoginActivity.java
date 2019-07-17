@@ -1,9 +1,14 @@
 package com.adi.exam;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -63,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
         findViewById(R.id.iv_settings).setOnClickListener(onClick);
 
-        sname= findViewById(R.id.sname);
+        sname = findViewById(R.id.sname);
         stuid = findViewById(R.id.stuid);
         sclass = findViewById(R.id.sclass);
         batch = findViewById(R.id.batch);
@@ -247,6 +252,10 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
             jsonObject.put("device_id", getDevid());
 
+            //jsonObject.put("imei", getIMEI(this));
+            //Toast.makeText(this, getIMEI(this), Toast.LENGTH_SHORT).show();
+
+
             HTTPPostTask post = new HTTPPostTask(this, this);
 
             post.userRequest(getString(R.string.plwait), 3, "get_student_details", jsonObject.toString());
@@ -257,6 +266,23 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
         }
 
+    }
+
+    public String getIMEI(Context context) {
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    Activity#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for Activity#requestPermissions for more details.
+                //return TODO;
+            }
+        }
+        return String.valueOf(telephonyManager.getDeviceId());
     }
 
     public void showToast(String text) {
