@@ -93,11 +93,6 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
         adapterContent.setOnClickListener(this);
 
         rv_content_list.setAdapter(adapterContent);
-        try {
-            Utils.decrypt();
-        }catch (Exception e){
-            TraceUtils.logException(e);
-        }
         checkQuestionPaper();
 
         return layout;

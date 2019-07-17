@@ -121,11 +121,13 @@ public class KioskService extends Service {
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
             List<RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
-            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
-                if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                    for (String activeProcess : processInfo.pkgList) {
-                        if (activeProcess.equals(getPackageName())) {
-                            isInForeground = true;
+            if (runningProcesses!=null) {
+                for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                    if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                        for (String activeProcess : processInfo.pkgList) {
+                            if (activeProcess.equals(getPackageName())) {
+                                isInForeground = true;
+                            }
                         }
                     }
                 }

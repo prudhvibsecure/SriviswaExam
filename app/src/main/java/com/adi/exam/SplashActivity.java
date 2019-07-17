@@ -56,11 +56,7 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
         setContentView(R.layout.activity_splashscreen);
         PrefUtils.setKioskModeActive(true, getApplicationContext());
         String networkType = getNetWorkObject().execute("getConnectionInfo");
-        try {
-            Utils.encrypt();
-        }catch (Exception e){
-            TraceUtils.logException(e);
-        }
+
         if (networkType.equalsIgnoreCase("none")) {
 
             showokPopUp(R.drawable.pop_ic_info, getString(R.string.alert), getString(R.string.nipcyns), 1, this, false);

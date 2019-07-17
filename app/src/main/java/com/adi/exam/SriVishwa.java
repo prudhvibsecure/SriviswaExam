@@ -55,6 +55,7 @@ import com.adi.exam.fragments.ResultsPage;
 import com.adi.exam.fragments.Subjects;
 import com.adi.exam.fragments.Topics;
 import com.adi.exam.fragments.WiFiSettingsInApp;
+import com.adi.exam.fragments.WifiFragment;
 import com.adi.exam.services.ApkFileDownloader;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.PrefUtils;
@@ -262,12 +263,13 @@ public class SriVishwa extends AppCompatActivity
 
         }else if (id == R.id.nav_wifisettings) {
 
-            /*if (checkPermission("android.permission.CHANGE_WIFI_STATE", 300) == 1) {
+            swiftFragments(WifiFragment.newInstance(),"wifisettings");
+//            if (checkPermission("android.permission.CHANGE_WIFI_STATE", 300) == 1) {
+//
+//                showWiFiSettings();
+//
+//            }
 
-                showWiFiSettings();
-
-            }
-*/
             //showWiFiSettings();
 
         }
@@ -581,6 +583,11 @@ public class SriVishwa extends AppCompatActivity
 
                     ParentFragment pf = fragStack.peek();
                     if (pf instanceof ExamTemplates) {
+                        return true;
+                    }
+
+                    if(pf instanceof Assignment)
+                    {
                         return true;
                     }
 

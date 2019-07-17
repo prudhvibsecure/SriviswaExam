@@ -160,6 +160,8 @@ public class Utils {
 
     }
 
+/*
+        code not updated.......
     public static void encrypt() throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         // Here you read the cleartext.
         FileInputStream fis = new FileInputStream("data/allimages");
@@ -201,5 +203,6 @@ public class Utils {
         fos.close();
         cis.close();
     }
+*/
 
 }

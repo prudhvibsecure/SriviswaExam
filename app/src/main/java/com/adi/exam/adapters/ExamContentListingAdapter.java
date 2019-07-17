@@ -132,34 +132,34 @@ public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentL
 
                 contactViewHolder.tv_examtime.setText(mContext.getString(R.string.time, question_details.optString("from_time").trim() + " - " + question_details.optString("to_time").trim()));
 
-                String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
-                        .format(new Date()) // get the current date as String
-                        .concat(question_details.optString("from_time").trim()
-                );
-                String timestamp1 = new SimpleDateFormat("dd-MM-yyyy ")
-                        .format(new Date()) // get the current date as String
-                        .concat(question_details.optString("to_time").trim()
-                );
-                DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
-                Date date1 = (Date)formatter.parse(timestamp);
-                Date date2 = (Date)formatter.parse(timestamp1);
-                long time = System.currentTimeMillis();
-                long tkl = date1.getTime();
-                long tk2 = date2.getTime();
-                Date c = Calendar.getInstance().getTime();
-                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-                String c_date=df.format(c);
-                String exdt=question_details.optString("exam_date").trim();
-                if (c_date.equalsIgnoreCase(exdt)) {
-                   // contactViewHolder.tv_startexam.setEnabled(true);
-                    boolean result = inRange(tkl, tk2, time);
-                    if (result) {
-                        contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
-                    }
-                }else {
-                    contactViewHolder.tv_startexam.setVisibility(View.GONE);
-                   // contactViewHolder.tv_startexam.setEnabled(false);
-                }
+//                String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
+//                        .format(new Date()) // get the current date as String
+//                        .concat(question_details.optString("from_time").trim()
+//                );
+//                String timestamp1 = new SimpleDateFormat("dd-MM-yyyy ")
+//                        .format(new Date()) // get the current date as String
+//                        .concat(question_details.optString("to_time").trim()
+//                );
+//                DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+//                Date date1 = (Date)formatter.parse(timestamp);
+//                Date date2 = (Date)formatter.parse(timestamp1);
+//                long time = System.currentTimeMillis();
+//                long tkl = date1.getTime();
+//                long tk2 = date2.getTime();
+//                Date c = Calendar.getInstance().getTime();
+//                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+//                String c_date=df.format(c);
+//                String exdt=question_details.optString("exam_date").trim();
+//                if (c_date.equalsIgnoreCase(exdt)) {
+//                   // contactViewHolder.tv_startexam.setEnabled(true);
+//                    boolean result = inRange(tkl, tk2, time);
+//                    if (result) {
+//                        contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+//                    }
+//                }else {
+//                    contactViewHolder.tv_startexam.setVisibility(View.GONE);
+//                   // contactViewHolder.tv_startexam.setEnabled(false);
+//                }
 //                if (time >= tkl && tk2<=time) {
 //                    contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
 //                } else {

@@ -127,7 +127,7 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
 
             contactViewHolder.iv_iconexamcontent.setImageDrawable(ic1);
 
-            String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
+            /*String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
                     .format(new Date()) // get the current date as String
                     .concat(jsonObject.optString("from_time").trim()
                     );
@@ -153,7 +153,7 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
             }else {
                 contactViewHolder.tv_startexam.setVisibility(View.GONE);
                 // contactViewHolder.tv_startexam.setEnabled(false);
-            }
+            *//*}*/
 
         } catch (Exception e) {
 
