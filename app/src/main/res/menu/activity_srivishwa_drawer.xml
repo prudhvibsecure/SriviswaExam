@@ -15,6 +15,11 @@
             android:title="@string/Change_Password" />
 
         <item
+            android:id="@+id/nav_wifisettings"
+            android:icon="@drawable/wifi"
+            android:title="@string/wifisettings" />
+
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_logout"
             android:title="@string/logout" />

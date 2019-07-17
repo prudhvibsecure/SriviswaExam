@@ -262,5 +262,6 @@
     <string name="Change_Password">Change Password</string>
     <string name="asn_history">Assignments History</string>
     <string name="title_activity_view_material">ViewMaterial</string>
+    <string name="wifisettings">Wifi Settings</string>
 
 </resources>

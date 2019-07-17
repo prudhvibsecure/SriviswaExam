@@ -49,6 +49,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -103,7 +108,11 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     private TabLayout tl_subjects;
 
-    private long timeTaken4Question = 0;
+    private long timeTaken4Question = 0, startTime = 0, endTime = 0, diff = 0;
+
+    private String stime, etime;
+
+    private Date sdate, edate;
 
     AssetManager assetManager;
 
@@ -309,6 +318,12 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 //        long time = (long) Double.parseDouble(dat);
         showTimer((data.optInt("duration_sec") * 1000));
 
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        sdate = new Date();
+        /*Calendar cal = Calendar.getInstance();
+        System.out.println(dateFormat.format(cal)); //2016/11/16 12:08:43*/
+
+       // stime = dateFormat.format(cal);
         return layout;
     }
 
@@ -373,7 +388,23 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     private void updateQuestionTime() {
 
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        /*Calendar cal = Calendar.getInstance();
+        System.out.println(dateFormat.format(cal)); //2016/11/16 12:08:43*/
+        edate = new Date();
+        //etime = dateFormat.format(cal);
 
+        //SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+           /* sdate = format.parse(stime);
+
+            edate = format.parse(etime);*/
+
+            Long minutes = ((edate.getTime()- sdate.getTime())/(60*1000)) * 60;
+            timeTaken4Question = minutes + (edate.getTime()- sdate.getTime())/1000;
+
+            sdate = edate;
+            edate = null;
         try {
 
             if (currentExamId != -1) {
@@ -402,6 +433,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
                     timeTaken = timeTaken + timeTaken4Question;
 
+                    timeTaken4Question=timeTaken;
+
                     jsonObject1.put("question_time", timeTaken);
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
@@ -424,6 +457,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
                 questionTimeObject.put("exam_id", data.optInt("exam_id"));
                 questionTimeObject.put("question_no", currentExamId);
+                //questionTimeObject.put("question_no", jsonObject.optInt("question_no"));
                 questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
                 questionTimeObject.put("topic_id", jsonObject.optInt("topic_id"));
                 questionTimeObject.put("lesson_id", getLessonID(jsonObject.optInt("topic_id")));
@@ -441,12 +475,12 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 }
                 questionTimeObject.put("result", res );
                 questionTimeObject.put("question_time", timeTaken4Question + "");
+                //questionTimeObject.put("question_time", jsonObject.optString("question_time") + "");
                 questionTimeObject.put("no_of_clicks", check++);
-                questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "YES" : "NO");
+                questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                 table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
                 check=0;
-
             }
 
         } catch (Exception e) {
@@ -669,13 +703,13 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             tv_questionno.setText(getString(R.string.questionno, jsonObject.optString("sno")));
 
             iv_question.setImageResource(jsonObject.optInt("qid"));
-           /* Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
+            Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
                 @Override
                 public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
 
                 }
             }).build();
-            picasso.load("file:///android_asset/allimages/"+jsonObject.optString("question_name"))
+            picasso.load("file://" + Environment.getExternalStorageDirectory() + "/allimages/"+jsonObject.optString("question_name"))
                     .into(iv_question, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -686,7 +720,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                         public void onError() {
 
                         }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_a"))
+                    }); picasso.load("file://" + Environment.getExternalStorageDirectory() + "/allimages/"+jsonObject.optString("option_a"))
                     .into(iv_option1, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -697,7 +731,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                         public void onError() {
 
                         }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_b"))
+                    }); picasso.load("file://" + Environment.getExternalStorageDirectory() + "/allimages/"+jsonObject.optString("option_b"))
                     .into(iv_option2, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -708,7 +742,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                         public void onError() {
 
                         }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_c"))
+                    }); picasso.load("file://" + Environment.getExternalStorageDirectory() + "/allimages/"+jsonObject.optString("option_c"))
                     .into(iv_option3, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -719,7 +753,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                         public void onError() {
 
                         }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_d"))
+                    }); picasso.load("file://" + Environment.getExternalStorageDirectory() + "/allimages/"+jsonObject.optString("option_d"))
                     .into(iv_option4, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -730,9 +764,9 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                         public void onError() {
 
                         }
-                    });*/
+                    });
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
+           /* imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
 
@@ -741,7 +775,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
-
+*/
 
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
@@ -1391,5 +1425,12 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
         }
 
+    }
+
+    public void getDate()
+    {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        System.out.println(dateFormat.format(cal)); //2016/11/16 12:08:43
     }
 }

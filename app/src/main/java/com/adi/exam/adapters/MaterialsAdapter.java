@@ -60,15 +60,15 @@ public class MaterialsAdapter extends RecyclerView.Adapter<MaterialsAdapter.Cont
 
             if (jsonObject.optString("material_original_name").toLowerCase().contains(".pdf")) {
 
-                contactViewHolder.iv_icon.setImageResource(R.drawable.ic_pdf);
+                contactViewHolder.iv_icon.setImageResource(R.drawable.pdf_red);
 
             } else if (jsonObject.optString("material_original_name").toLowerCase().contains(".doc") || jsonObject.optString("material_original_name").toLowerCase().contains(".docx")) {
 
-                contactViewHolder.iv_icon.setImageResource(R.drawable.ic_word);
+                contactViewHolder.iv_icon.setImageResource(R.drawable.word);
 
             } else if (jsonObject.optString("material_original_name").toLowerCase().contains(".png") || jsonObject.optString("material_original_name").toLowerCase().contains(".jpeg") || jsonObject.optString("material_original_name").toLowerCase().contains(".jpg")) {
 
-                contactViewHolder.iv_icon.setImageResource(R.drawable.ic_image);
+                contactViewHolder.iv_icon.setImageResource(R.drawable.image);
 
             }
 

@@ -54,6 +54,7 @@ import com.adi.exam.fragments.ParentFragment;
 import com.adi.exam.fragments.ResultsPage;
 import com.adi.exam.fragments.Subjects;
 import com.adi.exam.fragments.Topics;
+import com.adi.exam.fragments.WiFiSettingsInApp;
 import com.adi.exam.services.ApkFileDownloader;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.PrefUtils;
@@ -252,11 +253,23 @@ public class SriVishwa extends AppCompatActivity
 
         } else if (id == R.id.nav_logout) {
 
+            //AppPreferences.getInstance(this).getFromStore("studentDetails");
+            AppPreferences.getInstance(this).clearSharedPreferences(true);
             SriVishwa.this.finish();
 
         } else if (id == R.id.nav_changepwd) {
 
             changePassword();
+
+        }else if (id == R.id.nav_wifisettings) {
+
+            if (checkPermission("android.permission.ACCESS_FINE_LOCATION", 300) == 1) {
+
+                showWiFiSettings();
+
+            }
+
+            //showWiFiSettings();
 
         }
 
@@ -271,6 +284,12 @@ public class SriVishwa extends AppCompatActivity
     private void changePassword() {
 
         swiftFragments(ChangePassword.newInstance(), "ChangePassword");
+
+    }
+
+    public void showWiFiSettings() {
+
+        swiftFragments(WiFiSettingsInApp.newInstance(), "wifisettings");
 
     }
 
@@ -813,6 +832,21 @@ public class SriVishwa extends AppCompatActivity
                 }
 
                 break;
+
+            case 300:
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    showWiFiSettings();
+
+                } else {
+
+                    showToast(R.string.pd);
+
+                }
+
+                break;
+
 
         }
     }
