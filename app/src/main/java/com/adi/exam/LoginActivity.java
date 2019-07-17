@@ -320,6 +320,10 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
                         AppPreferences.getInstance(this).addToStore("studentDetails", student.toString(), false);
                     }
+                    else
+                    {
+
+                    }
                     break;
 
                 default:
@@ -364,6 +368,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         JSONObject jsonObject = new JSONObject(object.toString());
 
         if (jsonObject.optString("statuscode").equalsIgnoreCase("200")) {
+
 
             if(jsonObject.has("student_details")) {
 
