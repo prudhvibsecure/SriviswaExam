@@ -90,8 +90,7 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
                     if(!AppPreferences.getInstance(SplashActivity.this).getFromStore("studentDetails").equalsIgnoreCase(""))
                     {
                         lauchLoginActivity(SriVishwa.class);
-                    }else
-                    {
+                    }else {
 
                         lauchLoginActivity(LoginActivity.class);
                     }
@@ -305,7 +304,15 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
 
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                lauchLoginActivity(LoginActivity.class);
+                                if(!AppPreferences.getInstance(SplashActivity.this).getFromStore("studentDetails").equalsIgnoreCase(""))
+                                {
+                                    lauchLoginActivity(SriVishwa.class);
+                                }else {
+
+                                    lauchLoginActivity(LoginActivity.class);
+                                }
+
+                                // lauchLoginActivity(LoginActivity.class);
                             }
                         });
 

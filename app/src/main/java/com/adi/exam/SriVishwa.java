@@ -204,20 +204,10 @@ public class SriVishwa extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (tempFrag instanceof ExamTemplates) {
-
-            } else {
-           /* Fragment f = getSupportFragmentManager().findFragmentById(R.id.container);
-            if(f instanceof(ExamTemplates.class)) {
-
-            }
-            else {*/
-
                 super.onBackPressed();
             }
 
-            // }
-        }
+
     }
 
     @Override
@@ -573,35 +563,17 @@ public class SriVishwa extends AppCompatActivity
 
         swiftFragments(AssignmentHistory.newInstance(), "assignmenthistory");
     }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         try {
             if (keyCode == 4) {
 
-                if (fragStack.size() > 0) {
+                if (fragStack.size() > 1) {
 
                     ParentFragment pf = fragStack.peek();
-                    if (pf instanceof ExamTemplates) {
+
+                    if (pf.back())
                         return true;
-                    }
-
-                    if(pf instanceof Assignment)
-                    {
-                        return true;
-                    }
-
-                    if (pf instanceof ResultsPage) {
-                        startActivity(new Intent(this, SriVishwa.class));
-                    }
-
-                    if (pf instanceof Dashboard) {
-                        PrefUtils.setKioskModeActive(false, getApplicationContext());
-                        finish();
-                    } else {
-                        if (pf.back())
-                            return true;
-                    }
 
                     fragStack.pop();
 
@@ -630,6 +602,63 @@ public class SriVishwa extends AppCompatActivity
 
         return super.onKeyDown(keyCode, event);
     }
+
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        try {
+//            if (keyCode == 4) {
+//
+//                if (fragStack.size() > 0) {
+//
+//                    ParentFragment pf = fragStack.peek();
+//                    if (pf instanceof ExamTemplates) {
+//                        return true;
+//                    }
+//
+//                    if(pf instanceof Assignment)
+//                    {
+//                        return true;
+//                    }
+//
+//                    if (pf instanceof ResultsPage) {
+//                        startActivity(new Intent(this, SriVishwa.class));
+//                    }
+//
+//                    if (pf instanceof Dashboard) {
+//                        PrefUtils.setKioskModeActive(false, getApplicationContext());
+//                        finish();
+//                    } else {
+//                        if (pf.back())
+//                            return true;
+//                    }
+//
+//                    fragStack.pop();
+//
+//                    FragmentTransaction trans = manager.beginTransaction();
+//                    trans.remove(pf);
+//
+//                    if (fragStack.size() > 0) {
+//                        ParentFragment pf1 = fragStack.get(fragStack.size() - 1);
+//                        trans.show(pf1);
+//                    } /*else {
+//                        swiftHomeFragments(null, fragHomeStack.peek());
+//                    }*/
+//
+//                    trans.commit();
+//
+//                    return true;
+//                }
+//
+//                showExitDialog();
+//                return false;
+//
+//            }
+//        } catch (Exception e) {
+//            TraceUtils.logException(e);
+//        }
+//
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     public void showExitDialog() {
 

@@ -145,7 +145,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                     App_Table table = new App_Table(activity);
                     String iwhereClause = "assignment_id = '" + jsonObject1.optString("assignment_id") + "'";
 
-                    boolean isRecordExits = table.isRecordExits(iwhereClause, "ASSIGNMENTS");
+                    boolean isRecordExits = table.isRecordExits(iwhereClause, "ASSIGNMENT");
 
                     if (isRecordExits) {
 
