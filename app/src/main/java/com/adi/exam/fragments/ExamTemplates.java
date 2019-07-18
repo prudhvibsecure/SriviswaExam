@@ -755,11 +755,11 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
                         }
                     });*/
-            decrypt("enc_"+jsonObject.optString("question_name"));
-            decrypt("enc_"+jsonObject.optString("option_a"));
-            decrypt("enc_"+jsonObject.optString("option_b"));
-            decrypt("enc_"+jsonObject.optString("option_c"));
-            decrypt("enc_"+jsonObject.optString("option_d"));
+//            decrypt("enc_"+jsonObject.optString("question_name"));
+//            decrypt("enc_"+jsonObject.optString("option_a"));
+//            decrypt("enc_"+jsonObject.optString("option_b"));
+//            decrypt("enc_"+jsonObject.optString("option_c"));
+//            decrypt("enc_"+jsonObject.optString("option_d"));
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
 
