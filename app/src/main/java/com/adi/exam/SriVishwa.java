@@ -36,7 +36,7 @@ import com.adi.exam.database.Database;
 import com.adi.exam.dialogfragments.AppUpdateDialog;
 import com.adi.exam.dialogfragments.ExitDialog;
 import com.adi.exam.dialogfragments.MessageDialog;
-import com.adi.exam.fragments.AIIMSemplates;
+
 import com.adi.exam.fragments.AllQuestions;
 import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
@@ -49,12 +49,11 @@ import com.adi.exam.fragments.ExamList;
 import com.adi.exam.fragments.ExamSubmitConfirmationPage;
 import com.adi.exam.fragments.ExamTemplates;
 import com.adi.exam.fragments.Instructions;
-import com.adi.exam.fragments.JEEemplates;
-import com.adi.exam.fragments.JIPMERSemplates;
+
 import com.adi.exam.fragments.KVPYTemplates;
 import com.adi.exam.fragments.Lessons;
 import com.adi.exam.fragments.Materials;
-import com.adi.exam.fragments.NEETemplates;
+
 import com.adi.exam.fragments.ParentFragment;
 import com.adi.exam.fragments.ResultsPage;
 import com.adi.exam.fragments.Subjects;
@@ -505,7 +504,7 @@ public class SriVishwa extends AppCompatActivity
 
             if (jsonObject.optString("course").equalsIgnoreCase("1") || jsonObject.optString("course").equalsIgnoreCase("2")) { //JEE
 
-                swiftFragments(JEEemplates.newInstance(data,"JEE"), "examtemplate");
+                //swiftFragments(JEEemplates.newInstance(data,"JEE"), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("3")) { //BITSAT
                 swiftFragments(BITSATTemplates.newInstance(data,"BITSAT"), "examtemplate");
@@ -518,14 +517,14 @@ public class SriVishwa extends AppCompatActivity
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("5")) { //NEET
 
-                swiftFragments(NEETemplates.newInstance(data,"NEET"), "examtemplate");
+               // swiftFragments(NEETemplates.newInstance(data,"NEET"), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("6")) { //AIIMS
-                swiftFragments(AIIMSemplates.newInstance(data,"AIIMS"), "examtemplate");
+                //swiftFragments(AIIMSemplates.newInstance(data,"AIIMS"), "examtemplate");
                 //localPath = "file:///android_asset/AIIMS/aiims.html";
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("7")) { //JIPMER
-                swiftFragments(JIPMERSemplates.newInstance(data,"JIPMER"), "examtemplate");
+                //swiftFragments(JIPMERSemplates.newInstance(data,"JIPMER"), "examtemplate");
                 //localPath = "file:///android_asset/JIPMER/jipmer.html";
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("9")) { //KVPY
