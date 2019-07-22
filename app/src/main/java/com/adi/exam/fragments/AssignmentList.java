@@ -145,7 +145,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                     App_Table table = new App_Table(activity);
                     String iwhereClause = "assignment_id = '" + jsonObject1.optString("assignment_id") + "'";
 
-                    boolean isRecordExits = table.isRecordExits(iwhereClause, "ASSIGNMENT");
+                    boolean isRecordExits = table.isRecordExits(iwhereClause, "ASSIGNMENTRESULTS");
 
                     if (isRecordExits) {
 
@@ -155,9 +155,9 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                     }
 
-                    JSONObject question_details = jsonObject1.getJSONObject("question_details");
+                   // JSONObject question_details = jsonObject1.getJSONObject("question_details");
 
-                    String dateTime = question_details.optString("exam_date").trim() + " " + question_details.optString("from_time").trim();
+                    String dateTime = jsonObject1.optString("exam_date").trim() + " " + jsonObject1.optString("from_time").trim();
 
                     Date examDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime);
 

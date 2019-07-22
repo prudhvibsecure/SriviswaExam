@@ -75,14 +75,15 @@ public class WifiFragment extends ParentFragment {
     private Dashboard.OnListFragmentInteractionListener mListener;
 
     private OnFragmentInteractionListener mFragListener;
-
+    private static String screen="";
 
 
     public WifiFragment() {
         // Required empty public constructor
     }
-    public static WifiFragment newInstance() {
+    public static WifiFragment newInstance(String type) {
         WifiFragment fragment = new WifiFragment();
+        screen=type;
         return fragment;
     }
     @Override
@@ -93,7 +94,9 @@ public class WifiFragment extends ParentFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //Make instance of Wifi
-        mFragListener.onFragmentInteraction(R.string.wifisettings, true);
+        if (screen.startsWith("Settings")) {
+            mFragListener.onFragmentInteraction(R.string.wifisettings, true);
+        }
         ImageView btnScan= (ImageView) getActivity().findViewById(R.id.scan);
         wifi = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         //Check wifi enabled or not
@@ -112,6 +115,27 @@ public class WifiFragment extends ParentFragment {
                 Log.d("Wifi","Total Wifi Network"+netCount);
             }
         },new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        wifi.startScan();
+        try {
+            netCount=netCount -1;
+            if (netCount>=0) {
+                while (netCount >= 0) {
+                    getActivity().findViewById(R.id.no_scan).setVisibility(View.GONE);
+                    device d = new device();
+                    d.setName(wifiList.get(netCount).SSID.toString());
+                    d.setCapabilities(wifiList.get(netCount).capabilities);
+                    values.add(d);
+                    wifiScanAdapter.notifyDataSetChanged();
+                    netCount = netCount - 1;
+                }
+            }else{
+                getActivity().findViewById(R.id.no_scan).setVisibility(View.VISIBLE);
+            }
+        }
+        catch (Exception e){
+            Log.d("Wifi", e.getMessage());
+        }
        wifiScanAdapter=new WifiScanAdapter(values,getActivity());
        recyclerView= (RecyclerView) getActivity().findViewById(R.id.wifiRecyclerView);
        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -131,6 +155,7 @@ public class WifiFragment extends ParentFragment {
                     values.add(d);
                     wifiScanAdapter.notifyDataSetChanged();
                     netCount=netCount -1;
+                    getActivity().findViewById(R.id.no_scan).setVisibility(View.GONE);
                 }
             }
             catch (Exception e){
@@ -146,6 +171,7 @@ public class WifiFragment extends ParentFragment {
                try {
                    netCount=netCount -1;
                    while (netCount>=0){
+                       getActivity().findViewById(R.id.no_scan).setVisibility(View.GONE);
                        device d= new device();
                        d.setName(wifiList.get(netCount).SSID.toString());
                        d.setCapabilities(wifiList.get(netCount).capabilities);
@@ -210,25 +236,30 @@ public class WifiFragment extends ParentFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mListener = (Dashboard.OnListFragmentInteractionListener) context;
+        if (screen.startsWith("Settings")) {
+            mListener = (Dashboard.OnListFragmentInteractionListener) context;
 
-        mFragListener = (SriVishwa) context;
+            mFragListener = (SriVishwa) context;
 
-        activity = (SriVishwa) context;
+            activity = (SriVishwa) context;
+        }
 
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-        mFragListener = null;
+        if (screen.startsWith("Settings")) {
+            mListener = null;
+            mFragListener = null;
+        }
     }
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-
-        mFragListener.onFragmentInteraction(R.string.dashboard, true);
+        if (screen.startsWith("Settings")) {
+            mFragListener.onFragmentInteraction(R.string.dashboard, true);
+        }
 
     }
 

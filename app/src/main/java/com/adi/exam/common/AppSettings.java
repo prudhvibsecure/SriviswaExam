@@ -30,34 +30,36 @@ public class AppSettings {
 
             properties = new Properties();
 
-            properties.setProperty("studentlogin", "https://bsecuresoftechsolutions.com/viswa/student_login");
+            String BASE_PATH = "https://bsecuresoftechsolutions.com/viswa_dev/";   //Local path
+            //String BASE_PATH="https://bsecuresoftechsolutions.com/viswa_dev/";  //live path
 
-            properties.setProperty("checkqustionpaper", "https://bsecuresoftechsolutions.com/viswa/admin/check_question_paper");
+            properties.setProperty("studentlogin", BASE_PATH + "student_login");
 
-            properties.setProperty("getquestionpaper", "https://bsecuresoftechsolutions.com/viswa/admin/get_question_paper");
+            properties.setProperty("checkqustionpaper", BASE_PATH + "admin/check_question_paper");
 
-            properties.setProperty("updatedevice", "https://bsecuresoftechsolutions.com/viswa/admin/update_device");
+            properties.setProperty("getquestionpaper", BASE_PATH + "admin/get_question_paper");
 
-            properties.setProperty("checkversion", "https://bsecuresoftechsolutions.com/viswa/admin/check_version");
+            properties.setProperty("updatedevice", BASE_PATH + "admin/update_device");
 
-            properties.setProperty("getmaterial", "https://bsecuresoftechsolutions.com/viswa/material/get_material");
+            properties.setProperty("checkversion", BASE_PATH + "admin/check_version");
 
-            properties.setProperty("checkassignment", "https://bsecuresoftechsolutions.com/viswa/assignment/check_assignment");
+            properties.setProperty("getmaterial", BASE_PATH + "material/get_material");
 
-            properties.setProperty("getassignment", "https://bsecuresoftechsolutions.com/viswa/assignment/get_assignment");
+            properties.setProperty("checkassignment", BASE_PATH + "assignment/check_assignment");
 
-            properties.setProperty("uploadfile_admin", "https://bsecuresoftechsolutions.com/viswa/admin/uploadfile");
+            properties.setProperty("getassignment", BASE_PATH + "assignment/get_assignment");
 
-            properties.setProperty("submit_exam_result", "https://bsecuresoftechsolutions.com/viswa/admin/submit_exam_result");
+            properties.setProperty("uploadfile_admin", BASE_PATH + "admin/uploadfile");
 
-            properties.setProperty("submit_assignment_result", "https://bsecuresoftechsolutions.com/viswa/admin/submit_assignment_result");
+            properties.setProperty("submit_exam_result", BASE_PATH + "admin/submit_exam_result");
 
-            properties.setProperty("get_student_details", "https://bsecuresoftechsolutions.com/viswa/get_student_details");
+            properties.setProperty("submit_assignment_result", BASE_PATH + "admin/submit_assignment_result");
 
-            properties.setProperty("update_password", "https://bsecuresoftechsolutions.com/viswa/update_password");
+            properties.setProperty("get_student_details", BASE_PATH + "get_student_details");
 
-            properties.setProperty("download_qs", "https://bsecuresoftechsolutions.com/viswa/assets/upload/quest_uploads/");
+            properties.setProperty("update_password", BASE_PATH + "update_password");
 
+            properties.setProperty("download_qs", BASE_PATH + "assets/upload/quest_uploads/");
 
 
         } catch (Exception e) {

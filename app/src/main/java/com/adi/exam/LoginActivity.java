@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
@@ -28,6 +30,7 @@ import com.adi.exam.controls.CustomEditText;
 import com.adi.exam.controls.CustomTextView;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.dialogfragments.MessageDialog;
+import com.adi.exam.fragments.WifiFragment;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
 
@@ -61,6 +64,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                         .getInstance());
 
         findViewById(R.id.tv_frgtpwd).setOnClickListener(onClick);
+        findViewById(R.id.connect_wife).setOnClickListener(onClick);
 
         findViewById(R.id.tv_register).setOnClickListener(onClick);
 
@@ -102,6 +106,10 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
                 case R.id.tv_frgtpwd:
                     launchForgotActivity();
+                    break;
+                case R.id.connect_wife:
+                    Intent ns = new Intent(LoginActivity.this, CheckWifi.class);
+                    startActivity(ns);
                     break;
 
                 default:
@@ -330,8 +338,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                 case 3:
 
                     JSONObject object = new JSONObject(results.toString());
-                    if(object.optString("statuscode").equalsIgnoreCase("200"))
-                    {
+                    if (object.optString("statuscode").equalsIgnoreCase("200")) {
                         JSONObject student = object.getJSONObject("student_details");
 
                         sname.setText(student.optString("student_name"));
@@ -345,9 +352,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                         user.setText(student.optString("username"));
 
                         AppPreferences.getInstance(this).addToStore("studentDetails", student.toString(), false);
-                    }
-                    else
-                    {
+                    } else {
 
                     }
                     break;
@@ -396,7 +401,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         if (jsonObject.optString("statuscode").equalsIgnoreCase("200")) {
 
 
-            if(jsonObject.has("student_details")) {
+            if (jsonObject.has("student_details")) {
 
                 JSONObject jsonObject1 = jsonObject.getJSONObject("student_details");
 
@@ -414,21 +419,22 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
     }
 
-    public String getDevid()
-    {
+    public String getDevid() {
         String android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return android_id;
     }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(!hasFocus) {
+        if (!hasFocus) {
             // Close every kind of system dialog
             Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             sendBroadcast(closeDialog);
         }
     }
+
     public boolean dispatchKeyEvent(KeyEvent keyEvent) {
         if (this.blockedKeys.contains(Integer.valueOf(keyEvent.getKeyCode()))) {
             return true;
