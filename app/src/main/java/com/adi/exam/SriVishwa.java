@@ -510,7 +510,7 @@ public class SriVishwa extends AppCompatActivity
                 swiftFragments(JEEemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("3")) { //BITSAT
-                swiftFragments(BITSATTemplates.newInstance(data,"BITSAT"), "examtemplate");
+                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/BITSAT/bitsat0.html";
                 // swiftFragments(BITSATTemplates.newInstance(data), "examtemplate");
 
