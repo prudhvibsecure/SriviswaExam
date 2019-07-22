@@ -37,6 +37,7 @@ import com.adi.exam.dialogfragments.AppUpdateDialog;
 import com.adi.exam.dialogfragments.ExitDialog;
 import com.adi.exam.dialogfragments.MessageDialog;
 
+import com.adi.exam.fragments.AIIMSemplates;
 import com.adi.exam.fragments.AllQuestions;
 import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
@@ -50,6 +51,8 @@ import com.adi.exam.fragments.ExamSubmitConfirmationPage;
 import com.adi.exam.fragments.ExamTemplates;
 import com.adi.exam.fragments.Instructions;
 
+import com.adi.exam.fragments.JEEemplates;
+import com.adi.exam.fragments.JIPMERSemplates;
 import com.adi.exam.fragments.KVPYTemplates;
 import com.adi.exam.fragments.Lessons;
 import com.adi.exam.fragments.Materials;
@@ -504,7 +507,7 @@ public class SriVishwa extends AppCompatActivity
 
             if (jsonObject.optString("course").equalsIgnoreCase("1") || jsonObject.optString("course").equalsIgnoreCase("2")) { //JEE
 
-                //swiftFragments(JEEemplates.newInstance(data,"JEE"), "examtemplate");
+                swiftFragments(JEEemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("3")) { //BITSAT
                 swiftFragments(BITSATTemplates.newInstance(data,"BITSAT"), "examtemplate");
@@ -517,18 +520,18 @@ public class SriVishwa extends AppCompatActivity
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("5")) { //NEET
 
-               // swiftFragments(NEETemplates.newInstance(data,"NEET"), "examtemplate");
+                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("6")) { //AIIMS
-                //swiftFragments(AIIMSemplates.newInstance(data,"AIIMS"), "examtemplate");
+                swiftFragments(AIIMSemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/AIIMS/aiims.html";
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("7")) { //JIPMER
-                //swiftFragments(JIPMERSemplates.newInstance(data,"JIPMER"), "examtemplate");
+                swiftFragments(JIPMERSemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/JIPMER/jipmer.html";
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("9")) { //KVPY
-                swiftFragments(KVPYTemplates.newInstance(data,"KVPY"), "examtemplate");
+                swiftFragments(KVPYTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/KVPY/kvpy.html";
 
             }
