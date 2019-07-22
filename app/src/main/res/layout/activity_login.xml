@@ -213,11 +213,14 @@
                         android:id="@+id/connect_wife"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/wifi"
-                        android:gravity="end"
+                        android:drawableEnd="@mipmap/ic_action_wifi"
+                        android:gravity="center"
+                        android:drawableTint="@color/textblue"
                         android:drawablePadding="5dp"
+                        android:text="Network"
+                        android:layout_gravity="center"
                         android:textColor="@color/titlecolor"
-                        android:textSize="@dimen/_12sdp"
+                        android:textSize="@dimen/_10sdp"
                         app:fontType="1" />
                 </LinearLayout>
 
