@@ -276,8 +276,9 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
         }
 
-      //  showTimer((data.optInt("duration") * 60 * 60 * 1000));
+        //  showTimer((data.optInt("duration") * 60 * 60 * 1000));
         showTimer((data.optInt("duration_sec") * 1000));
+
         return layout;
     }
 

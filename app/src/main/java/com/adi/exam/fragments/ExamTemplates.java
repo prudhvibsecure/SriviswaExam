@@ -761,15 +761,15 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 //            decrypt("enc_"+jsonObject.optString("option_c"));
 //            decrypt("enc_"+jsonObject.optString("option_d"));
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), iv_question);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("question_name"), iv_question);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_a"), iv_option1);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_a"), iv_option1);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_b"), iv_option2);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_b"), iv_option2);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_c"), iv_option3);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_c"), iv_option3);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("option_d"), iv_option4);
+            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_d"), iv_option4);
 
 
 

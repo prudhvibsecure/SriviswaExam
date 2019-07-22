@@ -1,14 +1,19 @@
 package com.adi.exam;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,8 +24,8 @@ import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
@@ -28,9 +33,9 @@ import com.adi.exam.common.AppSettings;
 import com.adi.exam.common.NetworkInfoAPI;
 import com.adi.exam.controls.CustomEditText;
 import com.adi.exam.controls.CustomTextView;
+import com.adi.exam.database.Database;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.dialogfragments.MessageDialog;
-import com.adi.exam.fragments.WifiFragment;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
 
@@ -57,6 +62,16 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
         setContentView(R.layout.activity_login);
 
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 0);
+        }
+        else
+        {
+            sendDeviceId();
+        }
+
+
         getSupportActionBar().hide();
 
         ((EditText) findViewById(R.id.et_password))
@@ -64,7 +79,6 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                         .getInstance());
 
         findViewById(R.id.tv_frgtpwd).setOnClickListener(onClick);
-        findViewById(R.id.connect_wife).setOnClickListener(onClick);
 
         findViewById(R.id.tv_register).setOnClickListener(onClick);
 
@@ -81,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         network = new NetworkInfoAPI();
 
         network.initialize(this);
-        sendDeviceId();
+        //sendDeviceId();
         //phncomp = new PhoneComponent(this, this, 2);
 
     }
@@ -106,10 +120,6 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
                 case R.id.tv_frgtpwd:
                     launchForgotActivity();
-                    break;
-                case R.id.connect_wife:
-                    Intent ns = new Intent(LoginActivity.this, CheckWifi.class);
-                    startActivity(ns);
                     break;
 
                 default:
@@ -216,7 +226,18 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                 return;
             }
 
-            sendLoginRequest(username, password);
+           // sendLoginRequest(username, password);
+
+            String data = getStudent(username, password).toString();
+            if(TextUtils.isEmpty(data))
+            {
+                sendLoginRequest(username, password);
+                //showokPopUp("Error", "Invalid Credentials");
+            }
+            else
+            {
+                parseLoginResponse(data);
+            }
 
             /*phncomp.defineWhereClause("application_no = '"+username+"' AND roll_no = '"+password+"'");
 
@@ -256,12 +277,13 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
         try {
 
+
             JSONObject jsonObject = new JSONObject();
 
             jsonObject.put("device_id", getDevid());
 
-            //jsonObject.put("imei", getIMEI(this));
-            //Toast.makeText(this, getIMEI(this), Toast.LENGTH_SHORT).show();
+            jsonObject.put("imei", getIMEI(this));
+
 
 
             HTTPPostTask post = new HTTPPostTask(this, this);
@@ -277,7 +299,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
     }
 
     public String getIMEI(Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -290,7 +312,9 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                 //return TODO;
             }
         }
-        return String.valueOf(telephonyManager.getDeviceId());
+        final String id = telephonyManager.getDeviceId();
+        //Toast.makeText(context, id.toString(), Toast.LENGTH_SHORT).show();
+        return id;
     }
 
     public void showToast(String text) {
@@ -338,7 +362,8 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                 case 3:
 
                     JSONObject object = new JSONObject(results.toString());
-                    if (object.optString("statuscode").equalsIgnoreCase("200")) {
+                    if(object.optString("statuscode").equalsIgnoreCase("200"))
+                    {
                         JSONObject student = object.getJSONObject("student_details");
 
                         sname.setText(student.optString("student_name"));
@@ -352,7 +377,17 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                         user.setText(student.optString("username"));
 
                         AppPreferences.getInstance(this).addToStore("studentDetails", student.toString(), false);
-                    } else {
+
+                        String test = getStudent(student.optString("student_id"),  student.optString("password")).toString();
+                        if(TextUtils.isEmpty(test)) {
+
+                            saveStudent(Integer.parseInt(student.optString("student_id")), student.optString("student_name"), student.optString("password"), student.optString("application_no"), student.optString("roll_no"), student.optString("class_id"), student.optString("course_name"), student.optString("program_name"), student.optString("section"), student.optString("parent_phone_no"), student.optString("year"), student.optString("status"));
+
+                        }
+
+                    }
+                    else
+                    {
 
                     }
                     break;
@@ -366,6 +401,8 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         }
 
     }
+
+
 
     @Override
     public void onError(String errorCode, int requestType) {
@@ -401,7 +438,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         if (jsonObject.optString("statuscode").equalsIgnoreCase("200")) {
 
 
-            if (jsonObject.has("student_details")) {
+            if(jsonObject.has("student_details")) {
 
                 JSONObject jsonObject1 = jsonObject.getJSONObject("student_details");
 
@@ -419,22 +456,21 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
     }
 
-    public String getDevid() {
+    public String getDevid()
+    {
         String android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return android_id;
     }
-
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (!hasFocus) {
+        if(!hasFocus) {
             // Close every kind of system dialog
             Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             sendBroadcast(closeDialog);
         }
     }
-
     public boolean dispatchKeyEvent(KeyEvent keyEvent) {
         if (this.blockedKeys.contains(Integer.valueOf(keyEvent.getKeyCode()))) {
             return true;
@@ -445,5 +481,100 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 0:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    sendDeviceId();
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    public JSONObject getStudent(String sid, String password)
+    {
+        JSONObject obj = new JSONObject();
+        try {
+            Database database = new Database(this);
+            SQLiteDatabase db;
+            if (database != null) {
+
+                String cursor_q = "select * from STUDENTS where student_id="+ Integer.parseInt(sid)+ " AND password="+password;
+
+                db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+
+                            obj.put("student_id", cursor.getString(cursor.getColumnIndex("student_id")));
+                            obj.put("student_name" , cursor.getString(cursor.getColumnIndex("student_name")));
+                            obj.put("password" , cursor.getString(cursor.getColumnIndex("password")));
+                            obj.put("application_no", cursor.getString(cursor.getColumnIndex("application_no")));
+                            obj.put("roll_no", cursor.getString(cursor.getColumnIndex("roll_no")));
+                            obj.put("class_id", cursor.getString(cursor.getColumnIndex("class_id")));
+                            obj.put("course_name", cursor.getString(cursor.getColumnIndex("course_name")));
+                            obj.put("program_name", cursor.getString(cursor.getColumnIndex("program_name")));
+                            obj.put("section", cursor.getString(cursor.getColumnIndex("section")));
+                            obj.put("parent_phone_no", cursor.getString(cursor.getColumnIndex("parent_phone_no")));
+                            obj.put("year",cursor.getString(cursor.getColumnIndex("year")));
+                            obj.put("status", cursor.getString(cursor.getColumnIndex("status")));
+
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+    private void saveStudent(int student_id, String student_name, String password, String application_no, String roll_no, String class_id, String course_name, String program_name, String section, String parent_phone_no, String year, String status ) {
+
+        SQLiteDatabase db = null;
+        Database database = new Database(this);
+
+        try {
+            long rawId;
+            if (database != null) {
+                db = database.getWritableDatabase();
+                ContentValues cv = new ContentValues();
+
+                cv.put("student_id", student_id);
+                cv.put("student_name", student_name);
+                cv.put("password", password);
+                cv.put("application_no", application_no);
+                cv.put("roll_no", roll_no);
+                cv.put("class_id", class_id);
+                cv.put("course_name", course_name);
+                cv.put("program_name", program_name);
+                cv.put("section", section);
+                cv.put("parent_phone_no", parent_phone_no);
+                cv.put("year", year);
+                cv.put("status", status);
+
+                db.insertWithOnConflict("STUDENTS", null, cv, SQLiteDatabase.CONFLICT_IGNORE);
+                db.close();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

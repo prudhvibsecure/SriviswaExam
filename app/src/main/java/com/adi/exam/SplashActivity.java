@@ -57,14 +57,14 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
         PrefUtils.setKioskModeActive(true, getApplicationContext());
         String networkType = getNetWorkObject().execute("getConnectionInfo");
 
-        if (networkType.equalsIgnoreCase("none")) {
+        /*if (networkType.equalsIgnoreCase("none")) {
 
             showokPopUp(R.drawable.pop_ic_info, getString(R.string.alert), getString(R.string.nipcyns), 1, this, false);
 
             return;
 
         }
-
+*/
         if (AppPreferences.getInstance(this).getFromStore("User-Agent").length() == 0) {
 
             WebView webview = new WebView(this);

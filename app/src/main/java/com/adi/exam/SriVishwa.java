@@ -577,6 +577,16 @@ public class SriVishwa extends AppCompatActivity
 
                     ParentFragment pf = fragStack.peek();
 
+                    if(pf instanceof ExamTemplates)
+                    {
+                        return true;
+                    }
+
+                    if(pf instanceof Assignment)
+                    {
+                        return true;
+                    }
+
                     if (pf.back())
                         return true;
 
