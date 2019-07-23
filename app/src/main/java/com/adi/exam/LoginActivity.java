@@ -62,12 +62,9 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
         setContentView(R.layout.activity_login);
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 0);
-        }
-        else
-        {
+        } else {
             sendDeviceId();
         }
 
@@ -85,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         findViewById(R.id.tv_login).setOnClickListener(onClick);
 
         findViewById(R.id.iv_settings).setOnClickListener(onClick);
+        findViewById(R.id.connect_wife).setOnClickListener(onClick);
 
         sname = findViewById(R.id.sname);
         stuid = findViewById(R.id.stuid);
@@ -120,6 +118,10 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
                 case R.id.tv_frgtpwd:
                     launchForgotActivity();
+                    break;
+                case R.id.connect_wife:
+                    Intent task = new Intent(getApplicationContext(), CheckWifi.class);
+                    startActivity(task);
                     break;
 
                 default:
@@ -226,16 +228,13 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                 return;
             }
 
-           // sendLoginRequest(username, password);
+            // sendLoginRequest(username, password);
 
             String data = getStudent(username, password).toString();
-            if(TextUtils.isEmpty(data))
-            {
+            if (TextUtils.isEmpty(data)) {
                 sendLoginRequest(username, password);
                 //showokPopUp("Error", "Invalid Credentials");
-            }
-            else
-            {
+            } else {
                 parseLoginResponse(data);
             }
 
@@ -283,7 +282,6 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
             jsonObject.put("device_id", getDevid());
 
             jsonObject.put("imei", getIMEI(this));
-
 
 
             HTTPPostTask post = new HTTPPostTask(this, this);
@@ -362,8 +360,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                 case 3:
 
                     JSONObject object = new JSONObject(results.toString());
-                    if(object.optString("statuscode").equalsIgnoreCase("200"))
-                    {
+                    if (object.optString("statuscode").equalsIgnoreCase("200")) {
                         JSONObject student = object.getJSONObject("student_details");
 
                         sname.setText(student.optString("student_name"));
@@ -378,16 +375,14 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
                         AppPreferences.getInstance(this).addToStore("studentDetails", student.toString(), false);
 
-                        String test = getStudent(student.optString("student_id"),  student.optString("password")).toString();
-                        if(TextUtils.isEmpty(test)) {
+                        String test = getStudent(student.optString("student_id"), student.optString("password")).toString();
+                        if (TextUtils.isEmpty(test)) {
 
                             saveStudent(Integer.parseInt(student.optString("student_id")), student.optString("student_name"), student.optString("password"), student.optString("application_no"), student.optString("roll_no"), student.optString("class_id"), student.optString("course_name"), student.optString("program_name"), student.optString("section"), student.optString("parent_phone_no"), student.optString("year"), student.optString("status"));
 
                         }
 
-                    }
-                    else
-                    {
+                    } else {
 
                     }
                     break;
@@ -401,7 +396,6 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         }
 
     }
-
 
 
     @Override
@@ -438,7 +432,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         if (jsonObject.optString("statuscode").equalsIgnoreCase("200")) {
 
 
-            if(jsonObject.has("student_details")) {
+            if (jsonObject.has("student_details")) {
 
                 JSONObject jsonObject1 = jsonObject.getJSONObject("student_details");
 
@@ -456,21 +450,22 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
     }
 
-    public String getDevid()
-    {
+    public String getDevid() {
         String android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return android_id;
     }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(!hasFocus) {
+        if (!hasFocus) {
             // Close every kind of system dialog
             Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             sendBroadcast(closeDialog);
         }
     }
+
     public boolean dispatchKeyEvent(KeyEvent keyEvent) {
         if (this.blockedKeys.contains(Integer.valueOf(keyEvent.getKeyCode()))) {
             return true;
@@ -498,15 +493,14 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         }
     }
 
-    public JSONObject getStudent(String sid, String password)
-    {
+    public JSONObject getStudent(String sid, String password) {
         JSONObject obj = new JSONObject();
         try {
             Database database = new Database(this);
             SQLiteDatabase db;
             if (database != null) {
 
-                String cursor_q = "select * from STUDENTS where student_id="+ Integer.parseInt(sid)+ " AND password="+password;
+                String cursor_q = "select * from STUDENTS where student_id=" + Integer.parseInt(sid) + " AND password=" + password;
 
                 db = database.getWritableDatabase();
                 Cursor cursor = db
@@ -518,8 +512,8 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                             cursor.moveToFirst();
 
                             obj.put("student_id", cursor.getString(cursor.getColumnIndex("student_id")));
-                            obj.put("student_name" , cursor.getString(cursor.getColumnIndex("student_name")));
-                            obj.put("password" , cursor.getString(cursor.getColumnIndex("password")));
+                            obj.put("student_name", cursor.getString(cursor.getColumnIndex("student_name")));
+                            obj.put("password", cursor.getString(cursor.getColumnIndex("password")));
                             obj.put("application_no", cursor.getString(cursor.getColumnIndex("application_no")));
                             obj.put("roll_no", cursor.getString(cursor.getColumnIndex("roll_no")));
                             obj.put("class_id", cursor.getString(cursor.getColumnIndex("class_id")));
@@ -527,7 +521,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                             obj.put("program_name", cursor.getString(cursor.getColumnIndex("program_name")));
                             obj.put("section", cursor.getString(cursor.getColumnIndex("section")));
                             obj.put("parent_phone_no", cursor.getString(cursor.getColumnIndex("parent_phone_no")));
-                            obj.put("year",cursor.getString(cursor.getColumnIndex("year")));
+                            obj.put("year", cursor.getString(cursor.getColumnIndex("year")));
                             obj.put("status", cursor.getString(cursor.getColumnIndex("status")));
 
                         }
@@ -544,7 +538,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         return obj;
     }
 
-    private void saveStudent(int student_id, String student_name, String password, String application_no, String roll_no, String class_id, String course_name, String program_name, String section, String parent_phone_no, String year, String status ) {
+    private void saveStudent(int student_id, String student_name, String password, String application_no, String roll_no, String class_id, String course_name, String program_name, String section, String parent_phone_no, String year, String status) {
 
         SQLiteDatabase db = null;
         Database database = new Database(this);
