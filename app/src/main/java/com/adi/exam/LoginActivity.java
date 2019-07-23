@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         findViewById(R.id.tv_login).setOnClickListener(onClick);
 
         findViewById(R.id.iv_settings).setOnClickListener(onClick);
+
         findViewById(R.id.connect_wife).setOnClickListener(onClick);
 
         sname = findViewById(R.id.sname);
