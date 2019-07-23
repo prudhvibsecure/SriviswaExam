@@ -44,7 +44,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-public class Materials extends ParentFragment implements IItemHandler, View.OnClickListener, IDialogCallbacks {
+public class
+Materials extends ParentFragment implements IItemHandler, View.OnClickListener, IDialogCallbacks {
 
     private View layout;
 

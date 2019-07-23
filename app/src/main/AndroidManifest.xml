@@ -18,7 +18,7 @@
 
     <application
         android:name=".SriVishwaApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -31,6 +31,7 @@
         <activity
             android:name=".ViewMaterial"
             android:label="@string/title_activity_view_material"
+            android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <meta-data

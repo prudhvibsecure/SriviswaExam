@@ -30,7 +30,7 @@ public class AppSettings {
 
             properties = new Properties();
 
-            String BASE_PATH = "https://bsecuresoftechsolutions.com/viswa_dev/";   //Local path
+            String BASE_PATH = "https://bsecuresoftechsolutions.com/viswa/";   //Local path
             //String BASE_PATH="https://bsecuresoftechsolutions.com/viswa_dev/";  //live path
 
             properties.setProperty("studentlogin", BASE_PATH + "student_login");

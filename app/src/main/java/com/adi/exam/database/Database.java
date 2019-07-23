@@ -12,7 +12,7 @@ public class Database extends SQLiteOpenHelper {
 
     private String CLASS_TABLE = "CREATE TABLE CLASS(class_id INTEGER, branch_name TEXT, year TEXT, course_name TEXT, program_name TEXT, section TEXT, subject Text);";
 
-    private String STUDENT_TABLE = "CREATE TABLE STUDENTS(student_id INTEGER, student_name TEXT, password TEXT, username TEXT, application_no TEXT, roll_no TEXT, class_id TEXT, course_name TEXT, program_name TEXT, section TEXT, parent_phone_no TEXT, year TEXT, status TEXT);";
+    private String STUDENT_TABLE = "CREATE TABLE STUDENTS(student_id INTEGER, student_name TEXT, application_no TEXT, roll_no TEXT, class_id TEXT, course_name TEXT, program_name TEXT, section TEXT, parent_phone_no TEXT, year TEXT, status TEXT);";
 
     private String LESSONS_TABLE = "CREATE TABLE LESSONS(lessons_id INTEGER, program_id INTEGER, year TEXT, subject TEXT, lesson_name TEXT);";
 

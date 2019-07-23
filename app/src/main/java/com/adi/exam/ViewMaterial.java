@@ -18,6 +18,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class ViewMaterial extends AppCompatActivity {
 
     private String student_id, url;
@@ -48,34 +51,22 @@ public class ViewMaterial extends AppCompatActivity {
         }
 
         wv_content = findViewById(R.id.webview);
-        wv_content.loadUrl("https://docs.google.com/gview?embedded=true&url="+url);
-        wv_content.getSettings().setAllowFileAccess(true);
+
+     //   wv_content.getSettings().setAllowFileAccess(true);
         wv_content.getSettings().setSupportZoom(true);
-        wv_content.setVerticalScrollBarEnabled(true);
-        wv_content.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        wv_content.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
-        wv_content.getSettings().setLoadWithOverviewMode(true);
-        wv_content.getSettings().setUseWideViewPort(true);
+
+       // wv_content.getSettings().setUseWideViewPort(true);
         wv_content.getSettings().setJavaScriptEnabled(true);
-        wv_content.getSettings().setPluginState(WebSettings.PluginState.ON);
-
-        wv_content.getSettings().setSaveFormData(false);
-        wv_content.getSettings().setSavePassword(false);
-
-        wv_content.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-        wv_content.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         wv_content.setWebViewClient(new ViewMaterial.MyWebViewClient());
         wv_content.setWebChromeClient(new ViewMaterial.MyWebChromeClient());
-
-        wv_content.getSettings().setJavaScriptEnabled(true);
-        wv_content.getSettings().setLoadWithOverviewMode(true);
-        wv_content.getSettings().setUseWideViewPort(true);
-
-        webSettings = wv_content.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setSupportZoom(true);
-        webSettings.setBuiltInZoomControls(true);
+//        try {
+//            url= URLEncoder.encode(url,"UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+          wv_content.loadUrl("https://docs.google.com/gview?embedded=true&url="+url);
+        //wv_content.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url="+url);
     }
 
 

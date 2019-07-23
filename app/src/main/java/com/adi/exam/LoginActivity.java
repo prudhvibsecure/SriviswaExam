@@ -229,15 +229,15 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
                 return;
             }
 
-            // sendLoginRequest(username, password);
+             sendLoginRequest(username, password);
 
-            String data = getStudent(username, password).toString();
+           /* String data = getStudent(username, password).toString();
             if (TextUtils.isEmpty(data)) {
                 sendLoginRequest(username, password);
                 //showokPopUp("Error", "Invalid Credentials");
             } else {
                 parseLoginResponse(data);
-            }
+            }*/
 
             /*phncomp.defineWhereClause("application_no = '"+username+"' AND roll_no = '"+password+"'");
 
@@ -374,14 +374,14 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
 
                         user.setText(student.optString("username"));
 
-                        AppPreferences.getInstance(this).addToStore("studentDetails", student.toString(), false);
+                      /*  AppPreferences.getInstance(this).addToStore("studentDetails", student.toString(), false);
 
                         String test = getStudent(student.optString("student_id"), student.optString("password")).toString();
                         if (TextUtils.isEmpty(test)) {
 
                             saveStudent(Integer.parseInt(student.optString("student_id")), student.optString("student_name"), student.optString("password"), student.optString("application_no"), student.optString("roll_no"), student.optString("class_id"), student.optString("course_name"), student.optString("program_name"), student.optString("section"), student.optString("parent_phone_no"), student.optString("year"), student.optString("status"));
 
-                        }
+                        }*/
 
                     } else {
 

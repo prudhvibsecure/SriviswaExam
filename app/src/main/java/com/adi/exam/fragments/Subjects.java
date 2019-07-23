@@ -132,8 +132,8 @@ public class Subjects extends ParentFragment implements IItemHandler, View.OnCli
         try {
 
             PhoneComponent phncomp = new PhoneComponent(this, mActivity, 1);
-
-            phncomp.defineWhereClause("course_name='" + mActivity.getStudentDetails().optString("program_name").trim() + "'");
+                String name =  mActivity.getStudentDetails().optString("program_name").trim();
+            phncomp.defineWhereClause("course='" + mActivity.getStudentDetails().optString("course").trim() + "'");
 
             phncomp.executeLocalDBInBackground("COURSES");
 
@@ -216,7 +216,7 @@ public class Subjects extends ParentFragment implements IItemHandler, View.OnCli
 
                     JSONObject jsonObject1 = new JSONObject();
 
-                    jsonObject1.put("title", temp[i]);
+                    jsonObject1.put("title", temp[i].trim());
 
                     finalArray.put(jsonObject1);
 
