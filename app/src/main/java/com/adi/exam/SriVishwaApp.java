@@ -67,7 +67,7 @@ public class SriVishwaApp extends MultiDexApplication implements ActivityLifecyc
             TraceUtils.logException(e);
         }
         registerKioskModeScreenOffReceiver();
-        //startKioskService();
+        startKioskService();
     }
 
     @Override

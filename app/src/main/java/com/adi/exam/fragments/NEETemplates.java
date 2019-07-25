@@ -57,6 +57,8 @@ public class NEETemplates extends ParentFragment implements View.OnClickListener
 
     private int currentExamId = -1;
 
+    private int question_no = 0;
+
     private RadioGroup rg_options;
 
     public NEETemplates() {

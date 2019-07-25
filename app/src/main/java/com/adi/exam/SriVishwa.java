@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -376,7 +377,7 @@ public class SriVishwa extends AppCompatActivity
                     break;
 
                 case R.id.tv_cancel:
-                    PrefUtils.setKioskModeActive(false, getApplicationContext());
+                    //PrefUtils.setKioskModeActive(false, getApplicationContext());
                     break;
 
             }
@@ -1152,6 +1153,7 @@ public class SriVishwa extends AppCompatActivity
                         intent_n.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent_n.setDataAndType(paths, type);
                         startActivity(intent_n);
+                        apkDelte(path);
                     }
                     if (type.startsWith("text/plain")) {
                         String path = Environment.getExternalStorageDirectory()
@@ -1211,6 +1213,23 @@ public class SriVishwa extends AppCompatActivity
             }
         }
     };
+
+    private void apkDelte(final String path) {
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                File apk_file=new File(path);
+                if (apk_file.exists()) {
+                    apk_file.delete();
+                }
+
+            }
+        },600000);
+
+    }
+
     private BroadcastReceiver mBroadcastQuestion = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

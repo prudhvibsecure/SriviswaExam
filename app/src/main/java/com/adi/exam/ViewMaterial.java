@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -18,6 +16,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -29,10 +29,13 @@ public class ViewMaterial extends AppCompatActivity {
 
     private WebSettings webSettings = null;
 
+    //PDFView view ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_material);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -49,6 +52,15 @@ public class ViewMaterial extends AppCompatActivity {
         {
            url = in.getStringExtra("url");
         }
+        /*view = findViewById(R.id.pdfView);
+        Uri uri = Uri.parse(url);
+        view.fromUri(uri);
+        PDFView.Configurator.onRender(new OnRenderListener() {
+            @Override
+            public void onInitiallyRendered(int pages, float pageWidth, float pageHeight) {
+                view.fitToWidth(); // optionally pass page number
+            }
+        });*/
 
         wv_content = findViewById(R.id.webview);
 
@@ -65,8 +77,12 @@ public class ViewMaterial extends AppCompatActivity {
 //        } catch (UnsupportedEncodingException e) {
 //            e.printStackTrace();
 //        }
-          wv_content.loadUrl("https://docs.google.com/gview?embedded=true&url="+url);
+        wv_content.loadUrl("https://docs.google.com/gview?embedded=true&url="+url);
         //wv_content.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url="+url);
+        //url = "https://decapoda.nhm.org/pdfs/11686/11686.pdf";
+        //String doc="<iframe src='https://decapoda.nhm.org/pdfs/11686/11686.pdf' embedded=true width='100%' height='100%' style='border: none;'></iframe>";
+        //wv_content.loadUrl(doc);
+        //wv_content.loadData( doc , "text/html",  "UTF-8");
     }
 
 

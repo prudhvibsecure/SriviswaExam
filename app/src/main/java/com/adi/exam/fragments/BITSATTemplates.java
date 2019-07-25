@@ -57,6 +57,8 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
 
     private int currentExamId = -1;
 
+    private int question_no = 0;
+
     private RadioGroup rg_options;
 
     public BITSATTemplates() {

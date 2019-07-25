@@ -97,6 +97,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
     private int currentExamId = -1;
 
+    private int question_no = 0;
+
     private RadioGroup rg_options;
 
     private JSONObject data = new JSONObject();
@@ -449,7 +451,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("student_question_time_id", student_question_time_id);
                 questionTimeObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
                 questionTimeObject.put("exam_id", data.optInt("exam_id"));
-                questionTimeObject.put("question_no", currentExamId);
+                questionTimeObject.put("question_no", question_no);
                 questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
                 questionTimeObject.put("topic_id", jsonObject.optInt("topic_id"));
                 questionTimeObject.put("lesson_id", getLessonID(jsonObject.optInt("topic_id")));
@@ -466,7 +468,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("result", res );
                 questionTimeObject.put("question_time", timeTaken4Question + "");
                 questionTimeObject.put("no_of_clicks", check++);
-                questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "YES" : "NO");
+                questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                 table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
                 check=0;
@@ -533,7 +535,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 case R.id.tv_savennext:
 
                     if (currentExamId != -1) {
-
+                        question_no++;
                         int selRatioId = rg_options.getCheckedRadioButtonId();
 
                         if (selRatioId == -1) {
