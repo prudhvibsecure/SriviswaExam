@@ -32,8 +32,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class Utils {
 
     private static Dialog dialog = null;
-    private Context context;
-
+    private static  Context context;
+    private String networkType = "mobile";
 
     public static String urlEncode(String sUrl) {
         int i = 0;
@@ -139,7 +139,7 @@ public class Utils {
     }
 
 
-    public boolean isNetworkAvailable() {
+    public  boolean isNetworkAvailable() {
 
         ConnectivityManager manager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);

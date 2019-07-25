@@ -1,6 +1,8 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
 public class ExamList extends ParentFragment implements View.OnClickListener, IItemHandler {
 
     //TODO: error handling -> make use of tv_content_txt
@@ -93,7 +96,14 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
         adapterContent.setOnClickListener(this);
 
         rv_content_list.setAdapter(adapterContent);
-        checkQuestionPaper();
+
+        if (isNetworkAvailable()) {
+            checkQuestionPaper();
+        } else {
+            progressBar.setVisibility(View.GONE);
+            PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
+            phncomp.executeLocalDBInBackground("EXAM");
+        }
 
         return layout;
     }
@@ -601,4 +611,26 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
         return vals;
 
     }
+
+    public boolean isNetworkAvailable() {
+
+        ConnectivityManager manager = (ConnectivityManager) getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) {
+            return false;
+        }
+
+        NetworkInfo net = manager.getActiveNetworkInfo();
+        if (net != null) {
+            if (net.isConnected()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+    }
+
 }
