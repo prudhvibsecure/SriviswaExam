@@ -51,7 +51,7 @@ public class ExamHistory extends AppCompatActivity {
         }
 
         wv_content = (WebView) findViewById(R.id.webview);
-        wv_content.loadUrl("https://bsecuresoftechsolutions.com/viswa/analysis?student_id="+student_id);
+        wv_content.loadUrl("https://bsecuresoftechsolutions.com/viswa/analysis?student_id=3");
         wv_content.getSettings().setAllowFileAccess(true);
         wv_content.getSettings().setSupportZoom(true);
         wv_content.setVerticalScrollBarEnabled(true);

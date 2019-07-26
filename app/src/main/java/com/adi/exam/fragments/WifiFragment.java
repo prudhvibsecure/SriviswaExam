@@ -2,6 +2,7 @@ package com.adi.exam.fragments;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothClass;
 import android.content.BroadcastReceiver;
@@ -27,6 +28,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -109,8 +112,12 @@ public class WifiFragment extends ParentFragment {
         getActivity().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                wifiList=wifi.getScanResults();
-                netCount=wifiList.size();
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 11);
+                } else {
+                    wifiList = wifi.getScanResults();
+                    netCount = wifiList.size();
+                }
                // wifiScanAdapter.notifyDataSetChanged();
                 Log.d("Wifi","Total Wifi Network"+netCount);
             }
@@ -293,6 +300,15 @@ public class WifiFragment extends ParentFragment {
                             .show();
                 }
             }
+
+            break;
+
+            case 11:
+
+                wifiList = wifi.getScanResults();
+                netCount = wifiList.size();
+
+                break;
         }
     }
 
@@ -307,9 +323,9 @@ public class WifiFragment extends ParentFragment {
         if (permissionsList.size() > 0) {
             if (permissionsNeeded.size() > 0) {
                 // Need Rationale
-                String message = "You need to grant access to " + permissionsNeeded.get(0);
+                String message = "You need to grant access to " /*+ permissionsNeeded.get(0)*/;
                 for (int i = 0; i < permissionsNeeded.size(); i++)
-                    message = message + ", " + permissionsNeeded.get(i);
+                    message = message + "" + permissionsNeeded.get(i);
                 showMessageOKCancel(message,
                         new DialogInterface.OnClickListener() {
                             @Override

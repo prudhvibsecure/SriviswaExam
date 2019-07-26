@@ -590,6 +590,22 @@ public class SriVishwa extends AppCompatActivity
                         return true;
                     }
 
+                    if(pf instanceof AssignResultsPage)
+                    {
+                        startActivity(new Intent(SriVishwa.this, SriVishwa.class));
+                    }
+                    if(pf instanceof ChangePassword)
+                    {
+                        startActivity(new Intent(SriVishwa.this, SriVishwa.class));
+                    }
+
+                    if(pf instanceof Subjects)
+                    {
+                        startActivity(new Intent(SriVishwa.this, SriVishwa.class));
+                    }
+
+
+
                     if (pf.back())
                         return true;
 

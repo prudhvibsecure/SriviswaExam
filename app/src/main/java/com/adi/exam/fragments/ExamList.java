@@ -452,7 +452,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                         progressBar.setVisibility(View.GONE);
 
                         PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
-
+                       // phncomp.defineWhereClause("");
                         phncomp.executeLocalDBInBackground("EXAM");
 
                     }

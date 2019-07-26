@@ -1,6 +1,7 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.adi.exam.R;
 import com.adi.exam.SriVishwa;
 import com.adi.exam.callbacks.IDialogCallbacks;
 import com.adi.exam.callbacks.IItemHandler;
+import com.adi.exam.controls.CustomTextView;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.utils.TraceUtils;
 
@@ -36,6 +38,8 @@ public class AssignResultsPage extends ParentFragment implements IItemHandler, V
     private TableLayout tl_results;
 
     private TextView tv_scoore, tv_tqval, tv_taval, tv_caval, tv_icaval;
+
+    private CustomTextView tv_submit;
 
     private JSONArray allQuestions = new JSONArray();
 
@@ -120,6 +124,16 @@ public class AssignResultsPage extends ParentFragment implements IItemHandler, V
             TraceUtils.logException(e);
 
         }
+
+        tv_submit = layout.findViewById(R.id.tv_submit);
+
+        tv_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(activity, SriVishwa.class));
+            }
+        });
+
 
         return layout;
 

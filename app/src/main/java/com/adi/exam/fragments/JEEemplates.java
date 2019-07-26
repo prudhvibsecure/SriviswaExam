@@ -954,6 +954,18 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 }
 
             }
+            else if(requestId == 3)
+            {
+                JSONObject obj = new JSONObject(results.toString());
+                if(obj.optString("statuscode").equalsIgnoreCase("200"))
+                {
+                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(activity, "Failed", Toast.LENGTH_SHORT).show();
+                }
+            }
 
         } catch (Exception e) {
 
@@ -1298,9 +1310,9 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
             jsonObject.put("file_name", file_name);
 
-            HTTPPostTask post = new HTTPPostTask(getActivity(), this);
+            HTTPPostTask post = new HTTPPostTask(activity, this);
 
-            post.userRequest(getString(R.string.plwait), 2, "submit_exam_result", jsonObject.toString());
+            post.userRequest(getString(R.string.plwait), 3 , "submit_exam_result", jsonObject.toString());
 
         }catch (Exception e){
 
