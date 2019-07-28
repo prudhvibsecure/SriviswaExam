@@ -640,7 +640,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
                     break;
 
                 case R.id.tv_submit:
-                    activity.onKeyDown(4,null);
+                  //  activity.onKeyDown(4,null);
                     showResults();
 
                     break;
@@ -951,6 +951,14 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
                 }
 
+            }else if (requestId == 3) {
+                JSONObject obj = new JSONObject(results.toString());
+                if (obj.optString("statuscode").equalsIgnoreCase("200")) {
+                    activity.onKeyDown(4, null);
+//                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                } else {
+                    activity.onKeyDown(4, null);
+                }
             }
 
         } catch (Exception e) {

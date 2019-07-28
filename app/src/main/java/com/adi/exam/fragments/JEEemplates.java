@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,8 +39,6 @@ import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,8 +49,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -63,13 +57,12 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class JEEemplates extends ParentFragment implements View.OnClickListener, IItemHandler, IFileUploadCallback {
 
-    private ParentFragment.OnFragmentInteractionListener mFragListener;
+    private OnFragmentInteractionListener mFragListener;
 
     private View layout;
 
@@ -103,7 +96,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     private JSONObject data = new JSONObject();
 
-    private JSONArray array=new JSONArray();
+    private JSONArray array = new JSONArray();
 
     private ImageLoader imageLoader;
 
@@ -125,9 +118,10 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     AssetManager assetManager;
 
-    private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
+    private static final String FILE_NAME = System.currentTimeMillis() + "_Result.txt";
 
-    private boolean isVisible=false;
+    private boolean isVisible = false;
+
     public JEEemplates() {
         // Required empty public constructor
     }
@@ -335,7 +329,6 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
         mFragListener = (SriVishwa) context;
 
         activity = (SriVishwa) context;
@@ -395,8 +388,8 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
         edate = new Date();
 
-        Long minutes = ((edate.getTime()- sdate.getTime())/(60*1000)) * 60;
-        timeTaken4Question = minutes + (edate.getTime()- sdate.getTime())/1000;
+        Long minutes = ((edate.getTime() - sdate.getTime()) / (60 * 1000)) * 60;
+        timeTaken4Question = minutes + (edate.getTime() - sdate.getTime()) / 1000;
 
         sdate = edate;
         edate = null;
@@ -429,7 +422,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     }
 
                     timeTaken = timeTaken + timeTaken4Question;
-                    timeTaken4Question=timeTaken;
+                    timeTaken4Question = timeTaken;
                     jsonObject1.put("question_time", timeTaken);
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
@@ -459,20 +452,19 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
                 String res = "";
-                if(jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+                if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
                     res = "0";
-                }
-                else {
+                } else {
                     res = "1";
                 }
-                questionTimeObject.put("result", res );
+                questionTimeObject.put("result", res);
                 questionTimeObject.put("question_time", timeTaken4Question + "");
                 questionTimeObject.put("no_of_clicks", check++);
                 questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                 table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
-                check=0;
-               // question_no++;
+                check = 0;
+                // question_no++;
 
             }
 
@@ -491,7 +483,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
         try {
             if (database != null) {
 
-                String cursor_q = "select * from TOPICS where topic_id="+ tid;
+                String cursor_q = "select * from TOPICS where topic_id=" + tid;
                 SQLiteDatabase db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,
@@ -642,7 +634,6 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     break;
 
                 case R.id.tv_submit:
-                    activity.onKeyDown(4,null);
                     showResults();
 
                     break;
@@ -774,7 +765,6 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_c"), iv_option3);
 
             imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_d"), iv_option4);
-
 
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
@@ -953,17 +943,13 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                 }
 
-            }
-            else if(requestId == 3)
-            {
+            } else if (requestId == 3) {
                 JSONObject obj = new JSONObject(results.toString());
-                if(obj.optString("statuscode").equalsIgnoreCase("200"))
-                {
-                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Toast.makeText(activity, "Failed", Toast.LENGTH_SHORT).show();
+                if (obj.optString("statuscode").equalsIgnoreCase("200")) {
+                    activity.onKeyDown(4, null);
+//                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                } else {
+                    activity.onKeyDown(4, null);
                 }
             }
 
@@ -1154,7 +1140,6 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             STUDENTEXAMRESULT.put("exam_type", "");
 
 
-
 //            backup_result.put("student_exam_result_id", student_exam_result_id);
 //            backup_result.put("student_id", activity.getStudentDetails().optInt("student_id"));
 //            backup_result.put("exam_id", data.optInt("exam_id"));
@@ -1171,7 +1156,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
             App_Table table = new App_Table(activity);
 
-            json=table.getExamsResult(data.optInt("exam_id"),activity.getStudentDetails().optInt("student_id"));
+            json = table.getExamsResult(data.optInt("exam_id"), activity.getStudentDetails().optInt("student_id"));
             json.put("student_exam_result_id", student_exam_result_id);
             json.put("student_id", activity.getStudentDetails().optInt("student_id"));
             json.put("exam_id", data.optInt("exam_id"));
@@ -1202,7 +1187,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                 activity.showExamSubmitConfirmationPage(data, student_exam_result_id, 1);
 
-                startUploadBackUp(path,FILE_NAME);
+                startUploadBackUp(path, FILE_NAME);
 
                 return;
 
@@ -1218,9 +1203,9 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     }
 
-    private void startUploadBackUp(String path,String file_name) {
+    private void startUploadBackUp(String path, String file_name) {
 
-        String url= AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+        String url = AppSettings.getInstance().getPropertyValue("uploadfile_admin");
 
         FileUploader uploader = new FileUploader(getActivity(), this);
 
@@ -1300,7 +1285,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     private void dataSendServer(String file_name) {
 
-        try{
+        try {
 
             JSONObject jsonObject = new JSONObject();
 
@@ -1310,26 +1295,25 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
             jsonObject.put("file_name", file_name);
 
-            HTTPPostTask post = new HTTPPostTask(activity, this);
+            HTTPPostTask post = new HTTPPostTask(getActivity(), this);
 
-            post.userRequest(getString(R.string.plwait), 3 , "submit_exam_result", jsonObject.toString());
+            post.userRequest(getString(R.string.plwait), 3, "submit_exam_result", jsonObject.toString());
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
             TraceUtils.logException(e);
 
         }
     }
 
-    public JSONObject getQuestion(String qid)
-    {
+    public JSONObject getQuestion(String qid) {
         JSONObject obj = new JSONObject();
         try {
             Database database = new Database(activity);
             SQLiteDatabase db;
             if (database != null) {
 
-                String cursor_q = "select * from QUESTIONS where question_id="+ Integer.parseInt(qid);
+                String cursor_q = "select * from QUESTIONS where question_id=" + Integer.parseInt(qid);
 
                 db = database.getWritableDatabase();
                 Cursor cursor = db
@@ -1341,7 +1325,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                             cursor.moveToFirst();
 
                             obj.put("question_id", cursor.getString(cursor.getColumnIndex("question_id")));
-                            obj.put("topic_id" , cursor.getString(cursor.getColumnIndex("topic_id")));
+                            obj.put("topic_id", cursor.getString(cursor.getColumnIndex("topic_id")));
                             obj.put("topic_name", cursor.getString(cursor.getColumnIndex("topic_name")));
                             obj.put("question_name", cursor.getString(cursor.getColumnIndex("question_name")));
                             obj.put("question_name1", cursor.getString(cursor.getColumnIndex("question_name1")));
@@ -1349,7 +1333,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                             obj.put("question_name3", cursor.getString(cursor.getColumnIndex("question_name3")));
                             obj.put("option_a", cursor.getString(cursor.getColumnIndex("option_a")));
                             obj.put("option_b", cursor.getString(cursor.getColumnIndex("option_b")));
-                            obj.put("option_c",cursor.getString(cursor.getColumnIndex("option_c")));
+                            obj.put("option_c", cursor.getString(cursor.getColumnIndex("option_c")));
                             obj.put("option_d", cursor.getString(cursor.getColumnIndex("option_d")));
                             obj.put("answer", cursor.getString(cursor.getColumnIndex("answer")));
                             obj.put("solution1", cursor.getString(cursor.getColumnIndex("solution1")));
@@ -1373,8 +1357,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
         return obj;
     }
 
-    public void setData(JSONArray jsonArray)
-    {
+    public void setData(JSONArray jsonArray) {
         if (jsonArray.length() > 0) {
             int c = jsonArray.length();
             if (adapter.getItems().length() == 0) {
@@ -1436,23 +1419,5 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
         }
 
-    }
-    public  void decrypt(String imageName) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-        KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        byte[] keyBytes = "12345678".getBytes();
-        SecretKey skey = kgen.generateKey();
-        FileInputStream encfis = new FileInputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + "enc_"+ imageName);
-        FileOutputStream decfos = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + imageName);
-
-        Cipher decipher = Cipher.getInstance("AES");
-        decipher.init(Cipher.DECRYPT_MODE, skey);
-
-        CipherOutputStream cos = new CipherOutputStream(decfos, decipher);
-        int read;
-        while ((read = encfis.read()) != -1) {
-            cos.write(read);
-            cos.flush();
-        }
-        cos.close();
     }
 }

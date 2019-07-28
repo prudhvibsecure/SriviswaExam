@@ -222,4 +222,10 @@ public class ChangePassword extends ParentFragment implements IItemHandler {
         mListener = null;
 
     }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        mListener.onFragmentInteraction(R.string.dashboard, true);
+    }
 }

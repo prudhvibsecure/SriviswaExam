@@ -61,6 +61,9 @@ public class AppSettings {
 
             properties.setProperty("download_qs", BASE_PATH + "assets/upload/quest_uploads/");
 
+            properties.setProperty("check_network", BASE_PATH + "check_network");
+
+
 
         } catch (Exception e) {
 

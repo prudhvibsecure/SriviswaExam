@@ -69,7 +69,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class ExamTemplates extends ParentFragment implements View.OnClickListener, IItemHandler, IFileUploadCallback {
 
-    private ParentFragment.OnFragmentInteractionListener mFragListener;
+    private OnFragmentInteractionListener mFragListener;
 
     private View layout;
 
@@ -640,7 +640,6 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                     break;
 
                 case R.id.tv_submit:
-                    activity.onKeyDown(4,null);
                     showResults();
 
                     break;
@@ -951,6 +950,14 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
                 }
 
+            }else if (requestId == 3) {
+                JSONObject obj = new JSONObject(results.toString());
+                if (obj.optString("statuscode").equalsIgnoreCase("200")) {
+                    activity.onKeyDown(4, null);
+//                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                } else {
+                    activity.onKeyDown(4, null);
+                }
             }
 
         } catch (Exception e) {
@@ -1422,23 +1429,5 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
 
         }
 
-    }
-    public  void decrypt(String imageName) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-        KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        byte[] keyBytes = "12345678".getBytes();
-        SecretKey skey = kgen.generateKey();
-        FileInputStream encfis = new FileInputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + "enc_"+ imageName);
-        FileOutputStream decfos = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + imageName);
-
-        Cipher decipher = Cipher.getInstance("AES");
-        decipher.init(Cipher.DECRYPT_MODE, skey);
-
-        CipherOutputStream cos = new CipherOutputStream(decfos, decipher);
-        int read;
-        while ((read = encfis.read()) != -1) {
-            cos.write(read);
-            cos.flush();
-        }
-        cos.close();
     }
 }

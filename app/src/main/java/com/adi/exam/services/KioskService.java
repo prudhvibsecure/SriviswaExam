@@ -69,9 +69,9 @@ public class KioskService extends Service {
         // is Kiosk Mode active?
         if(PrefUtils.isKioskModeActive(ctx)&& !isForeground()) {
             // is App in background?
-            //if(isInBackground()) {
+          //  if(isInBackground()) {
                 restoreApp(); // restore!
-           // }
+          //  }
         }
     }
     /*private boolean isForeground() {
@@ -154,7 +154,11 @@ public class KioskService extends Service {
     private void restoreApp() {
         // Restart activity
         Intent i = new Intent(ctx, SplashActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      //  i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                |Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                |Intent.FLAG_ACTIVITY_SINGLE_TOP
+                |Intent.FLAG_ACTIVITY_NO_ANIMATION);
         ctx.startActivity(i);
     }
 

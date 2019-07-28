@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 public class WifiFragment extends ParentFragment {
-    public class device{
+    public class device {
         CharSequence name;
 
         public String getCapabilities() {
@@ -60,73 +60,79 @@ public class WifiFragment extends ParentFragment {
             this.name = name;
         }
 
-        public CharSequence getName (){
+        public CharSequence getName() {
             return name;
         }
     }
+
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 125;
     List<ScanResult> wifiList;
     private WifiManager wifi;
     List<device> values = new ArrayList<device>();
-    int netCount=0;
+    int netCount = 0;
     RecyclerView recyclerView;
     WifiScanAdapter wifiScanAdapter;
-    private SriVishwa activity;
-    private static String TAG="WifiFragment";
-    private String password=null;
+    private SriVishwa mActivity;
+    private static String TAG = "WifiFragment";
+    private String password = null;
     //Option Menu for wifi connection
-    private Dashboard.OnListFragmentInteractionListener mListener;
+   // private OnFragmentInteractionListener mListener;
 
     private OnFragmentInteractionListener mFragListener;
-    private static String screen="";
+    private static String screen = "";
 
 
     public WifiFragment() {
         // Required empty public constructor
     }
+
     public static WifiFragment newInstance(String type) {
         WifiFragment fragment = new WifiFragment();
-        screen=type;
+        screen = type;
         return fragment;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //Make instance of Wifi
         if (screen.startsWith("Settings")) {
-            mFragListener.onFragmentInteraction(R.string.wifisettings, true);
+            mFragListener.onFragmentInteraction(R.string.wifisettings, false);
         }
-        ImageView btnScan= (ImageView) getActivity().findViewById(R.id.scan);
+        ImageView btnScan = (ImageView) getActivity().findViewById(R.id.scan);
         wifi = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         //Check wifi enabled or not
-        if (wifi.isWifiEnabled() == false)
-        {
+        if (wifi.isWifiEnabled() == false) {
             Toast.makeText(getActivity(), "Wifi is disabled enabling...", Toast.LENGTH_LONG).show();
             wifi.setWifiEnabled(true);
         }
         //register Broadcast receiver
-        getActivity().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 11);
-                } else {
-                    wifiList = wifi.getScanResults();
-                    netCount = wifiList.size();
+        try {
+            getActivity().registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (ContextCompat.checkSelfPermission((Activity)context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 11);
+                    } else {
+                        wifiList = wifi.getScanResults();
+                        netCount = wifiList.size();
+                    }
+                    // wifiScanAdapter.notifyDataSetChanged();
+                    Log.d("Wifi", "Total Wifi Network" + netCount);
                 }
-               // wifiScanAdapter.notifyDataSetChanged();
-                Log.d("Wifi","Total Wifi Network"+netCount);
-            }
-        },new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-
+            }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         wifi.startScan();
         try {
-            netCount=netCount -1;
-            if (netCount>=0) {
+            netCount = netCount - 1;
+            if (netCount >= 0) {
                 while (netCount >= 0) {
                     getActivity().findViewById(R.id.no_scan).setVisibility(View.GONE);
                     device d = new device();
@@ -136,16 +142,15 @@ public class WifiFragment extends ParentFragment {
                     wifiScanAdapter.notifyDataSetChanged();
                     netCount = netCount - 1;
                 }
-            }else{
+            } else {
                 getActivity().findViewById(R.id.no_scan).setVisibility(View.VISIBLE);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.d("Wifi", e.getMessage());
         }
-       wifiScanAdapter=new WifiScanAdapter(values,getActivity());
-       recyclerView= (RecyclerView) getActivity().findViewById(R.id.wifiRecyclerView);
-       recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        wifiScanAdapter = new WifiScanAdapter(values, getActivity());
+        recyclerView = (RecyclerView) getActivity().findViewById(R.id.wifiRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(wifiScanAdapter);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkandAskPermission();
@@ -158,45 +163,43 @@ public class WifiFragment extends ParentFragment {
                     device d = new device();
                     d.setName(wifiList.get(netCount).SSID.toString());
                     d.setCapabilities(wifiList.get(netCount).capabilities);
-                    Log.d("WiFi",d.getName().toString());
+                    Log.d("WiFi", d.getName().toString());
                     values.add(d);
                     wifiScanAdapter.notifyDataSetChanged();
-                    netCount=netCount -1;
+                    netCount = netCount - 1;
                     getActivity().findViewById(R.id.no_scan).setVisibility(View.GONE);
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Log.d("Wifi", e.getMessage());
             }
         }
-       btnScan.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
+        btnScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-               wifi.startScan();
-               values.clear();
-               try {
-                   netCount=netCount -1;
-                   while (netCount>=0){
-                       getActivity().findViewById(R.id.no_scan).setVisibility(View.GONE);
-                       device d= new device();
-                       d.setName(wifiList.get(netCount).SSID.toString());
-                       d.setCapabilities(wifiList.get(netCount).capabilities);
-                       values.add(d);
-                       wifiScanAdapter.notifyDataSetChanged();
-                       netCount=netCount -1;
-                   }
-               }
-               catch (Exception e){
-                   Log.d("Wifi", e.getMessage());
-               }
-           }
-       });
+                wifi.startScan();
+                values.clear();
+                try {
+                    netCount = netCount - 1;
+                    while (netCount >= 0) {
+                        getActivity().findViewById(R.id.no_scan).setVisibility(View.GONE);
+                        device d = new device();
+                        d.setName(wifiList.get(netCount).SSID.toString());
+                        d.setCapabilities(wifiList.get(netCount).capabilities);
+                        values.add(d);
+                        wifiScanAdapter.notifyDataSetChanged();
+                        netCount = netCount - 1;
+                    }
+                } catch (Exception e) {
+                    Log.d("Wifi", e.getMessage());
+                }
+            }
+        });
         wifiScanAdapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final device d=(device)v.findViewById(R.id.ssid_name).getTag();
-                Log.d(TAG,"Selected Network is "+d.getName());
+                final device d = (device) v.findViewById(R.id.ssid_name).getTag();
+                Log.d(TAG, "Selected Network is " + d.getName());
 
                 LayoutInflater li = LayoutInflater.from(getContext());
                 View promptsView = li.inflate(R.layout.menuwifi, null);
@@ -205,27 +208,27 @@ public class WifiFragment extends ParentFragment {
                 alertDialogBuilder.setView(promptsView);
                 final EditText userInput = (EditText) promptsView
                         .findViewById(R.id.editTextPassword);
-                TextView ssidText=(TextView)promptsView.findViewById(R.id.textViewSSID);
-                ssidText.setText("Connecting to "+ d.getName());
-                TextView security=(TextView)promptsView.findViewById(R.id.textViewSecurity);
-                security.setText("Security for Network is:\n" +d.getCapabilities());
+                TextView ssidText = (TextView) promptsView.findViewById(R.id.textViewSSID);
+                ssidText.setText("Connecting to " + d.getName());
+                TextView security = (TextView) promptsView.findViewById(R.id.textViewSecurity);
+                security.setText("Security for Network is:\n" + d.getCapabilities());
                 alertDialogBuilder
                         .setCancelable(false)
                         .setPositiveButton("OK",
                                 new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,int id) {
+                                    public void onClick(DialogInterface dialog, int id) {
                                         // get user input and set it to result
                                         // edit text
-                                        Log.d(TAG,"Password is:" + userInput.getText());
-                                        password=userInput.getText().toString();
-                                      //  result.setText(userInput.getText());
-                                        connectWiFi(String.valueOf(d.getName()),password,d.capabilities);
+                                        Log.d(TAG, "Password is:" + userInput.getText());
+                                        password = userInput.getText().toString();
+                                        //  result.setText(userInput.getText());
+                                        connectWiFi(String.valueOf(d.getName()), password, d.capabilities);
 
                                     }
                                 })
                         .setNegativeButton("Cancel",
                                 new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,int id) {
+                                    public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
                                     }
                                 });
@@ -243,24 +246,34 @@ public class WifiFragment extends ParentFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (screen.startsWith("Settings")) {
-            mListener = (Dashboard.OnListFragmentInteractionListener) context;
-
-            mFragListener = (SriVishwa) context;
-
-            activity = (SriVishwa) context;
+        if (screen.equalsIgnoreCase("Settings")) {
+            mFragListener = (OnFragmentInteractionListener) context;
+            mActivity = (SriVishwa) context;
         }
 
     }
+
+//    @Override
+//    public void onAttach(@NonNull Activity context) {
+//        super.onAttach(context);
+//
+//        mListener = (OnFragmentInteractionListener) context;
+//        mFragListener = (SriVishwa) context;
+//
+//        mActivity = (SriVishwa) context;
+//
+//    }
+
 
     @Override
     public void onDetach() {
         super.onDetach();
-        if (screen.startsWith("Settings")) {
-            mListener = null;
-            mFragListener = null;
-        }
+
+      //  mListener = null;
+        mFragListener = null;
+
     }
+
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
@@ -341,7 +354,7 @@ public class WifiFragment extends ParentFragment {
                     REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
             return;
         }
-       // initVideo();
+        // initVideo();
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
@@ -364,7 +377,7 @@ public class WifiFragment extends ParentFragment {
         return true;
     }
 
-    public void connectWiFi(String SSID,String password,String Security) {
+    public void connectWiFi(String SSID, String password, String Security) {
         try {
 
             Log.d(TAG, "Item clicked, SSID " + SSID + " Security : " + Security);
@@ -453,4 +466,6 @@ public class WifiFragment extends ParentFragment {
             e.printStackTrace();
         }
     }
+
+
 }

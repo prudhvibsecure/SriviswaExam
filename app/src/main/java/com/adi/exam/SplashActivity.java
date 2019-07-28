@@ -1,15 +1,25 @@
 
 package com.adi.exam;
 
+import android.app.ActivityManager;
 import android.app.LauncherActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
+import android.graphics.PixelFormat;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +28,7 @@ import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.NetworkInfoAPI;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.dialogfragments.MessageDialog;
+import com.adi.exam.utils.CustomViewGroup;
 import com.adi.exam.utils.PrefUtils;
 import com.adi.exam.utils.TraceUtils;
 import com.adi.exam.utils.Utils;
@@ -45,7 +56,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;*/
 public class SplashActivity extends AppCompatActivity implements IDialogCallbacks {
     private final List blockedKeys = new ArrayList(Arrays.asList(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP));
     private NetworkInfoAPI networkInfoAPI = null;
-
+    public static final int OVERLAY_PERMISSION_REQ_CODE = 4545;
+    protected CustomViewGroup blockingView = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +112,6 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
             }, 5000);
 
         }
-
     }
 
     public NetworkInfoAPI getNetWorkObject() {
