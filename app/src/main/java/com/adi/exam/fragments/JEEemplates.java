@@ -452,7 +452,11 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
                 String res = "";
-                if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+
+                if(jsonObject.optString("answer").equalsIgnoreCase("")) {
+                    res = "2";
+                }
+                else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
                     res = "0";
                 } else {
                     res = "1";
@@ -518,7 +522,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 case R.id.ll_questionno:
 
                     int position = rv_ques_nums.getChildAdapterPosition(v);
-
+                    question_no = position+1;
                     updateQuestionTime();
 
                     showNextQuestion(position);
@@ -561,7 +565,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 case R.id.tv_savenmarkforreview:
 
                     if (currentExamId != -1) {
-
+                        question_no++;
                         int selRatioId = rg_options.getCheckedRadioButtonId();
 
                         if (selRatioId == -1) {
@@ -598,7 +602,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 case R.id.tv_mfrn:
 
                     if (currentExamId != -1) {
-
+                        question_no++;
                         int selRatioId = rg_options.getCheckedRadioButtonId();
 
                         JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);

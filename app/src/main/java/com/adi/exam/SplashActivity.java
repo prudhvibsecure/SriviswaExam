@@ -28,7 +28,7 @@ import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.NetworkInfoAPI;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.dialogfragments.MessageDialog;
-import com.adi.exam.utils.CustomViewGroup;
+
 import com.adi.exam.utils.PrefUtils;
 import com.adi.exam.utils.TraceUtils;
 import com.adi.exam.utils.Utils;
@@ -57,7 +57,7 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
     private final List blockedKeys = new ArrayList(Arrays.asList(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP));
     private NetworkInfoAPI networkInfoAPI = null;
     public static final int OVERLAY_PERMISSION_REQ_CODE = 4545;
-    protected CustomViewGroup blockingView = null;
+    //protected CustomViewGroup blockingView = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
