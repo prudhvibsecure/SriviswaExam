@@ -648,7 +648,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                     if (currentExamId == adapter.getCount())
                         return;
-
+                    question_no++;
                     JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                     if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {

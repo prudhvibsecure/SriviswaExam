@@ -544,7 +544,7 @@ public class App_Table {
                 JSONArray jsonArray = new JSONArray();
                 SQLiteDatabase db = database.getWritableDatabase();
 
-                Cursor cursor = db.rawQuery("SELECT * FROM STUDENTQUESTIONTIME WHERE assignment_id='" + assign_id + "' and student_id='" + student_id + "'",
+                Cursor cursor = db.rawQuery("SELECT * FROM ASSIGNMENTSTUDENTQUESTIONRESULTS WHERE assignment_id='" + assign_id + "' and student_id='" + student_id + "'",
                         null);
 
                 if (cursor != null) {
@@ -564,6 +564,7 @@ public class App_Table {
                             json.put(key, value);
 
                         }
+                        jsonArray.put(json);
 
                     }
                     jsonObject.put("student_question_time", jsonArray);

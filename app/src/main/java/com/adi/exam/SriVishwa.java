@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -333,9 +335,12 @@ public class SriVishwa extends AppCompatActivity
                     break;
 
                 case 2:
-
-                    Intent in = new Intent(this, ExamHistory.class);
-                    startActivity(in);
+                    if (isNetworkAvailable()) {
+                        Intent in = new Intent(this, ExamHistory.class);
+                        startActivity(in);
+                    }else{
+                        Toast.makeText(this, "Please connect your network", Toast.LENGTH_SHORT).show();
+                    }
 
                     break;
 
@@ -348,7 +353,11 @@ public class SriVishwa extends AppCompatActivity
                     break;
 
                 case 4:
-                    showHistoryList();
+                    if (isNetworkAvailable()) {
+                        showHistoryList();
+                    }else{
+                        Toast.makeText(this, "Please connect your network", Toast.LENGTH_SHORT).show();
+                    }
                     break;
 
             }
@@ -628,7 +637,7 @@ public class SriVishwa extends AppCompatActivity
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
                     }
 
-                    if(pf instanceof ChangePassword)
+                    /*if(pf instanceof ChangePassword)
                     {
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
                     }
@@ -636,7 +645,7 @@ public class SriVishwa extends AppCompatActivity
                     if(pf instanceof Subjects)
                     {
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
-                    }
+                    }*/
 
                     if (pf.back())
                         return true;
@@ -1323,5 +1332,35 @@ public class SriVishwa extends AppCompatActivity
         if (!z) {
             sendBroadcast(new Intent("android.intent.action.CLOSE_SYSTEM_DIALOGS"));
         }
+    }
+
+    public void serRefresh() {
+
+        try {
+            ExamList examList = ExamList.newInstance();
+            examList.refresh();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public boolean isNetworkAvailable() {
+
+        ConnectivityManager manager = (ConnectivityManager) this
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) {
+            return false;
+        }
+
+        NetworkInfo net = manager.getActiveNetworkInfo();
+        if (net != null) {
+            if (net.isConnected()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
     }
 }

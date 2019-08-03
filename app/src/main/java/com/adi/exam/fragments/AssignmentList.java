@@ -1,6 +1,8 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import com.adi.exam.adapters.ExamContentListingAdapter;
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.database.App_Table;
+import com.adi.exam.database.Database;
 import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
@@ -100,8 +103,22 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
             checkAssignment();
         }else{
             progressBar.setVisibility(View.GONE);
-            PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
-            phncomp.executeLocalDBInBackground("ASSIGNMENT");
+
+            JSONArray jsonArray = (JSONArray) getAssaignments();
+
+            if (jsonArray.length() > 0) {
+
+                adapterContent.setItems(jsonArray);
+
+                adapterContent.notifyDataSetChanged();
+
+                progressBar.setVisibility(View.GONE);
+
+                //updateOtherDetails(adapterContent.getItems());
+
+            }
+            //PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
+            //phncomp.executeLocalDBInBackground("ASSIGNMENT");
         }
 
         return layout;
@@ -184,7 +201,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                    // JSONObject question_details = jsonObject1.getJSONObject("question_details");
 
-                    String dateTime = jsonObject1.optString("exam_date").trim() + " " + jsonObject1.optString("from_time").trim();
+                   /* String dateTime = jsonObject1.optString("exam_date").trim() + " " + jsonObject1.optString("from_time").trim();
 
                     Date examDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime);
 
@@ -237,14 +254,26 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                         return;
 
                     }
+                    String dateTime1 = jsonObject1.optString("exam_date").trim() + " " + jsonObject1.optString("to_time").trim();
 
-                    if (diff[1] < 0) {
+                    Date examDateTime1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime1);
 
-                        long hoursInSecs = diff[1] * 60 * 60;
+                    Calendar c1 = Calendar.getInstance();
 
-                        long minsInSecs = diff[2] * 60;
+                    SimpleDateFormat df11 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
 
-                        long secInSecs = diff[3];
+                    String formattedDate11 = df11.format(c1.getTime());
+
+                    Date currentDateTime1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(formattedDate11);
+
+                    long[] diff1 = getDifference(examDateTime1,currentDateTime1);//changed here diff
+                    if (diff1[1] < 0) {
+
+                        long hoursInSecs = diff1[1] * 60 * 60;
+
+                        long minsInSecs = diff1[2] * 60;
+
+                        long secInSecs = diff1[3];
 
                         long totalDelay = Math.abs(hoursInSecs) + Math.abs(minsInSecs) + Math.abs(secInSecs);
 
@@ -264,11 +293,11 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                         }
 
-                    } else if (diff[2] < 0) {
+                    } else if (diff1[2] < 0) {
 
-                        long minsInSecs = diff[2] * 60;
+                        long minsInSecs = diff1[2] * 60;
 
-                        long secInSecs = diff[3];
+                        long secInSecs = diff1[3];
 
                         long totalDelay = Math.abs(minsInSecs) + Math.abs(secInSecs);
 
@@ -288,9 +317,9 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                         }
 
-                    } else if (diff[3] < 0) {
+                    } else if (diff1[3] < 0) {
 
-                        long secInSecs = diff[3];
+                        long secInSecs = diff1[3];
 
                         long totalDelay = Math.abs(secInSecs);
 
@@ -310,7 +339,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                         }
 
-                    }
+                    }*/
 
                     activity.showAssignment(jsonObject1.toString());
 
@@ -435,7 +464,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                         }
 
-                        if (adapterContent.getItems().length() > 0) {
+                        /*if (adapterContent.getItems().length() > 0) {
 
                             for (int i = 0; i < jsonArray.length(); i++) {
 
@@ -453,7 +482,21 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                         adapterContent.notifyDataSetChanged();
 
+*/
 
+                        JSONArray jsonArray1 = getAssaignments();
+
+                        if (jsonArray1.length() > 0) {
+
+                            adapterContent.setItems(jsonArray1);
+
+                            adapterContent.notifyDataSetChanged();
+
+                            progressBar.setVisibility(View.GONE);
+
+                            //updateOtherDetails(adapterContent.getItems());
+
+                        }
                     }
 
                 }
@@ -472,6 +515,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                     updateOtherDetails(adapterContent.getItems());
 
                 }
+
             }
 
         } catch (Exception e) {
@@ -626,6 +670,95 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
         return vals;
 
+    }
+
+
+    public JSONArray getAssaignments() {
+
+        Database database = new Database(getActivity());
+
+        SQLiteDatabase db;
+
+        JSONArray array = new JSONArray();
+
+        try {
+            if (database != null) {
+
+                //String cursor_q = "select * from EXAM";
+                String cursor_q = "SELECT * from assignment order by exam_date";
+                db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            if(cursor.moveToFirst()) {
+                                do {
+                                    JSONObject obj = new JSONObject();
+
+                                    obj.put("assignment_id", cursor.getString(cursor.getColumnIndex("assignment_id")));
+                                    obj.put("assignment_name", cursor.getString(cursor.getColumnIndex("assignment_name")));
+                                    obj.put("course", cursor.getString(cursor.getColumnIndex("course")));
+                                    obj.put("course_name", cursor.getString(cursor.getColumnIndex("course_name")));
+                                    obj.put("subject", cursor.getString(cursor.getColumnIndex("subject")));
+                                    obj.put("section", cursor.getString(cursor.getColumnIndex("section")));
+                                    obj.put("lessons", cursor.getString(cursor.getColumnIndex("lessons")));
+                                    obj.put("topics", cursor.getString(cursor.getColumnIndex("topics")));
+                                    obj.put("exam_date", cursor.getString(cursor.getColumnIndex("exam_date")));
+                                    obj.put("from_time", cursor.getString(cursor.getColumnIndex("from_time")));
+                                    obj.put("to_time", cursor.getString(cursor.getColumnIndex("to_time")));
+                                    obj.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
+                                    obj.put("no_of_questions", cursor.getString(cursor.getColumnIndex("no_of_questions")));
+                                    obj.put("marks_per_question", cursor.getString(cursor.getColumnIndex("marks_per_question")));
+                                    obj.put("questions", cursor.getString(cursor.getColumnIndex("questions")));
+                                    obj.put("exam_time", cursor.getString(cursor.getColumnIndex("exam_time")));
+                                    obj.put("duration_sec", cursor.getString(cursor.getColumnIndex("duration_sec")));
+                                    //obj.put("question_details", obj1);
+
+                                    String dateTime = cursor.getString(cursor.getColumnIndex("exam_date")).trim() + " " + cursor.getString(cursor.getColumnIndex("to_time")).trim();
+
+                                    Date examDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime);
+
+                                    Calendar c = Calendar.getInstance();
+
+                                    SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+
+                                    String formattedDate1 = df1.format(c.getTime());
+
+                                    Date currentDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(formattedDate1);
+
+                                    long[] diff = getDifference(currentDateTime, examDateTime);
+
+                                    String edate = cursor.getString(cursor.getColumnIndex("exam_date")).trim();
+                                    String cdate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(c.getTime());
+                                    Date exdate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(edate);
+                                    Date cudate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(cdate);
+
+                                    //array.put(obj);
+
+                                    if(exdate.equals(cudate) || examDateTime.compareTo(currentDateTime)>0) {
+
+                                      /* if(diff[1] > 0 || diff[2] > 0 || diff[3] > 0)
+                                       {*/
+                                        array.put(obj);
+                                        //}
+                                    }
+
+                                } while(cursor.moveToNext());
+                            }
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return array;
     }
 
 }

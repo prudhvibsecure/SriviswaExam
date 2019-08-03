@@ -127,7 +127,7 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
 
             contactViewHolder.iv_iconexamcontent.setImageDrawable(ic1);
 
-           /* String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
+            String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
                     .format(new Date()) // get the current date as String
                     .concat(jsonObject.optString("from_time").trim()
                     );
@@ -144,16 +144,23 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
             Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
             String c_date=df.format(c);
-            if (c_date.equalsIgnoreCase(jsonObject.optString("exam_date").trim())) {
+            if (c_date.equals(jsonObject.optString("exam_date").trim())) {
                 // contactViewHolder.tv_startexam.setEnabled(true);
                 boolean result = inRange(tkl, tk2, time);
                 if (result) {
                     contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+                    contactViewHolder.tv_startexam.setEnabled(true);
+                }else {
+                    contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+                    contactViewHolder.tv_startexam.setEnabled(false);
+                    contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit_disable));
                 }
             }else {
-                contactViewHolder.tv_startexam.setVisibility(View.GONE);
+                contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
+                contactViewHolder.tv_startexam.setEnabled(false);
+                contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit_disable));
                 // contactViewHolder.tv_startexam.setEnabled(false);
-            }*/
+            }
 
         } catch (Exception e) {
 

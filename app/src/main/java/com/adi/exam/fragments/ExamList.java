@@ -108,8 +108,22 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
             checkQuestionPaper();
         } else {
             progressBar.setVisibility(View.GONE);
-            PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
-            phncomp.executeLocalDBInBackground("EXAM");
+           /* PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
+            phncomp.executeLocalDBInBackground("EXAM");*/
+            JSONArray jsonArray =  getExams();
+
+            if (jsonArray.length() > 0) {
+
+                adapterContent.setItems(jsonArray);
+
+                adapterContent.notifyDataSetChanged();
+
+                progressBar.setVisibility(View.GONE);
+
+                //updateOtherDetails(adapterContent.getItems());
+
+            }
+
         }
 
         return layout;
@@ -156,11 +170,9 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                 case R.id.tv_startexam:
                     JSONObject jsonObject1 = adapterContent.getItems().getJSONObject((int) view.getTag());
-
                     App_Table table = new App_Table(activity);
 
                     String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") + "'";
-
                     boolean isRecordExits = table.isRecordExits(iwhereClause, "STUDENTEXAMRESULT");
 
                     if (isRecordExits) {
@@ -171,7 +183,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                     }
 
-                    JSONObject question_details = jsonObject1.getJSONObject("question_details");
+                   /* JSONObject question_details = jsonObject1.getJSONObject("question_details");
 
                     String dateTime = question_details.optString("exam_date").trim() + " " + question_details.optString("from_time").trim();
 
@@ -227,8 +239,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                     }
 
-                    if (diff[1] < 0) {
-
+                    if (diff[1]<0){
                         long hoursInSecs = diff[1] * 60 * 60;
 
                         long minsInSecs = diff[2] * 60;
@@ -237,12 +248,54 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                         long totalDelay = Math.abs(hoursInSecs) + Math.abs(minsInSecs) + Math.abs(secInSecs);
 
-                        long duration_secs = jsonObject1.optLong("duration_sec");//value leaset from total delay
+                        long duration_secs = jsonObject1.optLong("duration_sec");
 
                         long leftOverSeconds = duration_secs - totalDelay;
 
+                        if (leftOverSeconds < 0) {
 
-                        if (leftOverSeconds < 0) { //here getting -value
+                            activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.ethbf));
+
+                            return;
+
+                        } else {
+
+                            jsonObject1.put("duration_sec", leftOverSeconds);
+                            activity.showInstructionsScreen(jsonObject1, true);
+                            return;
+                        }
+
+                    }
+
+                    String dateTime1 = question_details.optString("exam_date").trim() + " " + question_details.optString("to_time").trim();
+
+                    Date examDateTime1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime1);
+
+                    Calendar c1 = Calendar.getInstance();
+
+                    SimpleDateFormat df11 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+
+                    String formattedDate11 = df11.format(c1.getTime());
+
+                    Date currentDateTime1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(formattedDate11);
+
+                    long[] diff1 = getDifference(currentDateTime1,examDateTime1 );
+
+                    if (diff1[1] < 0) {
+
+                        long hoursInSecs = diff1[1] * 60 * 60;
+
+                        long minsInSecs = diff1[2] * 60;
+
+                        long secInSecs = diff1[3];
+
+                        long totalDelay = Math.abs(hoursInSecs) + Math.abs(minsInSecs) + Math.abs(secInSecs);
+
+                        long duration_secs = jsonObject1.optLong("duration_sec");
+
+                        long leftOverSeconds = duration_secs - totalDelay;
+
+                        if (leftOverSeconds < 0) {
 
                             activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.ethbf));
 
@@ -254,11 +307,11 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                         }
 
-                    } else if (diff[2] < 0) {
+                    } else if (diff1[2] < 0) {
 
-                        long minsInSecs = diff[2] * 60;
+                        long minsInSecs = diff1[2] * 60;
 
-                        long secInSecs = diff[3];
+                        long secInSecs = diff1[3];
 
                         long totalDelay = Math.abs(minsInSecs) + Math.abs(secInSecs);
 
@@ -278,9 +331,9 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                         }
 
-                    } else if (diff[3] < 0) {
+                    } else if (diff1[3] < 0) {
 
-                        long secInSecs = diff[3];
+                        long secInSecs = diff1[3];
 
                         long totalDelay = Math.abs(secInSecs);
 
@@ -300,7 +353,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                         }
 
-                    }
+                    }*/
 
                     activity.showInstructionsScreen(jsonObject1, true);
 
@@ -475,7 +528,6 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                             progressBar.setVisibility(View.GONE);
 
                             //updateOtherDetails(adapterContent.getItems());
-
 
                         }
 
@@ -747,5 +799,15 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
     }
 
 
+    public void refresh() throws Exception {
+        JSONObject jsonObject = new JSONObject();
 
+        jsonObject.put("student_id", activity.getStudentDetails().optString("student_id"));
+
+        HTTPPostTask post = new HTTPPostTask(activity, this);
+
+        post.disableProgress();
+
+        post.userRequest(getString(R.string.plwait), 1, "checkqustionpaper", jsonObject.toString());
+    }
 }

@@ -8,7 +8,7 @@ public class Database extends SQLiteOpenHelper {
 
     private final static String APP_DATABASE_NAME = "exam.db";
 
-    private final static int APP_DATABASE_VERSION = 1;
+    private final static int APP_DATABASE_VERSION = 2;
 
     private String CLASS_TABLE = "CREATE TABLE CLASS(class_id INTEGER, branch_name TEXT, year TEXT, course_name TEXT, program_name TEXT, section TEXT, subject Text);";
 
@@ -40,7 +40,7 @@ public class Database extends SQLiteOpenHelper {
 
     private String ASSIGNMENTRESULTS_TABLE = "CREATE TABLE ASSIGNMENTRESULTS(assignment_result_id INTEGER, assignment_id INTEGER, student_id INTEGER, total_questions TEXT, total_questions_attempted TEXT, no_of_correct_answers TEXT, score TEXT)";
 
-    private String ASSIGNMENTSTUDENTQUESTIONRESULTS_TABLE = "CREATE TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS(assignment_student_question_time_id INTEGER, student_id INTEGER, question_id INTEGER, assignment_id INTEGER, given_option TEXT, correct_option TEXT, result TEXT)";
+    private String ASSIGNMENTSTUDENTQUESTIONRESULTS_TABLE = "CREATE TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS(assignment_student_question_time_id INTEGER, student_id INTEGER, question_no INTEGER,question_id INTEGER, assignment_id INTEGER, given_option TEXT, correct_option TEXT, result TEXT,subject TEXT)";
 
     private final String DOWNLOAD_QUEUE = "CREATE TABLE IF NOT EXISTS DOWNLOADQUEUE(material_data_id INTEGER, material_original_name TEXT, material_unique_name TEXT, downloadurl TEXT, downloadstatus TEXT, savedpath TEXT, mimetype TEXT, errorMsg TEXT);";
 
@@ -71,7 +71,12 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onCreate(db);
+
+        if (newVersion>oldVersion){
+            db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN question_no INTEGER DEFAULT 0");
+            db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN subject TEXT");
+        }
+       // onCreate(db);
     }
 
 }

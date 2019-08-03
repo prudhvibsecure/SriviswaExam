@@ -1,10 +1,17 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,15 +22,18 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adi.exam.ExamHistory;
 import com.adi.exam.R;
 import com.adi.exam.SriVishwa;
 import com.adi.exam.adapters.AssignmentHistoryAdapter;
 import com.adi.exam.adapters.AssignmentListingAdapter;
 import com.adi.exam.adapters.MaterialAdapter;
+import com.adi.exam.common.AppPreferences;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.utils.TraceUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AssignmentHistory extends ParentFragment implements View.OnClickListener {
@@ -35,6 +45,15 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
     private SriVishwa activity;
     private View layout;
     private RecyclerView mRecyclerView;
+
+    private String student_id;
+
+    private WebView wv_content = null;
+
+    private WebSettings webSettings = null;
+
+    private JSONObject studentdetails;
+
     public AssignmentHistory() {
         // Required empty public constructor
     }
@@ -76,8 +95,56 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        layout = inflater.inflate(R.layout.fragment_examlist, container, false);
-        table = new App_Table(getActivity());
+        layout = inflater.inflate(R.layout.fragment_assign_history, container, false);
+
+        /*if (getActivity().getSupportActionBar() != null) {
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        }*/
+
+        try {
+
+            studentdetails = new JSONObject(AppPreferences.getInstance(getActivity()).getFromStore("studentDetails"));
+
+            student_id = studentdetails.optString("student_id");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        wv_content = (WebView)layout.findViewById(R.id.webview);
+        wv_content.loadUrl("https://bsecuresoftechsolutions.com/viswa/analysis/assignment?student_id="+student_id);
+        wv_content.getSettings().setAllowFileAccess(true);
+        wv_content.getSettings().setSupportZoom(true);
+        wv_content.setVerticalScrollBarEnabled(true);
+        wv_content.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        wv_content.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
+        wv_content.getSettings().setLoadWithOverviewMode(true);
+        wv_content.getSettings().setUseWideViewPort(true);
+        wv_content.getSettings().setJavaScriptEnabled(true);
+        wv_content.getSettings().setPluginState(WebSettings.PluginState.ON);
+
+        wv_content.getSettings().setSaveFormData(false);
+        wv_content.getSettings().setSavePassword(false);
+
+        wv_content.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        wv_content.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+        wv_content.setWebViewClient(new AssignmentHistory.MyWebViewClient());
+        wv_content.setWebChromeClient(new AssignmentHistory.MyWebChromeClient());
+
+        wv_content.getSettings().setJavaScriptEnabled(true);
+        wv_content.getSettings().setLoadWithOverviewMode(true);
+        wv_content.getSettings().setUseWideViewPort(true);
+
+        webSettings = wv_content.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setBuiltInZoomControls(true);
+        /*table = new App_Table(getActivity());
         progressBar = layout.findViewById(R.id.pb_content_bar);
 
         tv_content_txt = layout.findViewById(R.id.tv_content_txt);
@@ -103,7 +170,7 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
         rv_content_list.setAdapter(adapterContent);
 
         checkAssignment();
-
+*/
         return layout;
     }
 
@@ -163,6 +230,62 @@ public class AssignmentHistory extends ParentFragment implements View.OnClickLis
 
         mListener.onFragmentInteraction(activity.getString(R.string.asn_history), false);
 
+    }
+
+    private class MyWebChromeClient extends WebChromeClient {
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+
+            // Log.e("-=-=-=-=-=-", newProgress + "");
+
+            if (newProgress == 5)
+                layout.findViewById(R.id.pb_allpg).setVisibility(View.VISIBLE);
+
+            if (newProgress >= 95) {
+                layout.findViewById(R.id.pb_allpg).setVisibility(View.GONE);
+            }
+            super.onProgressChanged(view, newProgress);
+        }
+
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            return super.onJsAlert(view, url, message, result);
+        }
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            layout.findViewById(R.id.pb_allpg).setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+        }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+
+                getActivity().finish();
+
+                break;
+
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

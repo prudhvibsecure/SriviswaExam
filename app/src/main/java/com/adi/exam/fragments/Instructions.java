@@ -396,6 +396,8 @@ public class Instructions extends ParentFragment implements View.OnClickListener
 
             clearCookies(activity);
 
+            activity.serRefresh();
+
             wv_instructions.clearMatches();
 
             wv_instructions.clearSslPreferences();

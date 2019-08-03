@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -84,11 +85,13 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
     private TextView tv_timer;
     private JSONObject json;
-
+    private int check = 0;
+    private long timeTaken4Question = 0;
     private FileOutputStream fos = null;
-
+    private Date edate, sdate;
+    private int question_no = 0;
     private static final String FILE_NAME = System.currentTimeMillis()+"_assign_Result.txt";
-
+    TabLayout tl_subjects;
     public Assignment() {
         // Required empty public constructor
     }
@@ -171,56 +174,8 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
         layout.findViewById(R.id.tv_next).setOnClickListener(this);
 
-        TabLayout tl_subjects = layout.findViewById(R.id.tl_subjects);
+        tl_subjects= layout.findViewById(R.id.tl_subjects);
 
-        tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-
-                int tabPosition = tab.getPosition();
-
-                if (tabPosition == 0) {
-
-                    showNextQuestion(0);
-
-                    return;
-
-                }
-
-                String noOfQuestions = data.optString("no_of_questions");
-
-                if (noOfQuestions.contains(",")) {
-
-                    String temp1[] = noOfQuestions.split(",");
-
-                    int questionIndex = 0;
-
-                    for (int i = 0; i < tabPosition; i++) {
-
-                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
-
-                    }
-
-                    //questionIndex = questionIndex+1;
-
-                    showNextQuestion(questionIndex);
-
-                }
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-
-        });
 
         adapter = new QuestionNumberListingAdapter(activity);
 
@@ -275,7 +230,57 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             tl_subjects.addTab(tl_subjects.newTab().setCustomView(textView));
 
         }
+        tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                int tabPosition = tab.getPosition();
+
+                if (tabPosition == 0) {
+
+                    updateQuestionTime();
+
+                    showNextQuestion(0);
+
+                    return;
+
+                }
+
+                String noOfQuestions = data.optString("no_of_questions");
+
+                if (noOfQuestions.contains(",")) {
+
+                    String temp1[] = noOfQuestions.split(",");
+
+                    int questionIndex = 0;
+
+                    for (int i = 0; i < tabPosition; i++) {
+
+                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                    }
+
+                    updateQuestionTime();
+
+                    showNextQuestion(questionIndex);
+
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+        });
+        sdate = new Date();
         //  showTimer((data.optInt("duration") * 60 * 60 * 1000));
         showTimer((data.optInt("duration_sec") * 1000));
 
@@ -318,7 +323,8 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                 case R.id.ll_questionno:
 
                     int position = rv_ques_nums.getChildAdapterPosition(v);
-
+                    question_no = position+1;
+                    updateQuestionTime();
                     showNextQuestion(position);
 
                     break;
@@ -326,6 +332,8 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                 case R.id.tv_savennext:
 
                     if (currentExamId != -1) {
+
+                        question_no++;
 
                         int selRatioId = rg_options.getCheckedRadioButtonId();
 
@@ -351,7 +359,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                         } else if (selRatioId == R.id.rb_fourth) {
                             jsonObject.put("qanswer", "d");
                         }*/
-
+                        updateQuestionTime();
                         adapter.notifyItemChanged(currentExamId);
 
                         rg_options.clearCheck();
@@ -375,7 +383,8 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                     if (currentExamId == 0)
                         return;
-
+                    question_no--;
+                    updateQuestionTime();
                     showNextQuestion(currentExamId - 1);
 
                     break;
@@ -390,7 +399,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                     if (currentExamId == adapter.getCount())
                         return;
-
+                    question_no++;
                     JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                     if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {
@@ -398,7 +407,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                         jsonObject.put("qstate", 1);
 
                     }
-
+                    updateQuestionTime();
                     adapter.notifyItemChanged(currentExamId);
 
                     showNextQuestion(currentExamId + 1);
@@ -414,7 +423,81 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
         }
 
     }
+    private void updateQuestionTime() {
 
+        edate = new Date();
+
+        Long minutes = ((edate.getTime()- sdate.getTime())/(60*1000)) * 60;
+        timeTaken4Question = minutes + (edate.getTime()- sdate.getTime())/1000;
+
+        sdate = edate;
+        edate = null;
+
+
+        try {
+
+            if (currentExamId != -1) {
+
+                App_Table table = new App_Table(activity);
+
+                JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
+
+                String iwhereClause = "assignment_id = '" + data.optString("assignment_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "'";
+
+                JSONArray jsonArray = table.getRecords(iwhereClause, "ASSIGNMENTSTUDENTQUESTIONRESULTS");
+
+                if (jsonArray.length() > 0) {
+
+                    long timeTaken = 0;
+
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(jsonArray.length() - 1);
+
+
+                    iwhereClause = "assignment_id = '" + data.optString("assignment_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND assignment_student_question_time_id = '" + jsonObject1.optInt("assignment_student_question_time_id") + "'";
+
+                    table.checkNInsertARecord(jsonObject1, "ASSIGNMENTSTUDENTQUESTIONRESULTS", iwhereClause);
+
+                    return;
+                }
+
+                // {"question_id":"827","topic_id":"51","topic_name":"To find equations of locus - Problems connected to it","question_name":"5841.PNG","question_name1":"NULL","question_name2":"NULL","question_name3":"NULL","option_a":"5842.PNG","option_b":"5843.PNG","option_c":"5844.PNG","option_d":"5845.PNG","answer":"c","solution1":"6301.PNG","solution2":"NULL","solution3":"NULL","solution4":"NULL","difficulty":"0.0","status":"1.0","qstate":2,"qanswer":"a","sno":1}
+                // {"exam_id":"4","exam_name":"JEE Test Exam","course":"1","subjects":"Mathematics,Physics,Chemistry","no_of_questions":"15,15,15","marks_per_question":"1","negative_marks":"0.25","duration":"2","question_details":{"question_paper_id":"34","exam_id":"4","exam_date":"07\/08\/2019","from_time":"08:00 AM","to_time":"10:00 AM","subjects":"Mathematics 1A,Mathematics 1B,Physics","topicids":"1,2,3,4,5,6,7,8,9,10,11,12,13,51,52,54,56,57,58,59,60,61,62,63,64,683,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116"}}
+
+                int student_question_time_id = AppPreferences.getInstance(activity).getIntegerFromStore("assignment_student_question_time_id");
+
+                AppPreferences.getInstance(activity).addIntegerToStore("assignment_student_question_time_id", ++student_question_time_id, false);
+
+                JSONObject questionTimeObject = new JSONObject();
+
+                questionTimeObject.put("assignment_student_question_time_id", student_question_time_id);
+                questionTimeObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
+                questionTimeObject.put("question_no", question_no);
+                questionTimeObject.put("assignment_id", data.optString("assignment_id"));
+                questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
+                questionTimeObject.put("subject", ((TextView) (tl_subjects.getTabAt(tl_subjects.getSelectedTabPosition()).getCustomView())).getText().toString());
+                questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
+                questionTimeObject.put("correct_option", jsonObject.optString("answer"));
+                String res = "";
+                if(jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+                    res = "0";
+                }
+                else {
+                    res = "1";
+                }
+                questionTimeObject.put("result", res );
+                table.insertSingleRecords(questionTimeObject, "ASSIGNMENTSTUDENTQUESTIONRESULTS");
+                check=0;
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+
+    }
     private void showNextQuestion(int position) {
 
         try {
@@ -856,7 +939,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 //            backup_result.put("student_question_time",array);
             try {
                 fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
-                fos.write(backup_result.toString().getBytes());
+                fos.write(json.toString().getBytes());
             }catch (Exception e){
                 TraceUtils.logException(e);
             }
