@@ -33,31 +33,27 @@ import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
 import com.adi.exam.database.App_Table;
-import com.adi.exam.database.Database;
 import com.adi.exam.dialogfragments.AppUpdateDialog;
 import com.adi.exam.dialogfragments.ExitDialog;
 import com.adi.exam.dialogfragments.MessageDialog;
-
 import com.adi.exam.fragments.AIIMSemplates;
 import com.adi.exam.fragments.AllQuestions;
 import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
 import com.adi.exam.fragments.AssignmentHistory;
 import com.adi.exam.fragments.AssignmentList;
-import com.adi.exam.fragments.BITSATTemplates;
 import com.adi.exam.fragments.ChangePassword;
 import com.adi.exam.fragments.Dashboard;
 import com.adi.exam.fragments.ExamList;
 import com.adi.exam.fragments.ExamSubmitConfirmationPage;
 import com.adi.exam.fragments.ExamTemplates;
 import com.adi.exam.fragments.Instructions;
-
 import com.adi.exam.fragments.JEEemplates;
 import com.adi.exam.fragments.JIPMERSemplates;
 import com.adi.exam.fragments.KVPYTemplates;
 import com.adi.exam.fragments.Lessons;
 import com.adi.exam.fragments.Materials;
-
+import com.adi.exam.fragments.NEETemplates;
 import com.adi.exam.fragments.ParentFragment;
 import com.adi.exam.fragments.ResultsPage;
 import com.adi.exam.fragments.Subjects;
@@ -66,7 +62,6 @@ import com.adi.exam.fragments.WiFiSettingsInApp;
 import com.adi.exam.fragments.WifiFragment;
 import com.adi.exam.services.ApkFileDownloader;
 import com.adi.exam.tasks.HTTPPostTask;
-import com.adi.exam.utils.PrefUtils;
 import com.adi.exam.utils.TraceUtils;
 import com.adi.exam.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
@@ -253,7 +248,8 @@ public class SriVishwa extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
 
             AppPreferences.getInstance(this).clearSharedPreferences(true);
-            SriVishwa.this.finish();
+            //SriVishwa.this.finish();
+            startActivity(new Intent(SriVishwa.this,LoginActivity.class));
 
         } else if (id == R.id.nav_changepwd) {
 
@@ -344,8 +340,10 @@ public class SriVishwa extends AppCompatActivity
                     break;
 
                 case 3:
+                    if (checkPermission("android.permission.READ_EXTERNAL_STORAGE", 100) == 1) {
 
-                    showAssignmentList();
+                        showAssignmentList();
+                    }
 
                     break;
 
@@ -580,6 +578,31 @@ public class SriVishwa extends AppCompatActivity
 
                     ParentFragment pf = fragStack.peek();
 
+                    if(pf instanceof JEEemplates)
+                    {
+                        return true;
+                    }
+
+                    if(pf instanceof NEETemplates)
+                    {
+                        return true;
+                    }
+
+                    if(pf instanceof JIPMERSemplates)
+                    {
+                        return true;
+                    }
+
+                    if(pf instanceof AIIMSemplates)
+                    {
+                        return true;
+                    }
+
+                    if(pf instanceof KVPYTemplates)
+                    {
+                        return true;
+                    }
+
                     if(pf instanceof ExamTemplates)
                     {
                         return true;
@@ -590,10 +613,21 @@ public class SriVishwa extends AppCompatActivity
                         return true;
                     }
 
+                    if(pf instanceof ExamSubmitConfirmationPage)
+                    {
+                        return true;
+                    }
+
                     if(pf instanceof AssignResultsPage)
                     {
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
                     }
+
+                    if(pf instanceof ResultsPage)
+                    {
+                        startActivity(new Intent(SriVishwa.this, SriVishwa.class));
+                    }
+
                     if(pf instanceof ChangePassword)
                     {
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
@@ -603,8 +637,6 @@ public class SriVishwa extends AppCompatActivity
                     {
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
                     }
-
-
 
                     if (pf.back())
                         return true;

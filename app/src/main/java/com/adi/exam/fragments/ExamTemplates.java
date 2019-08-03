@@ -953,7 +953,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             }else if (requestId == 3) {
                 JSONObject obj = new JSONObject(results.toString());
                 if (obj.optString("statuscode").equalsIgnoreCase("200")) {
-                    activity.onKeyDown(4, null);
+                   // activity.onKeyDown(4, null);
 //                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
                 } else {
                     activity.onKeyDown(4, null);
@@ -1234,6 +1234,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             }
 
             public void onFinish() {
+                showResults();
                 tv_timer.setText("00:00:00");
             }
 

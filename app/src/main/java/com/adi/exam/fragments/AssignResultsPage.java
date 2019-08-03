@@ -130,7 +130,10 @@ public class AssignResultsPage extends ParentFragment implements IItemHandler, V
         tv_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(activity, SriVishwa.class));
+
+                Intent intent = new Intent(getActivity(), SriVishwa.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
 

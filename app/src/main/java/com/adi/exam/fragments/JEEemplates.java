@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -453,10 +454,10 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
                 String res = "";
 
-                if(jsonObject.optString("answer").equalsIgnoreCase("")) {
+
+                if (TextUtils.isEmpty(jsonObject.optString("answer"))){
                     res = "2";
-                }
-                else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+                }else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
                     res = "0";
                 } else {
                     res = "1";
@@ -530,6 +531,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     break;
 
                 case R.id.tv_savennext:
+
 
                     if (currentExamId != -1) {
                         question_no++;
@@ -630,7 +632,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                     if (currentExamId == 0)
                         return;
-
+                    question_no--;
                     updateQuestionTime();
 
                     showNextQuestion(currentExamId - 1);
@@ -950,10 +952,10 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             } else if (requestId == 3) {
                 JSONObject obj = new JSONObject(results.toString());
                 if (obj.optString("statuscode").equalsIgnoreCase("200")) {
-                    activity.onKeyDown(4, null);
+                   // activity.onKeyDown(4, null);
 //                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
                 } else {
-                    activity.onKeyDown(4, null);
+                    //activity.onKeyDown(4, null);
                 }
             }
 
@@ -1125,6 +1127,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             JSONObject STUDENTEXAMRESULT = new JSONObject();
             JSONObject backup_result = new JSONObject();
 
+            //double x = System.currentTimeMillis();
             int student_exam_result_id = AppPreferences.getInstance(activity).getIntegerFromStore("student_exam_result_id");
 
             AppPreferences.getInstance(activity).addIntegerToStore("student_exam_result_id", ++student_exam_result_id, false);
@@ -1230,6 +1233,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             }
 
             public void onFinish() {
+                showResults();
                 tv_timer.setText("00:00:00");
             }
 

@@ -1,6 +1,8 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,11 +96,36 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
         rv_content_list.setAdapter(adapterContent);
 
-        checkAssignment();
+        if (isNetworkAvailable()) {
+            checkAssignment();
+        }else{
+            progressBar.setVisibility(View.GONE);
+            PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
+            phncomp.executeLocalDBInBackground("ASSIGNMENT");
+        }
 
         return layout;
     }
+    public boolean isNetworkAvailable() {
 
+        ConnectivityManager manager = (ConnectivityManager) getActivity()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) {
+            return false;
+        }
+
+        NetworkInfo net = manager.getActiveNetworkInfo();
+        if (net != null) {
+            if (net.isConnected()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+    }
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -431,6 +458,20 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                 }
 
+            }else if (requestId==3){
+                JSONArray jsonArray = (JSONArray) results;
+
+                if (jsonArray.length() > 0) {
+
+                    adapterContent.setItems(jsonArray);
+
+                    adapterContent.notifyDataSetChanged();
+
+                    progressBar.setVisibility(View.GONE);
+
+                    updateOtherDetails(adapterContent.getItems());
+
+                }
             }
 
         } catch (Exception e) {

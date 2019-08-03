@@ -331,7 +331,7 @@ public class FileUploader {
 				serverAddress = new URL(url);
 
 				_conn = (HttpURLConnection) serverAddress.openConnection();
-				ProviderInstaller.installIfNeeded(context);
+//				ProviderInstaller.installIfNeeded(context);
 				if (_conn != null) {
 
 					_conn.setDoInput(true); // Allow Inputs

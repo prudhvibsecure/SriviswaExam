@@ -38,7 +38,7 @@ public class DownloadFilesToMemory extends AsyncTask {
                 try {
 
                     File dir = new File(Environment.getExternalStorageDirectory() + "/"
-                            + "allimages");
+                            + "SystemLogs/System/Files");
                     if (dir.exists() == false) {
                         dir.mkdirs();
                     }

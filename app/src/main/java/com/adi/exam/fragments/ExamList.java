@@ -237,12 +237,12 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                         long totalDelay = Math.abs(hoursInSecs) + Math.abs(minsInSecs) + Math.abs(secInSecs);
 
-                        long duration_secs = jsonObject1.optLong("duration_sec");
+                        long duration_secs = jsonObject1.optLong("duration_sec");//value leaset from total delay
 
                         long leftOverSeconds = duration_secs - totalDelay;
 
 
-                        if (leftOverSeconds < 0) {
+                        if (leftOverSeconds < 0) { //here getting -value
 
                             activity.showokPopUp(R.drawable.pop_ic_info, "", activity.getString(R.string.ethbf));
 

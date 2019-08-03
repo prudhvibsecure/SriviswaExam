@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,6 +33,8 @@ import com.adi.exam.dialogfragments.MessageDialog;
 import com.adi.exam.utils.PrefUtils;
 import com.adi.exam.utils.TraceUtils;
 import com.adi.exam.utils.Utils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -66,7 +69,7 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         setContentView(R.layout.activity_splashscreen);
-        PrefUtils.setKioskModeActive(true, getApplicationContext());
+        PrefUtils.setKioskModeActive(false, getApplicationContext());
         String networkType = getNetWorkObject().execute("getConnectionInfo");
 
         /*if (networkType.equalsIgnoreCase("none")) {
