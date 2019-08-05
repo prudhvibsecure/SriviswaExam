@@ -33,6 +33,7 @@ import com.adi.exam.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
     private int iCounter = 0;
 
     private long time = 0;
+
+    private  long left_over_time=0;
 
     public ExamList() {
         // Required empty public constructor
@@ -110,7 +113,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
             progressBar.setVisibility(View.GONE);
            /* PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
             phncomp.executeLocalDBInBackground("EXAM");*/
-            JSONArray jsonArray =  getExams();
+            JSONArray jsonArray = getExams();
 
             if (jsonArray.length() > 0) {
 
@@ -182,7 +185,24 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                         return;
 
                     }
+                    JSONObject question_details = jsonObject1.getJSONObject("question_details");
+                    String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
+                            .format(new Date()) // get the current date as String
+                            .concat(question_details.optString("from_time").trim()
+                            );
+                    DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+                    Date date1 = (Date) formatter.parse(timestamp);
 
+                    long duration_secs = jsonObject1.optLong("duration_sec");
+                    long current_time = System.currentTimeMillis();//current time
+                    long from_time = date1.getTime();// from time
+
+                    if (from_time < current_time) {
+                        long left_time = current_time - from_time;
+                        left_over_time=((duration_secs*1000)-left_time)/1000;
+
+                    }
+                    jsonObject1.put("duration_sec", left_over_time);
                    /* JSONObject question_details = jsonObject1.getJSONObject("question_details");
 
                     String dateTime = question_details.optString("exam_date").trim() + " " + question_details.optString("from_time").trim();
@@ -517,7 +537,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                         phncomp.executeLocalDBInBackground("EXAM");*/
 
 
-                        JSONArray jsonArray = (JSONArray) getExams();
+                        JSONArray jsonArray = getExams();
 
                         if (jsonArray.length() > 0) {
 
@@ -730,8 +750,8 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                 try {
                     if (null != cursor)
                         if (cursor.getCount() > 0) {
-                            if(cursor.moveToFirst()) {
-                               do {
+                            if (cursor.moveToFirst()) {
+                                do {
                                     JSONObject obj = new JSONObject();
 
                                     obj.put("exam_id", cursor.getString(cursor.getColumnIndex("exam_id")));
@@ -753,36 +773,36 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                                     obj1.put("topicids", cursor.getString(cursor.getColumnIndex("topicids")));
                                     obj.put("question_details", obj1);
 
-                                   String dateTime = cursor.getString(cursor.getColumnIndex("exam_date")).trim() + " " + cursor.getString(cursor.getColumnIndex("to_time")).trim();
+                                    String dateTime = cursor.getString(cursor.getColumnIndex("exam_date")).trim() + " " + cursor.getString(cursor.getColumnIndex("to_time")).trim();
 
-                                   Date examDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime);
+                                    Date examDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(dateTime);
 
-                                   Calendar c = Calendar.getInstance();
+                                    Calendar c = Calendar.getInstance();
 
-                                   SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+                                    SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
 
-                                   String formattedDate1 = df1.format(c.getTime());
+                                    String formattedDate1 = df1.format(c.getTime());
 
-                                   Date currentDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(formattedDate1);
+                                    Date currentDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).parse(formattedDate1);
 
-                                   long[] diff = getDifference(currentDateTime, examDateTime);
+                                    long[] diff = getDifference(currentDateTime, examDateTime);
 
-                                   String edate = cursor.getString(cursor.getColumnIndex("exam_date")).trim();
-                                   String cdate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(c.getTime());
-                                   Date exdate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(edate);
-                                   Date cudate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(cdate);
+                                    String edate = cursor.getString(cursor.getColumnIndex("exam_date")).trim();
+                                    String cdate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(c.getTime());
+                                    Date exdate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(edate);
+                                    Date cudate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).parse(cdate);
 
-                                   //array.put(obj);
+                                    //array.put(obj);
 
-                                   if(exdate.equals(cudate) || examDateTime.compareTo(currentDateTime)>0) {
+                                    if (exdate.equals(cudate) || examDateTime.compareTo(currentDateTime) > 0) {
 
                                       /* if(diff[1] > 0 || diff[2] > 0 || diff[3] > 0)
                                        {*/
-                                           array.put(obj);
-                                       //}
-                                   }
+                                        array.put(obj);
+                                        //}
+                                    }
 
-                                } while(cursor.moveToNext());
+                                } while (cursor.moveToNext());
                             }
                         }
                     cursor.close();

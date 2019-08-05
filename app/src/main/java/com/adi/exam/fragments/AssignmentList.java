@@ -34,6 +34,7 @@ import com.adi.exam.utils.TraceUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,6 +55,8 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
     private AssignmentListingAdapter adapterContent;
 
     private int iCounter = 0;
+
+    private long left_over_time=0;
 
     public AssignmentList() {
         // Required empty public constructor
@@ -198,6 +201,25 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                         return;
 
                     }
+
+                    JSONObject question_details = jsonObject1.getJSONObject("question_details");
+                    String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
+                            .format(new Date()) // get the current date as String
+                            .concat(question_details.optString("from_time").trim()
+                            );
+                    DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+                    Date date1 = (Date) formatter.parse(timestamp);
+
+                    long duration_secs = jsonObject1.optLong("duration_sec");
+                    long current_time = System.currentTimeMillis();//current time
+                    long from_time = date1.getTime();// from time
+
+                    if (from_time < current_time) {
+                        long left_time = current_time - from_time;
+                        left_over_time=((duration_secs*1000)-left_time)/1000;
+
+                    }
+                    jsonObject1.put("duration_sec", left_over_time);
 
                    // JSONObject question_details = jsonObject1.getJSONObject("question_details");
 
@@ -376,7 +398,9 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
             JSONObject object = new JSONObject(AppPreferences.getInstance(getActivity()).getFromStore("studentDetails"));
 
             JSONObject sobj = new JSONObject();
+
             sobj.put("course",object.optString("program_name"));
+
             sobj.put("section",object.optString("section"));
 
             post.userRequest(getString(R.string.plwait), 1, "checkassignment", sobj.toString() /*"{\"course\":\"JEE MAINS\",\"section\":\"201\"}"*//*jsonObject.toString()*/);
@@ -483,19 +507,20 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                         adapterContent.notifyDataSetChanged();
 
 */
+                        if (adapterContent.getItems().length() > 0) {
+                            JSONArray jsonArray1 = getAssaignments();
 
-                        JSONArray jsonArray1 = getAssaignments();
+                            if (jsonArray1.length() > 0) {
 
-                        if (jsonArray1.length() > 0) {
+                                adapterContent.setItems(jsonArray1);
 
-                            adapterContent.setItems(jsonArray1);
+                                adapterContent.notifyDataSetChanged();
 
-                            adapterContent.notifyDataSetChanged();
+                                progressBar.setVisibility(View.GONE);
 
-                            progressBar.setVisibility(View.GONE);
+                                //updateOtherDetails(adapterContent.getItems());
 
-                            //updateOtherDetails(adapterContent.getItems());
-
+                            }
                         }
                     }
 
@@ -512,7 +537,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                     progressBar.setVisibility(View.GONE);
 
-                    updateOtherDetails(adapterContent.getItems());
+                  //  updateOtherDetails(adapterContent.getItems());
 
                 }
 

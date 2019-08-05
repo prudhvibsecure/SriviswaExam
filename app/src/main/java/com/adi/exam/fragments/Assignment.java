@@ -323,8 +323,11 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                 case R.id.ll_questionno:
 
                     int position = rv_ques_nums.getChildAdapterPosition(v);
+
                     question_no = position+1;
+
                     updateQuestionTime();
+
                     showNextQuestion(position);
 
                     break;
@@ -360,6 +363,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                             jsonObject.put("qanswer", "d");
                         }*/
                         updateQuestionTime();
+                        int size=adapter.getItemCount();
                         adapter.notifyItemChanged(currentExamId);
 
                         rg_options.clearCheck();
@@ -383,8 +387,11 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                     if (currentExamId == 0)
                         return;
+
                     question_no--;
+
                     updateQuestionTime();
+
                     showNextQuestion(currentExamId - 1);
 
                     break;
@@ -399,7 +406,9 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                     if (currentExamId == adapter.getCount())
                         return;
+
                     question_no++;
+
                     JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                     if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {
@@ -408,6 +417,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                     }
                     updateQuestionTime();
+
                     adapter.notifyItemChanged(currentExamId);
 
                     showNextQuestion(currentExamId + 1);
