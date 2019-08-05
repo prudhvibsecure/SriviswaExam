@@ -163,6 +163,8 @@
 
     <string name="sn">Section Name</string>
 
+    <string name="en">Exam Name</string>
+
     <string name="noq">No of Questions</string>
 
     <string name="aysywtsffmncwbaas">Are you sure you want to submit for final marking? \n No changes will be allowed after submission. </string>

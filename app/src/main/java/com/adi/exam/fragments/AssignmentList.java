@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -116,6 +117,10 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                 //updateOtherDetails(adapterContent.getItems());
 
+            }
+            else
+            {
+                Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
             }
             //PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
             //phncomp.executeLocalDBInBackground("ASSIGNMENT");
@@ -430,6 +435,9 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                             return;
 
+                        } else
+                        {
+                            Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -496,6 +504,10 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                             //updateOtherDetails(adapterContent.getItems());
 
+                        }
+                        else
+                        {
+                            Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                         }
                     }
 

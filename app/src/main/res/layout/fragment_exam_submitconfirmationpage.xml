@@ -33,7 +33,7 @@
                     android:background="@android:color/white"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
-                    android:text="@string/sn"
+                    android:text="@string/en"
                     android:textColor="@color/gray"
                     android:textSize="12sp"
                     android:textStyle="bold"
