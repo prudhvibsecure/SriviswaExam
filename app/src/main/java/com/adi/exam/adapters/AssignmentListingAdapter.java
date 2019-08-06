@@ -150,6 +150,7 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
                 if (result) {
                     contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                     contactViewHolder.tv_startexam.setEnabled(true);
+                    contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit));
                 }else {
                     contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                     contactViewHolder.tv_startexam.setEnabled(false);

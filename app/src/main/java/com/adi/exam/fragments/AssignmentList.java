@@ -207,10 +207,18 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                     }
 
-                    JSONObject question_details = jsonObject1.getJSONObject("question_details");
+                   /* JSONObject question_details = jsonObject1.getJSONObject("question_details");
                     String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
                             .format(new Date()) // get the current date as String
                             .concat(question_details.optString("from_time").trim()
+                            );
+                    DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+                    Date date1 = (Date) formatter.parse(timestamp);*/
+
+                    //JSONObject question_details = jsonObject1.getJSONObject("question_details");
+                    String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
+                            .format(new Date()) // get the current date as String
+                            .concat(jsonObject1.optString("from_time").trim()
                             );
                     DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
                     Date date1 = (Date) formatter.parse(timestamp);
@@ -221,7 +229,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                     if (from_time < current_time) {
                         long left_time = current_time - from_time;
-                        left_over_time=((duration_secs*1000)-left_time)/1000;
+                        left_over_time=duration_secs-(left_time/1000);
 
                     }
                     jsonObject1.put("duration_sec", left_over_time);
@@ -459,13 +467,12 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                             return;
 
-                        } else
-                        {
-                            Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                         }
 
                     }
 
+                }else {
+                    Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                 }
 
                 progressBar.setVisibility(View.GONE);
@@ -515,7 +522,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                         adapterContent.notifyDataSetChanged();
 
 */
-                        if (adapterContent.getItems().length() > 0) {
+                      //  if (adapterContent.getItems().length() > 0) {
                             JSONArray jsonArray1 = getAssaignments();
 
                             if (jsonArray1.length() > 0) {
@@ -529,9 +536,8 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
                                 //updateOtherDetails(adapterContent.getItems());
 
                             }
-                        }
-                        else
-                        {
+                       // }
+                        else {
                             Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                         }
                     }

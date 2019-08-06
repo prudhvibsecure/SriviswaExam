@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -182,13 +183,13 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                     String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") + "'";
                     boolean isRecordExits = table.isRecordExits(iwhereClause, "STUDENTEXAMRESULT");
 
-                    if (isRecordExits) {
-
-                        activity.showokPopUp(R.drawable.pop_ic_failed, "", activity.getString(R.string.yhadwte));
-
-                        return;
-
-                    }
+//                    if (isRecordExits) {
+//
+//                        activity.showokPopUp(R.drawable.pop_ic_failed, "", activity.getString(R.string.yhadwte));
+//
+//                        return;
+//
+//                    }
                     JSONObject question_details = jsonObject1.getJSONObject("question_details");
                     String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
                             .format(new Date()) // get the current date as String
@@ -203,7 +204,15 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                     if (from_time < current_time) {
                         long left_time = current_time - from_time;
-                        left_over_time=((duration_secs*1000)-left_time)/1000;
+
+//                        DateFormat dateFormat2 = new SimpleDateFormat("hh:mm");
+//                        String dateString2 = dateFormat2.format();
+//                        Log.e("current time",dateString2);
+//                        String []time_array1=dateString2.split(":");
+//                        long tt2=Integer.parseInt(time_array1[0])*3600+Integer.parseInt(time_array1[1])*60;
+
+                        left_over_time=duration_secs-(left_time/1000);
+
 
                     }
                     jsonObject1.put("duration_sec", left_over_time);
