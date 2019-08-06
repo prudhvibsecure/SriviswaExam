@@ -11,13 +11,22 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
+import com.adi.exam.callbacks.IFileUploadCallback;
+import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
+import com.adi.exam.common.AppSettings;
+import com.adi.exam.database.App_Table;
+import com.adi.exam.tasks.FileUploader;
+import com.adi.exam.tasks.HTTPPostTask;
+import com.adi.exam.utils.TraceUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ExamHistory extends AppCompatActivity {
+public class ExamHistory extends AppCompatActivity implements IItemHandler, IFileUploadCallback {
 
     private String student_id;
 
@@ -42,6 +51,21 @@ public class ExamHistory extends AppCompatActivity {
 
         try {
 
+
+            App_Table table = new App_Table(this);
+            Object results = table.getResultFiles();
+            if (results != null) {
+                JSONObject object = new JSONObject(results.toString());
+                JSONArray array = object.getJSONArray("files_body");
+                if (array.length() > 0) {
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject obb = array.getJSONObject(i);
+                        startUploadBackUp(obb.optString("path"), obb.optString("filename"));
+                    }
+                }
+            }
+
+
             studentdetails = new JSONObject(AppPreferences.getInstance(this).getFromStore("studentDetails"));
 
             student_id = studentdetails.optString("student_id");
@@ -51,7 +75,7 @@ public class ExamHistory extends AppCompatActivity {
         }
 
         wv_content = (WebView) findViewById(R.id.webview);
-        wv_content.loadUrl("https://bsecuresoftechsolutions.com/viswa/analysis?student_id="+student_id);
+        wv_content.loadUrl("https://bsecuresoftechsolutions.com/viswa/analysis?student_id=" + student_id);
         wv_content.getSettings().setAllowFileAccess(true);
         wv_content.getSettings().setSupportZoom(true);
         wv_content.setVerticalScrollBarEnabled(true);
@@ -79,6 +103,21 @@ public class ExamHistory extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setSupportZoom(true);
         webSettings.setBuiltInZoomControls(true);
+
+    }
+
+    @Override
+    public void onFinish(Object results, int requestId) {
+
+    }
+
+    @Override
+    public void onError(String errorCode, int requestId) {
+
+    }
+
+    @Override
+    public void onProgressChange(int requestId, Long... values) {
 
     }
 
@@ -120,6 +159,7 @@ public class ExamHistory extends AppCompatActivity {
             super.onPageStarted(view, url, favicon);
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -136,5 +176,78 @@ public class ExamHistory extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    private void startUploadBackUp(String path, String file_name) {
+
+        String url = AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+
+        FileUploader uploader = new FileUploader(this, this);
+
+        uploader.setFileName(file_name, file_name);
+
+        uploader.userRequest("", 11, url, path);
+    }
+
+    @Override
+    public void onStateChange(int what, int arg1, int arg2, Object obj, int reqID) {
+        try {
+
+            switch (what) {
+
+                case -1: // failed
+
+                    Toast.makeText(this, "Failed To Send", Toast.LENGTH_SHORT).show();
+
+                    break;
+
+                case 1: // progressBar
+
+                    break;
+
+                case 0: // success
+
+                    JSONObject object = new JSONObject(obj.toString());
+                    dataSendServer(object.optString("file_name"));
+                    break;
+
+                default:
+                    break;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            // TODO: handle exception
+        }
+
+    }
+
+    private void dataSendServer(String file_name) {
+
+        try {
+
+            App_Table table = new App_Table(this);
+
+            String exam_id = table.getFileName(file_name);
+
+            table.deleteRecord("exam_id='" + exam_id + "'", "FILESDATA");
+
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("exam_id", exam_id);
+
+            jsonObject.put("student_id", student_id);
+
+            jsonObject.put("file_name", file_name);
+
+            HTTPPostTask post = new HTTPPostTask(this, this);
+
+            post.userRequest(getString(R.string.plwait), 111, "submit_exam_result", jsonObject.toString());
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
     }
 }

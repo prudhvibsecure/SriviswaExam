@@ -183,13 +183,13 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                     String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") + "'";
                     boolean isRecordExits = table.isRecordExits(iwhereClause, "STUDENTEXAMRESULT");
 
-//                    if (isRecordExits) {
-//
-//                        activity.showokPopUp(R.drawable.pop_ic_failed, "", activity.getString(R.string.yhadwte));
-//
-//                        return;
-//
-//                    }
+                    if (isRecordExits) {
+
+                        activity.showokPopUp(R.drawable.pop_ic_failed, "", activity.getString(R.string.yhadwte));
+
+                        return;
+
+                    }
                     JSONObject question_details = jsonObject1.getJSONObject("question_details");
                     String timestamp = new SimpleDateFormat("dd-MM-yyyy ")
                             .format(new Date()) // get the current date as String
@@ -202,6 +202,8 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                     long current_time = System.currentTimeMillis();//current time
                     long from_time = date1.getTime();// from time
 
+
+                    Date date2 = formatter.parse(timestamp);
                     if (from_time < current_time) {
                         long left_time = current_time - from_time;
 

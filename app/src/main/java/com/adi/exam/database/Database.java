@@ -72,11 +72,12 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        if (newVersion>oldVersion){
+        if (newVersion > oldVersion) {
             db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN question_no INTEGER DEFAULT 0");
             db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN subject TEXT");
+            db.execSQL("CREATE TABLE IF NOT EXISTS FILESDATA(assignment_id TEXT,exam_id TEXT,filename TEXT,path TEXT);");
         }
-       // onCreate(db);
+        // onCreate(db);
     }
 
 }

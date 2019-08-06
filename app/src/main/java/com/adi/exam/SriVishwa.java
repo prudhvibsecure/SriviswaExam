@@ -31,6 +31,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.adi.exam.callbacks.IDialogCallbacks;
+import com.adi.exam.callbacks.IFileUploadCallback;
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
@@ -63,6 +64,7 @@ import com.adi.exam.fragments.Topics;
 import com.adi.exam.fragments.WiFiSettingsInApp;
 import com.adi.exam.fragments.WifiFragment;
 import com.adi.exam.services.ApkFileDownloader;
+import com.adi.exam.tasks.FileUploader;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
 import com.adi.exam.utils.Utils;
@@ -83,7 +85,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class SriVishwa extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ParentFragment.OnFragmentInteractionListener, Dashboard.OnListFragmentInteractionListener, View.OnClickListener, IItemHandler, AppUpdateDialog.IUpdateCallback {
+        implements IFileUploadCallback, NavigationView.OnNavigationItemSelectedListener, ParentFragment.OnFragmentInteractionListener, Dashboard.OnListFragmentInteractionListener, View.OnClickListener, IItemHandler, AppUpdateDialog.IUpdateCallback {
     private final List blockedKeys = new ArrayList(Arrays.asList(new Integer[]{Integer.valueOf(25), Integer.valueOf(24)}));
     private Toolbar toolbar;
 
@@ -209,8 +211,8 @@ public class SriVishwa extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-                super.onBackPressed();
-            }
+            super.onBackPressed();
+        }
 
 
     }
@@ -251,15 +253,15 @@ public class SriVishwa extends AppCompatActivity
 
             AppPreferences.getInstance(this).clearSharedPreferences(true);
             //SriVishwa.this.finish();
-            startActivity(new Intent(SriVishwa.this,LoginActivity.class));
+            startActivity(new Intent(SriVishwa.this, LoginActivity.class));
 
         } else if (id == R.id.nav_changepwd) {
 
             changePassword();
 
-        }else if (id == R.id.nav_wifisettings) {
+        } else if (id == R.id.nav_wifisettings) {
 
-            swiftFragments(WifiFragment.newInstance("Settings"),"wifisettings");
+            swiftFragments(WifiFragment.newInstance("Settings"), "wifisettings");
 //            if (checkPermission("android.permission.CHANGE_WIFI_STATE", 300) == 1) {
 //
 //                showWiFiSettings();
@@ -338,7 +340,7 @@ public class SriVishwa extends AppCompatActivity
                     if (isNetworkAvailable()) {
                         Intent in = new Intent(this, ExamHistory.class);
                         startActivity(in);
-                    }else{
+                    } else {
                         Toast.makeText(this, "Please connect your network", Toast.LENGTH_SHORT).show();
                     }
 
@@ -355,7 +357,7 @@ public class SriVishwa extends AppCompatActivity
                 case 4:
                     if (isNetworkAvailable()) {
                         showHistoryList();
-                    }else{
+                    } else {
                         Toast.makeText(this, "Please connect your network", Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -576,8 +578,25 @@ public class SriVishwa extends AppCompatActivity
 
     private void showHistoryList() {
 
+        try {
+            App_Table table = new App_Table(this);
+            Object results = table.getResultFiles();
+            if (results != null) {
+                JSONObject object = new JSONObject(results.toString());
+                JSONArray array = object.getJSONArray("files_body");
+                if (array.length() > 0) {
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject obb = array.getJSONObject(i);
+                        startUploadBackUp(obb.optString("path"), obb.optString("filename"));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         swiftFragments(AssignmentHistory.newInstance(), "assignmenthistory");
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         try {
@@ -587,53 +606,43 @@ public class SriVishwa extends AppCompatActivity
 
                     ParentFragment pf = fragStack.peek();
 
-                    if(pf instanceof JEEemplates)
-                    {
+                    if (pf instanceof JEEemplates) {
                         return true;
                     }
 
-                    if(pf instanceof NEETemplates)
-                    {
+                    if (pf instanceof NEETemplates) {
                         return true;
                     }
 
-                    if(pf instanceof JIPMERSemplates)
-                    {
+                    if (pf instanceof JIPMERSemplates) {
                         return true;
                     }
 
-                    if(pf instanceof AIIMSemplates)
-                    {
+                    if (pf instanceof AIIMSemplates) {
                         return true;
                     }
 
-                    if(pf instanceof KVPYTemplates)
-                    {
+                    if (pf instanceof KVPYTemplates) {
                         return true;
                     }
 
-                    if(pf instanceof ExamTemplates)
-                    {
+                    if (pf instanceof ExamTemplates) {
                         return true;
                     }
 
-                    if(pf instanceof Assignment)
-                    {
+                    if (pf instanceof Assignment) {
                         return true;
                     }
 
-                    if(pf instanceof ExamSubmitConfirmationPage)
-                    {
+                    if (pf instanceof ExamSubmitConfirmationPage) {
                         return true;
                     }
 
-                    if(pf instanceof AssignResultsPage)
-                    {
+                    if (pf instanceof AssignResultsPage) {
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
                     }
 
-                    if(pf instanceof ResultsPage)
-                    {
+                    if (pf instanceof ResultsPage) {
                         startActivity(new Intent(SriVishwa.this, SriVishwa.class));
                     }
 
@@ -1277,13 +1286,13 @@ public class SriVishwa extends AppCompatActivity
             @Override
             public void run() {
 
-                File apk_file=new File(path);
+                File apk_file = new File(path);
                 if (apk_file.exists()) {
                     apk_file.delete();
                 }
 
             }
-        },600000);
+        }, 600000);
 
     }
 
@@ -1320,6 +1329,7 @@ public class SriVishwa extends AppCompatActivity
         unregisterReceiver(mBroadcastQuestion);
         super.onDestroy();
     }
+
     public boolean dispatchKeyEvent(KeyEvent keyEvent) {
         if (this.blockedKeys.contains(Integer.valueOf(keyEvent.getKeyCode()))) {
             return true;
@@ -1339,10 +1349,11 @@ public class SriVishwa extends AppCompatActivity
         try {
             ExamList examList = ExamList.newInstance();
             examList.refresh();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public boolean isNetworkAvailable() {
 
         ConnectivityManager manager = (ConnectivityManager) this
@@ -1362,5 +1373,79 @@ public class SriVishwa extends AppCompatActivity
             return false;
         }
 
+    }
+
+    private void startUploadBackUp(String path, String file_name) {
+
+        String url = AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+
+        FileUploader uploader = new FileUploader(this, this);
+
+        uploader.setFileName(file_name, file_name);
+
+        uploader.userRequest("", 11, url, path);
+    }
+
+    @Override
+    public void onStateChange(int what, int arg1, int arg2, Object obj, int reqID) {
+        try {
+
+            switch (what) {
+
+                case -1: // failed
+
+                    Toast.makeText(this, "Failed To Send", Toast.LENGTH_SHORT).show();
+
+                    break;
+
+                case 1: // progressBar
+
+                    break;
+
+                case 0: // success
+
+                    JSONObject object = new JSONObject(obj.toString());
+                    dataSendServer(object.optString("file_name"));
+                    break;
+
+                default:
+                    break;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            // TODO: handle exception
+        }
+
+    }
+
+    private void dataSendServer(String file_name) {
+
+        try {
+
+            App_Table table = new App_Table(this);
+
+            String exam_id = table.getFileName(file_name);
+
+            table.deleteRecord("exam_id='" + exam_id + "'", "FILESDATA");
+
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("exam_id", exam_id);
+
+            jsonObject.put("student_id", studentDetails.getString("student_id"));
+
+            jsonObject.put("file_name", file_name);
+
+            HTTPPostTask post = new HTTPPostTask(this, this);
+
+            post.userRequest(getString(R.string.plwait), 111, "submit_exam_result", jsonObject.toString());
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
     }
 }

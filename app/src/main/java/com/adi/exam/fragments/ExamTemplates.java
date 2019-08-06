@@ -658,7 +658,9 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                     }
 
                     adapter.notifyItemChanged(currentExamId);
+
                     rg_options.clearCheck();
+
                     updateQuestionTime();
 
                     showNextQuestion(currentExamId + 1);
@@ -954,6 +956,8 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
                 JSONObject obj = new JSONObject(results.toString());
                 if (obj.optString("statuscode").equalsIgnoreCase("200")) {
                    // activity.onKeyDown(4, null);
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='"+data.optInt("exam_id")+"'","FILESDATA");
 //                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
                 } else {
                     activity.onKeyDown(4, null);
@@ -1186,7 +1190,7 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             fos.write(json.toString().getBytes());
 
             String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
-
+            table.insertFileData(data.optInt("exam_id"),FILE_NAME,path);
             long val = table.insertSingleRecords(STUDENTEXAMRESULT, "STUDENTEXAMRESULT");
 
             if (val > 0) {

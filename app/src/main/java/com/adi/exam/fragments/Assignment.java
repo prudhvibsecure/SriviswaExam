@@ -80,7 +80,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
     private RadioGroup rg_options;
 
     private JSONObject data = new JSONObject();
-    private JSONArray array=new JSONArray();
+    private JSONArray array = new JSONArray();
     private ImageLoader imageLoader;
 
     private TextView tv_timer;
@@ -90,8 +90,9 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
     private FileOutputStream fos = null;
     private Date edate, sdate;
     private int question_no = 0;
-    private static final String FILE_NAME = System.currentTimeMillis()+"_assign_Result.txt";
+    private static final String FILE_NAME = System.currentTimeMillis() + "_assign_Result.txt";
     TabLayout tl_subjects;
+
     public Assignment() {
         // Required empty public constructor
     }
@@ -174,7 +175,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
         layout.findViewById(R.id.tv_next).setOnClickListener(this);
 
-        tl_subjects= layout.findViewById(R.id.tl_subjects);
+        tl_subjects = layout.findViewById(R.id.tl_subjects);
 
 
         adapter = new QuestionNumberListingAdapter(activity);
@@ -324,7 +325,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                     int position = rv_ques_nums.getChildAdapterPosition(v);
 
-                    question_no = position+1;
+                    question_no = position + 1;
 
                     updateQuestionTime();
 
@@ -363,7 +364,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                             jsonObject.put("qanswer", "d");
                         }*/
                         updateQuestionTime();
-                        int size=adapter.getItemCount();
+                        int size = adapter.getItemCount();
                         adapter.notifyItemChanged(currentExamId);
 
                         rg_options.clearCheck();
@@ -433,12 +434,13 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
         }
 
     }
+
     private void updateQuestionTime() {
 
         edate = new Date();
 
-        Long minutes = ((edate.getTime()- sdate.getTime())/(60*1000)) * 60;
-        timeTaken4Question = minutes + (edate.getTime()- sdate.getTime())/1000;
+        Long minutes = ((edate.getTime() - sdate.getTime()) / (60 * 1000)) * 60;
+        timeTaken4Question = minutes + (edate.getTime() - sdate.getTime()) / 1000;
 
         sdate = edate;
         edate = null;
@@ -488,15 +490,14 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
                 String res = "";
-                if(jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+                if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
                     res = "0";
-                }
-                else {
+                } else {
                     res = "1";
                 }
-                questionTimeObject.put("result", res );
+                questionTimeObject.put("result", res);
                 table.insertSingleRecords(questionTimeObject, "ASSIGNMENTSTUDENTQUESTIONRESULTS");
-                check=0;
+                check = 0;
 
             }
 
@@ -508,6 +509,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
 
     }
+
     private void showNextQuestion(int position) {
 
         try {
@@ -781,6 +783,16 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                 }
 
+            } else if (requestId == 3) {
+                JSONObject obj = new JSONObject(results.toString());
+                if (obj.optString("statuscode").equalsIgnoreCase("200")) {
+                    // activity.onKeyDown(4, null);
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='" + data.optInt("exam_id") + "'", "FILESDATA");
+//                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                } else {
+                    activity.onKeyDown(4, null);
+                }
             }
 
         } catch (Exception e) {
@@ -935,9 +947,8 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             ASSIGNMENTRESULTS.put("score", score + "");
 
 
-
             App_Table table = new App_Table(activity);
-            json=table.getAssignmentResult(data.optInt("assignment_id"),activity.getStudentDetails().optInt("student_id"));
+            json = table.getAssignmentResult(data.optInt("assignment_id"), activity.getStudentDetails().optInt("student_id"));
             json.put("assignment_result_id", assignment_result_id);
             json.put("assignment_id", data.optInt("assignment_id"));
             json.put("student_id", activity.getStudentDetails().optInt("student_id"));
@@ -950,10 +961,11 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             try {
                 fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
                 fos.write(json.toString().getBytes());
-            }catch (Exception e){
+            } catch (Exception e) {
                 TraceUtils.logException(e);
             }
             String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
+            table.insertFileData(data.optInt("assignment_id"), FILE_NAME, path);
             long val = table.insertSingleRecords(ASSIGNMENTRESULTS, "ASSIGNMENTRESULTS");
 
             if (val > 0) {
@@ -961,7 +973,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                 activity.setAllQuestions(jsonArray);
 
                 activity.showExamSubmitConfirmationPage(data, assignment_result_id, 2);
-                startUploadBackUp(path,FILE_NAME);
+                startUploadBackUp(path, FILE_NAME);
                 return;
 
             }
@@ -975,12 +987,14 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
         }
 
     }
-    private void startUploadBackUp(String path,String file_name) {
-        String url= AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+
+    private void startUploadBackUp(String path, String file_name) {
+        String url = AppSettings.getInstance().getPropertyValue("uploadfile_admin");
         FileUploader uploader = new FileUploader(getActivity(), this);
         uploader.setFileName(file_name, file_name);
         uploader.userRequest("", 11, url, path);
     }
+
     private void showTimer(long millisInFuture) {
 
         new CountDownTimer(millisInFuture, 1000) {
@@ -1039,8 +1053,9 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
         }
 
     }
+
     private void dataSendServer(String file_name) {
-        try{
+        try {
             JSONObject jsonObject = new JSONObject();
 
             jsonObject.put("assignment_id", data.optInt("assignment_id"));
@@ -1051,7 +1066,7 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
             post.userRequest(getString(R.string.plwait), 2, "submit_assignment_result", jsonObject.toString());
 
-        }catch (Exception e){
+        } catch (Exception e) {
             TraceUtils.logException(e);
         }
     }

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adi.exam.R;
@@ -73,21 +74,21 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
 
             int totalQuestions = 0;
 
-            if(noOfQuestions.contains(",")) {
+            if (noOfQuestions.contains(",")) {
 
                 String temp1[] = noOfQuestions.split(",");
 
                 for (int i = 0; i < temp1.length; i++) {
 
-                    if(temp1[i].trim().length() > 0) {
+                    if (temp1[i].trim().length() > 0) {
 
-                        totalQuestions = totalQuestions+Integer.parseInt(temp1[i]);
+                        totalQuestions = totalQuestions + Integer.parseInt(temp1[i]);
 
                     }
 
                 }
 
-                noOfQuestions = totalQuestions+"";
+                noOfQuestions = totalQuestions + "";
 
             }
 
@@ -95,7 +96,7 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
 
             //contactViewHolder.tv_ques.setText(mContext.getString(R.string.ques, jsonObject.optString("no_of_questions").trim()));
 
-            contactViewHolder.tv_ques.setText(mContext.getString(R.string.ques, noOfQuestions+""));
+            contactViewHolder.tv_ques.setText(mContext.getString(R.string.ques, noOfQuestions + ""));
 
             contactViewHolder.tv_subjects.setText(mContext.getString(R.string.subjects, jsonObject.optString("subject").trim()));
 
@@ -119,7 +120,7 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
 //
 //            } else if (title.length() > 1) {
 //
-                tdText = title.substring(0, 1);
+            tdText = title.substring(0, 1);
 //
 //            }
 
@@ -136,31 +137,30 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
                     .concat(jsonObject.optString("to_time").trim()
                     );
             DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
-            Date date1 = (Date)formatter.parse(timestamp);
-            Date date2 = (Date)formatter.parse(timestamp1);
+            Date date1 = (Date) formatter.parse(timestamp);
+            Date date2 = (Date) formatter.parse(timestamp1);
             long time = System.currentTimeMillis();
             long tkl = date1.getTime();
             long tk2 = date2.getTime();
             Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            String c_date=df.format(c);
+            String c_date = df.format(c);
             if (c_date.equals(jsonObject.optString("exam_date").trim())) {
                 // contactViewHolder.tv_startexam.setEnabled(true);
                 boolean result = inRange(tkl, tk2, time);
                 if (result) {
                     contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                     contactViewHolder.tv_startexam.setEnabled(true);
-                    contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit));
-                }else {
+                    contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit));
+                } else {
                     contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                     contactViewHolder.tv_startexam.setEnabled(false);
-                    contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit_disable));
+                    contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit_disable));
                 }
-            }else {
+            } else {
                 contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                 contactViewHolder.tv_startexam.setEnabled(false);
-                contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit_disable));
-                // contactViewHolder.tv_startexam.setEnabled(false);
+                contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit_disable));
             }
 
         } catch (Exception e) {
@@ -170,10 +170,11 @@ public class AssignmentListingAdapter extends RecyclerView.Adapter<AssignmentLis
         }
 
     }
-    boolean inRange(long low, long high, long x)
-    {
-        return ((x-high)*(x-low) <= 0);
+
+    boolean inRange(long low, long high, long x) {
+        return ((x - high) * (x - low) <= 0);
     }
+
     @NonNull
     @Override
     public ContactViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {

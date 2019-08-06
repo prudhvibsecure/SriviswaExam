@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adi.exam.R;
@@ -157,15 +158,16 @@ public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentL
                     if (result) {
                         contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                         contactViewHolder.tv_startexam.setEnabled(true);
+                        contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit));
                     }else{
                         contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                         contactViewHolder.tv_startexam.setEnabled(false);
-                        contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit_disable));
+                        contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit_disable));
                     }
                 }else {
                     contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
                     contactViewHolder.tv_startexam.setEnabled(false);
-                    contactViewHolder.tv_startexam.setBackground(mContext.getDrawable(R.drawable.button_bg_submit_disable));
+                    contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit_disable));
                    // contactViewHolder.tv_startexam.setEnabled(false);
                 }
 //                if (time >= tkl && tk2<=time) {

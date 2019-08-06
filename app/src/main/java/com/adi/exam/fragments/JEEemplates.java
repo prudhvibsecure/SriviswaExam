@@ -954,6 +954,8 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 if (obj.optString("statuscode").equalsIgnoreCase("200")) {
                    // activity.onKeyDown(4, null);
 //                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='"+data.optInt("exam_id")+"'","FILESDATA");
                 } else {
                     //activity.onKeyDown(4, null);
                 }
@@ -1185,7 +1187,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             fos.write(json.toString().getBytes());
 
             String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
-
+            table.insertFileData(data.optInt("exam_id"),FILE_NAME,path);
             long val = table.insertSingleRecords(STUDENTEXAMRESULT, "STUDENTEXAMRESULT");
 
             if (val > 0) {

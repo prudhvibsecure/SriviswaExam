@@ -3,6 +3,7 @@ package com.adi.exam.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.adi.exam.utils.TraceUtils;
@@ -682,5 +683,101 @@ public class App_Table {
 
         return jsonArray;
 
+    }
+
+    public void insertFileData(int exam_id, String fileName, String path) {
+        SQLiteDatabase db = null;
+        try {
+            if (database != null) {
+                db = database.getWritableDatabase();
+                ContentValues cv = new ContentValues();
+                cv.put("exam_id", exam_id);
+                cv.put("filename", fileName);
+                cv.put("path", path);
+                db.insert("FILESDATA", null, cv);
+                db.close();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Object getResultFiles() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (database != null) {
+
+                JSONArray array = new JSONArray();
+
+                SQLiteDatabase db = database.getWritableDatabase();
+
+                Cursor cursor = db.rawQuery("SELECT * FROM FILESDATA",
+                        null);
+
+                if (cursor != null) {
+
+                    while (cursor.moveToNext()) {
+
+                        JSONObject obj = new JSONObject();
+
+
+                        String[] resultsColumns = cursor.getColumnNames();
+
+                        for (String key : resultsColumns) {
+
+                            String value = cursor.getString(cursor
+                                    .getColumnIndexOrThrow(key));
+
+                            obj.put(key, value);
+
+                        }
+                        array.put(obj);
+                    }
+                    jsonObject.put("files_body", array);
+                    cursor.close();
+
+                }
+
+                db.close();
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+        return jsonObject;
+
+    }
+    public String getFileName(String name) {
+        String exam_id = "";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from FILESDATA where filename='" + name + "'";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            exam_id = cursor.getString(cursor.getColumnIndex("exam_id"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exam_id;
     }
 }
