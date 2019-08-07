@@ -8,7 +8,7 @@ public class Database extends SQLiteOpenHelper {
 
     private final static String APP_DATABASE_NAME = "exam.db";
 
-    private final static int APP_DATABASE_VERSION = 2;
+    private final static int APP_DATABASE_VERSION = 3;
 
     private String CLASS_TABLE = "CREATE TABLE CLASS(class_id INTEGER, branch_name TEXT, year TEXT, course_name TEXT, program_name TEXT, section TEXT, subject Text);";
 
@@ -72,9 +72,11 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        if (newVersion > oldVersion) {
+        if (newVersion > oldVersion && newVersion==2) {
             db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN question_no INTEGER DEFAULT 0");
             db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN subject TEXT");
+
+        }else if (newVersion > oldVersion && newVersion==3){
             db.execSQL("CREATE TABLE IF NOT EXISTS FILESDATA(assignment_id TEXT,exam_id TEXT,filename TEXT,path TEXT);");
         }
         // onCreate(db);

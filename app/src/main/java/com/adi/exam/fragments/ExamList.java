@@ -764,7 +764,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                 //String cursor_q = "select * from EXAM";
                 String cursor_q = "SELECT exam.exam_id,exam.exam_name,exam.course,exam.no_of_questions,exam.subjects,exam.marks_per_question,exam.negative_marks,exam.duration,exam.duration_sec,questionpaper.from_time,questionpaper.to_time,questionpaper.exam_date,questionpaper.question_paper_id,questionpaper.exam_id,questionpaper.subjects,questionpaper.topicids" +
-                        " from exam inner join questionpaper on exam.exam_id = questionpaper.exam_id order by questionpaper.exam_date";
+                        " from exam inner join questionpaper on exam.exam_id = questionpaper.exam_id order by questionpaper.exam_date,questionpaper.from_time";
                 db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,
