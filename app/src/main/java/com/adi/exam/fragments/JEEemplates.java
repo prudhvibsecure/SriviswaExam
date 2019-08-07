@@ -424,13 +424,28 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     }
 
                     timeTaken = timeTaken + timeTaken4Question;
-                    timeTaken4Question = timeTaken;
                     jsonObject1.put("question_time", timeTaken);
-                    //jsonObject1.put("qstate", 1);
+                    jsonObject1.put("given_option", jsonObject.optString("qanswer"));
+                    jsonObject1.put("correct_option", jsonObject.optString("answer"));
+
+                    String res = "";
+
+
+                    if (TextUtils.isEmpty(jsonObject.optString("answer"))) {
+                        res = "2";
+                    } else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+                        res = "0";
+                    } else {
+                        res = "1";
+                    }
+                    jsonObject1.put("result", res);
+                    jsonObject1.put("question_time", timeTaken4Question + "");
+                    jsonObject1.put("no_of_clicks", check++);
+                    jsonObject1.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
 
-                    table.checkNInsertARecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
+                    table.updateRecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
 
                     return;
                 }
@@ -527,8 +542,6 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     int position = rv_ques_nums.getChildAdapterPosition(v);
                     question_no = position + 1;
 
-
-
                     JSONObject jsonObject = adapter.getItems().getJSONObject(position);
                     if (jsonObject.optString("qstate").equalsIgnoreCase("2")) {
                         v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered));
@@ -544,12 +557,13 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     } else {
                         rg_options.clearCheck();
                         jsonObject.put("qstate", 1);
-                        v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_visited));
+                        v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
                     }
                     adapter.notifyItemChanged(question_no);
+
                     updateQuestionTime();
 
-                    showNextQuestion(position);
+                    showNextQuestion(question_no);
 
                     break;
 
@@ -626,6 +640,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     //  }
                     jsonObject = adapter.getItems().getJSONObject(currentExamId);
                     jsonObject.put("qstate", 1);
+                    jsonObject.put("qanswer", "");
 
                     adapter.notifyItemChanged(currentExamId);
                     updateQuestionTime();
@@ -666,6 +681,8 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                     if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
                         rg_options.clearCheck();
+                        jsonObject.put("qstate", 1);
+                        jsonObject.put("qanswer", "");
                     }
                     question_no--;
                     adapter.notifyItemChanged(currentExamId);
@@ -676,7 +693,10 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                         jsonObject = adapter.getItems().getJSONObject(currentExamId);
                         if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
                             rg_options.clearCheck();
-                            // currentExamId=0;//this one
+
+                            jsonObject.put("qstate", 1);
+                            jsonObject.put("qanswer", "");
+                             currentExamId=0;//this one
                         }
                     }
 
