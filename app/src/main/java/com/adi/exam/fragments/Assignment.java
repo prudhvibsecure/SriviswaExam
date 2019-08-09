@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.Locale;
@@ -90,7 +92,9 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
     private FileOutputStream fos = null;
     private Date edate, sdate;
     private int question_no = 0;
-    private static final String FILE_NAME = System.currentTimeMillis() + "_assign_Result.txt";
+    private static String FILE_NAME;
+
+    private String path="";
     TabLayout tl_subjects;
 
     public Assignment() {
@@ -483,14 +487,17 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
 
                 questionTimeObject.put("assignment_student_question_time_id", student_question_time_id);
                 questionTimeObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
-                questionTimeObject.put("question_no", question_no);
+                questionTimeObject.put("question_no", jsonObject.optInt("sno"));
                 questionTimeObject.put("assignment_id", data.optString("assignment_id"));
                 questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
                 questionTimeObject.put("subject", ((TextView) (tl_subjects.getTabAt(tl_subjects.getSelectedTabPosition()).getCustomView())).getText().toString());
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
                 String res = "";
-                if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+                if (TextUtils.isEmpty(jsonObject.optString("qanswer"))) {
+                    res = "2";
+                }
+                else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
                     res = "0";
                 } else {
                     res = "1";
@@ -789,9 +796,19 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
                     // activity.onKeyDown(4, null);
                     App_Table table = new App_Table(activity);
                     table.deleteRecord("exam_id='" + data.optInt("exam_id") + "'", "FILESDATA");
+                    File file = new File(path);
+                    file.delete();
+
+                    path = "";
 //                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
                 } else {
-                    activity.onKeyDown(4, null);
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='" + data.optInt("exam_id") + "'", "FILESDATA");
+                    File file = new File(path);
+                    file.delete();
+
+                    path = "";
+                    //activity.onKeyDown(4, null);
                 }
             }
 
@@ -958,13 +975,14 @@ public class Assignment extends ParentFragment implements View.OnClickListener, 
             json.put("score", score + "");
 //            array.put(json);
 //            backup_result.put("student_question_time",array);
+            FILE_NAME = System.currentTimeMillis() + "_assign_Result.txt";
             try {
                 fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
                 fos.write(json.toString().getBytes());
             } catch (Exception e) {
                 TraceUtils.logException(e);
             }
-            String path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
+            path = getActivity().getFilesDir().getAbsolutePath() + "/" + FILE_NAME;
             table.insertFileData(data.optInt("assignment_id"), FILE_NAME, path);
             long val = table.insertSingleRecords(ASSIGNMENTRESULTS, "ASSIGNMENTRESULTS");
 

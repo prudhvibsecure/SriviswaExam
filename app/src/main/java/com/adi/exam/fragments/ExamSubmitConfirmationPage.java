@@ -28,7 +28,7 @@ import org.json.JSONObject;
 public class ExamSubmitConfirmationPage extends ParentFragment implements IItemHandler, View.OnClickListener, IDialogCallbacks {
 
 
-    private int student_exam_result_id = 0;
+    private long student_exam_result_id = 0;
 
     private ParentFragment.OnFragmentInteractionListener mFragListener;
 
@@ -44,12 +44,12 @@ public class ExamSubmitConfirmationPage extends ParentFragment implements IItemH
         // Required empty public constructor
     }
 
-    public static ExamSubmitConfirmationPage newInstance(String data, int student_exam_result_id, int type) { //type => 1 = exam, 2 = assignment
+    public static ExamSubmitConfirmationPage newInstance(String data, long student_exam_result_id, int type) { //type => 1 = exam, 2 = assignment
         ExamSubmitConfirmationPage frag = new ExamSubmitConfirmationPage();
         Bundle args = new Bundle();
         args.putString("data", data);
         args.putInt("type", type);
-        args.putInt("student_exam_result_id", student_exam_result_id);
+        args.putLong("student_exam_result_id", student_exam_result_id);
         frag.setArguments(args);
         return frag;
     }
@@ -62,7 +62,7 @@ public class ExamSubmitConfirmationPage extends ParentFragment implements IItemH
 
             if (getArguments() != null) {
 
-                student_exam_result_id = getArguments().getInt("student_exam_result_id");
+                student_exam_result_id = getArguments().getLong("student_exam_result_id");
 
                 data = new JSONObject(getArguments().getString("data"));
 

@@ -537,11 +537,12 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
 
                             }
                        // }
-                        else {
-                            Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
-                        }
+
                     }
 
+                }
+                else {
+                    Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                 }
 
             }else if (requestId==3){

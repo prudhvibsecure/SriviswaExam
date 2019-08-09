@@ -28,7 +28,7 @@ import org.json.JSONObject;
 public class ResultsPage extends ParentFragment implements IItemHandler, View.OnClickListener, IDialogCallbacks {
 
 
-    private int student_exam_result_id = 0;
+    private long student_exam_result_id = 0;
 
     private OnFragmentInteractionListener mFragListener;
 
@@ -50,13 +50,13 @@ public class ResultsPage extends ParentFragment implements IItemHandler, View.On
         // Required empty public constructor
     }
 
-    public static ResultsPage newInstance(String examDetails, int student_exam_result_id, int type) {
+    public static ResultsPage newInstance(String examDetails, long student_exam_result_id, int type) {
 
         ResultsPage frag = new ResultsPage();
 
         Bundle args = new Bundle();
 
-        args.putInt("student_exam_result_id", student_exam_result_id);
+        args.putLong("student_exam_result_id", student_exam_result_id);
 
         args.putString("examDetails", examDetails);
 
@@ -76,7 +76,7 @@ public class ResultsPage extends ParentFragment implements IItemHandler, View.On
 
             if (getArguments() != null) {
 
-                student_exam_result_id = getArguments().getInt("student_exam_result_id");
+                student_exam_result_id = getArguments().getLong("student_exam_result_id");
 
                 examDetails = new JSONObject(getArguments().getString("examDetails"));
 

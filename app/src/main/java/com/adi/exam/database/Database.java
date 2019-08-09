@@ -8,7 +8,7 @@ public class Database extends SQLiteOpenHelper {
 
     private final static String APP_DATABASE_NAME = "exam.db";
 
-    private final static int APP_DATABASE_VERSION = 3;
+    private final static int APP_DATABASE_VERSION = 1;
 
     private String CLASS_TABLE = "CREATE TABLE CLASS(class_id INTEGER, branch_name TEXT, year TEXT, course_name TEXT, program_name TEXT, section TEXT, subject Text);";
 
@@ -28,7 +28,7 @@ public class Database extends SQLiteOpenHelper {
 
     private String ASSIGNMENTS_TABLE = "CREATE TABLE ASSIGNMENTS(assignment_id INTEGER, assignment_name TEXT, no_of_questions TEXT, from_time TEXT, to_time TEXT, duration TEXT, class_name TEXT, subject TEXT, lessons TEXT, topics TEXT, questions TEXT,duration_sec TEXT)";
 
-    private String STUDENTEXAMRESULT_TABLE = "CREATE TABLE STUDENTEXAMRESULT(student_exam_result_id INTEGER, student_id INTEGER, exam_id INTEGER, exam_name TEXT, exam_date TEXT, total_questions TEXT, total_questions_attempted TEXT, no_of_correct_answers TEXT, score TEXT, percentage TEXT, accuracy TEXT, exam_type TEXT)";
+    private String STUDENTEXAMRESULT_TABLE = "CREATE TABLE STUDENTEXAMRESULT(student_exam_result_id LONG, student_id INTEGER, exam_id INTEGER, exam_name TEXT, exam_date TEXT, total_questions TEXT, total_questions_attempted TEXT, no_of_correct_answers TEXT, score TEXT, percentage TEXT, accuracy TEXT, exam_type TEXT)";
 
     private String STUDENTQUESTIONTIME_TABLE = "CREATE TABLE STUDENTQUESTIONTIME(student_question_time_id INTEGER, student_id INTEGER, exam_id INTEGER, question_no INTEGER, question_id INTEGER, topic_id INTEGER, lesson_id INTEGER, subject TEXT, given_option TEXT, correct_option TEXT, result TEXT, question_time TEXT, no_of_clicks TEXT, marked_for_review TEXT);";
 
@@ -38,11 +38,13 @@ public class Database extends SQLiteOpenHelper {
 
     private String ASSIGNMENT_TABLE = "CREATE TABLE ASSIGNMENT(assignment_id INTEGER, assignment_name TEXT, subject TEXT, course TEXT, course_name TEXT, section TEXT, lessons TEXT, topics TEXT, exam_date TEXT, from_time TEXT, to_time TEXT, duration TEXT, no_of_questions TEXT, marks_per_question TEXT, questions TEXT,exam_time TEXT,duration_sec TEXT)";
 
-    private String ASSIGNMENTRESULTS_TABLE = "CREATE TABLE ASSIGNMENTRESULTS(assignment_result_id INTEGER, assignment_id INTEGER, student_id INTEGER, total_questions TEXT, total_questions_attempted TEXT, no_of_correct_answers TEXT, score TEXT)";
+    private String ASSIGNMENTRESULTS_TABLE = "CREATE TABLE ASSIGNMENTRESULTS(assignment_result_id INTEGER, assignment_id INTEGER, student_id INTEGER, total_questions TEXT, total_questions_attempted TEXT, no_of_correct_answers TEXT, score TEXT, question_no INTEGER, subject TEXT)";
 
     private String ASSIGNMENTSTUDENTQUESTIONRESULTS_TABLE = "CREATE TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS(assignment_student_question_time_id INTEGER, student_id INTEGER, question_no INTEGER,question_id INTEGER, assignment_id INTEGER, given_option TEXT, correct_option TEXT, result TEXT,subject TEXT)";
 
     private final String DOWNLOAD_QUEUE = "CREATE TABLE IF NOT EXISTS DOWNLOADQUEUE(material_data_id INTEGER, material_original_name TEXT, material_unique_name TEXT, downloadurl TEXT, downloadstatus TEXT, savedpath TEXT, mimetype TEXT, errorMsg TEXT);";
+
+    private final String FILES_DATA = "CREATE TABLE IF NOT EXISTS FILESDATA(assignment_id TEXT,exam_id TEXT,filename TEXT,path TEXT);";
 
     public Database(Context context) {
         super(context, APP_DATABASE_NAME, null, APP_DATABASE_VERSION);
@@ -67,19 +69,22 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(ASSIGNMENT_TABLE);
         db.execSQL(ASSIGNMENTRESULTS_TABLE);
         db.execSQL(ASSIGNMENTSTUDENTQUESTIONRESULTS_TABLE);
+        db.execSQL(FILES_DATA);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        if (newVersion > oldVersion && newVersion==2) {
+       /* if (newVersion > oldVersion && newVersion==2) {
             db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN question_no INTEGER DEFAULT 0");
             db.execSQL("ALTER TABLE ASSIGNMENTSTUDENTQUESTIONRESULTS ADD COLUMN subject TEXT");
 
+
         }else if (newVersion > oldVersion && newVersion==3){
             db.execSQL("CREATE TABLE IF NOT EXISTS FILESDATA(assignment_id TEXT,exam_id TEXT,filename TEXT,path TEXT);");
-        }
-        // onCreate(db);
+        }*/
+        onCreate(db);
     }
 
 }

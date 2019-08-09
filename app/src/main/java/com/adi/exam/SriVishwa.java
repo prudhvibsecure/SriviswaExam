@@ -473,13 +473,13 @@ public class SriVishwa extends AppCompatActivity
 
     }
 
-    public void showExamSubmitConfirmationPage(JSONObject jsonObject, int student_exam_result_id, int type) {
+    public void showExamSubmitConfirmationPage(JSONObject jsonObject, long student_exam_result_id, int type) {
 
         swiftFragments(ExamSubmitConfirmationPage.newInstance(jsonObject.toString(), student_exam_result_id, type), "examsubmitconfirmationpage");
 
     }
 
-    public void showResults(String examDetails, int student_exam_result_id, int type) {
+    public void showResults(String examDetails, long student_exam_result_id, int type) {
 
         swiftFragments(ResultsPage.newInstance(examDetails, student_exam_result_id, type), "results");
 
