@@ -89,6 +89,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".SplashActivityEnc"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.adi.exam.provider"
