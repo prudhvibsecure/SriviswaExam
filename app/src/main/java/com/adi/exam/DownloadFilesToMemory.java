@@ -80,13 +80,15 @@ public class DownloadFilesToMemory extends AsyncTask {
     private void processImages() {
 
         try {
-
+            final String PATH = Environment.getExternalStorageDirectory() + "/allimages/";
             ImageProcesser imageProcesser = new ImageProcesser(context, new IItemHandler() {
 
                 @Override
                 public void onFinish(Object results, int requestId) {
 
                     Toast.makeText(context, "Completed", Toast.LENGTH_LONG).show();
+                    File ff=new File(PATH);
+                    ff.delete();
 
                 }
 
@@ -102,7 +104,7 @@ public class DownloadFilesToMemory extends AsyncTask {
 
             });
 
-            String PATH = Environment.getExternalStorageDirectory() + "/allimages/";
+
 
             imageProcesser.startProcess(1, PATH);
 
