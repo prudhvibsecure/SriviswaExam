@@ -56,10 +56,12 @@ import java.util.Date;
 import java.util.Locale;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -126,6 +128,9 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
     private boolean isVisible = false;
 
     String path;
+    private String PATH = Environment.getExternalStorageDirectory().toString();
+
+    private final String IMGPATH = PATH + "/System/allimages/";
 
     public JEEemplates() {
         // Required empty public constructor
@@ -921,16 +926,103 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 //            decrypt("enc_"+jsonObject.optString("option_c"));
 //            decrypt("enc_"+jsonObject.optString("option_d"));
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("question_name"), iv_question);
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("question_name"), iv_question);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_a"), iv_option1);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_b"), iv_option2);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_c"), iv_option3);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_d"), iv_option4);
+//
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_a"), iv_option1);
+            try {
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_b"), iv_option2);
+                iv_question.setImageDrawable(null);
+                iv_option1.setImageDrawable(null);
+                iv_option2.setImageDrawable(null);
+                iv_option3.setImageDrawable(null);
+                iv_option4.setImageDrawable(null);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_c"), iv_option3);
+                ImageLoader.getInstance().clearMemoryCache();
+                ImageLoader.getInstance().clearDiskCache();
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_d"), iv_option4);
+            } catch (Exception e) {
 
+                TraceUtils.logException(e);
+
+            }
+
+            String extFileDirPath = IMGPATH;
+
+            File externalFileDir = activity.getExternalFilesDir(null);
+
+            if (externalFileDir != null) {
+
+                extFileDirPath = externalFileDir.getAbsolutePath() + "/";
+
+            }
+
+            String encPath = IMGPATH + jsonObject.optString("question_name");
+
+            String plnPath = extFileDirPath + "question.PNG";
+
+            boolean isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_question);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_a");
+
+            plnPath = extFileDirPath + "option_a.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option1);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_b");
+
+            plnPath = extFileDirPath + "option_b.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option2);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_c");
+
+            plnPath = extFileDirPath + "option_c.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option3);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_d");
+
+            plnPath = extFileDirPath + "option_d.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option4);
+
+            }
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
@@ -1603,4 +1695,74 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
         }
 
     }
+    private boolean decryptCipher(String localLogoPath, String tmpFilePath) {
+
+        FileInputStream fis = null;
+
+        FileOutputStream fos = null;
+
+        CipherInputStream cis = null;
+
+        try {
+
+            fis = new FileInputStream(localLogoPath);
+
+            fos = new FileOutputStream(tmpFilePath);
+
+            Cipher cipher = Cipher.getInstance("ARC4");
+
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec("filepickerapp".getBytes(), "ARC4"));
+
+            cis = new CipherInputStream(fis, cipher);
+
+            int b;
+
+            int chunkSize = 1024;
+
+            byte[] d = new byte[chunkSize];
+
+            while ((b = cis.read(d)) != -1) {
+
+                fos.write(d, 0, b);
+
+            }
+
+            fos.flush();
+
+            fis.close();
+
+            fos.close();
+
+            cis.close();
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+            return false;
+
+        } finally {
+
+            try {
+                if (fis != null)
+                    fis.close();
+
+                if (fos != null)
+                    fos.close();
+
+                if (cis != null)
+                    cis.close();
+
+            } catch (Exception e) {
+
+                TraceUtils.logException(e);
+
+            }
+
+        }
+
+        return true;
+
+    }
+
 }

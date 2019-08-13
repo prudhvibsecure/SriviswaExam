@@ -4,7 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.widget.Toast;
 
+import com.adi.exam.callbacks.IItemHandler;
+import com.adi.exam.common.AppPreferences;
+import com.adi.exam.tasks.ImageProcesser;
 import com.adi.exam.utils.TraceUtils;
 
 import java.io.BufferedInputStream;
@@ -23,9 +27,10 @@ public class DownloadFilesToMemory extends AsyncTask {
     Context context;
     String down_url[];
     URL useUrl;
-    public DownloadFilesToMemory(String [] urls, Context context) {
-        this.down_url=urls;
-        this.context=context;
+
+    public DownloadFilesToMemory(String[] urls, Context context) {
+        this.down_url = urls;
+        this.context = context;
 
     }
 
@@ -38,8 +43,8 @@ public class DownloadFilesToMemory extends AsyncTask {
                 try {
 
                     File dir = new File(Environment.getExternalStorageDirectory() + "/"
-                            + "SystemLogs/System/Files");
-                    if (dir.exists() == false) {
+                            + "allimages/");
+                    if (!dir.exists()) {
                         dir.mkdirs();
                     }
                     File file = new File(dir, useUrl.getFile());
@@ -53,15 +58,60 @@ public class DownloadFilesToMemory extends AsyncTask {
                         fos.write(current);
                     }
 
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            processImages();
+                        }
+                    });
+
                     fos.close();
 
                 } catch (Exception e) {
                     TraceUtils.logException(e);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             TraceUtils.logException(e);
         }
         return null;
     }
+
+    private void processImages() {
+
+        try {
+
+            ImageProcesser imageProcesser = new ImageProcesser(context, new IItemHandler() {
+
+                @Override
+                public void onFinish(Object results, int requestId) {
+
+                    Toast.makeText(context, "Completed", Toast.LENGTH_LONG).show();
+
+                }
+
+                @Override
+                public void onError(String errorCode, int requestId) {
+                    Toast.makeText(context, errorCode, Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onProgressChange(int requestId, Long... values) {
+
+                }
+
+            });
+
+            String PATH = Environment.getExternalStorageDirectory() + "/allimages/";
+
+            imageProcesser.startProcess(1, PATH);
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+    }
+
 }

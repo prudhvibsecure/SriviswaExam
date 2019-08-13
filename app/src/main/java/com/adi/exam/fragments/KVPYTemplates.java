@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,6 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,6 +62,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
@@ -123,7 +127,13 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
 
     private Date edate, sdate;
 
+    String path;
+
     AssetManager assetManager;
+
+    private String PATH = Environment.getExternalStorageDirectory().toString();
+
+    private final String IMGPATH = PATH + "/System/allimages/";
 
     private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
 
@@ -429,12 +439,28 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
                     }
 
                     timeTaken = timeTaken + timeTaken4Question;
-                    timeTaken4Question=timeTaken;
                     jsonObject1.put("question_time", timeTaken);
+                    jsonObject1.put("given_option", jsonObject.optString("qanswer"));
+                    jsonObject1.put("correct_option", jsonObject.optString("answer"));
+
+                    String res = "";
+
+
+                    if (TextUtils.isEmpty(jsonObject.optString("qanswer"))) {
+                        res = "2";
+                    } else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+                        res = "0";
+                    } else {
+                        res = "1";
+                    }
+                    jsonObject1.put("result", res);
+                    jsonObject1.put("question_time", timeTaken4Question + "");
+                    jsonObject1.put("no_of_clicks", check++);
+                    jsonObject1.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
 
-                    table.checkNInsertARecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
+                    table.updateRecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
 
                     return;
                 }
@@ -451,7 +477,7 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("student_question_time_id", student_question_time_id);
                 questionTimeObject.put("student_id", activity.getStudentDetails().optInt("student_id"));
                 questionTimeObject.put("exam_id", data.optInt("exam_id"));
-                questionTimeObject.put("question_no", question_no);
+                questionTimeObject.put("question_no", jsonObject.optString("sno"));
                 questionTimeObject.put("question_id", jsonObject.optInt("question_id"));
                 questionTimeObject.put("topic_id", jsonObject.optInt("topic_id"));
                 questionTimeObject.put("lesson_id", getLessonID(jsonObject.optInt("topic_id")));
@@ -459,10 +485,13 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
                 String res = "";
-                if(jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
+
+
+                if (TextUtils.isEmpty(jsonObject.optString("qanswer"))) {
+                    res = "2";
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
                     res = "0";
-                }
-                else {
+                } else {
                     res = "1";
                 }
                 questionTimeObject.put("result", res );
@@ -525,8 +554,34 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
                 case R.id.ll_questionno:
 
                     int position = rv_ques_nums.getChildAdapterPosition(v);
+                    // question_no = position + 1;
+                    currentExamId = position;
+                    JSONObject jsonObject = adapter.getItems().getJSONObject(position);
+                    if (jsonObject.optString("qstate").equalsIgnoreCase("2")) {
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered));
+                        //  v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered));
+                    } else if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {
+                        rg_options.clearCheck();
+                        jsonObject.put("qstate", 1);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                        // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                    } else if (jsonObject.optString("qstate").equalsIgnoreCase("3")) {
+                        jsonObject.put("qstate", 3);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
+                        // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
+                    } else if (jsonObject.optString("qstate").equalsIgnoreCase("4")) {
+                        jsonObject.put("qstate", 4);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered_marked));
+                        // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered_marked));
+                    } else {
+                        rg_options.clearCheck();
+                        jsonObject.put("qstate", 1);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                        //  v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                    }
+                    adapter.notifyItemChanged(position);
 
-                    updateQuestionTime();
+                    // updateQuestionTime();
 
                     showNextQuestion(position);
 
@@ -534,6 +589,51 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
 
                 case R.id.tv_savennext:
 
+                    if (currentExamId != -1) {
+                        //  question_no++;
+
+                        if (currentExamId == adapter.getCount()) {
+
+                            return;
+
+                        }
+                        int selRatioId = rg_options.getCheckedRadioButtonId();
+
+                        if (selRatioId == -1) {
+
+                            activity.showokPopUp(R.drawable.pop_ic_info, activity.getString(R.string.alert), activity.getString(R.string.psao));
+
+                            return;
+                        }
+
+                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
+
+                        jsonObject.put("qstate", 2);
+
+                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+
+                        adapter.notifyItemChanged(currentExamId);
+
+                        if (jsonObject.optInt("sno") < adapter.getItemCount()) {
+                            rg_options.clearCheck();
+
+                        }
+
+                        updateQuestionTime();
+
+
+                        showNextQuestion(currentExamId + 1);
+
+                    }
+
+                    break;
+
+                case R.id.tv_savenmarkforreview:
+
+                    if (currentExamId == adapter.getCount()) {
+                        Toast.makeText(activity, "Are you finished your exam..", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     if (currentExamId != -1) {
                         question_no++;
                         int selRatioId = rg_options.getCheckedRadioButtonId();
@@ -545,39 +645,7 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
                             return;
                         }
 
-                        JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
-
-                        jsonObject.put("qstate", 2);
-
-                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
-
-                        adapter.notifyItemChanged(currentExamId);
-
-                        rg_options.clearCheck();
-
-                        updateQuestionTime();
-
-                        showNextQuestion(currentExamId + 1);
-
-
-                    }
-
-                    break;
-
-                case R.id.tv_savenmarkforreview:
-
-                    if (currentExamId != -1) {
-
-                        int selRatioId = rg_options.getCheckedRadioButtonId();
-
-                        if (selRatioId == -1) {
-
-                            activity.showokPopUp(R.drawable.pop_ic_info, activity.getString(R.string.alert), activity.getString(R.string.psao));
-
-                            return;
-                        }
-
-                        JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                         jsonObject.put("qstate", 4);
 
@@ -598,23 +666,38 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
                 case R.id.tv_clearresponse:
 
                     rg_options.clearCheck();
+                    //  }
+                    jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                    jsonObject.put("qstate", 1);
+                    jsonObject.put("qanswer", "");
+
+                    adapter.notifyItemChanged(currentExamId);
+                    updateQuestionTime();
+
 
                     break;
 
                 case R.id.tv_mfrn:
 
+                    if (currentExamId == adapter.getCount()) {
+                        Toast.makeText(activity, "Your exam preview is done..", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     if (currentExamId != -1) {
 
+                        //question_no++;
                         int selRatioId = rg_options.getCheckedRadioButtonId();
 
-                        JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                         jsonObject.put("qstate", 3);
 
                         jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
 
                         adapter.notifyItemChanged(currentExamId);
-
+//                        if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
+//                            rg_options.clearCheck();
+//                        }
                         rg_options.clearCheck();
 
                         updateQuestionTime();
@@ -622,35 +705,50 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
                         showNextQuestion(currentExamId + 1);
 
                     }
-
                     break;
 
                 case R.id.tv_back:
 
                     /*if (currentExamId == -1)
                         return;*/
-
-                    if (currentExamId == 0)
+                    if (currentExamId == -1)
                         return;
+                    jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
+                    if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
+                        rg_options.clearCheck();
+                        jsonObject.put("qstate", 1);
+                        jsonObject.put("qanswer", "");
+                    }
+                    question_no--;
+                    adapter.notifyItemChanged(currentExamId);
                     updateQuestionTime();
 
                     showNextQuestion(currentExamId - 1);
+                    if (currentExamId == 0) {
+                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                        if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
+                            rg_options.clearCheck();
+
+                            jsonObject.put("qstate", 1);
+                            jsonObject.put("qanswer", "");
+                            currentExamId = 0;//this one
+                        }
+                    }
+
 
                     break;
 
                 case R.id.tv_submit:
-                    activity.onKeyDown(4,null);
+                  //  activity.onKeyDown(4,null);
                     showResults();
 
                     break;
 
                 case R.id.tv_next:
 
-                    if (currentExamId == adapter.getCount())
-                        return;
-
-                    JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                    question_no++;
+                    jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                     if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {
 
@@ -683,6 +781,58 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
             questionStartTime = System.currentTimeMillis();
 
             currentExamId = position;
+            if (position == adapter.getCount()) {
+                JSONArray jsonArray = adapter.getItems();
+
+                int notvisited = 0;
+
+                int notanswered = 0;
+
+                int answered = 0;
+
+                int mfr = 0;
+
+                int amfr = 0;
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+
+                    if (jsonObject1.optString("qstate").equalsIgnoreCase("0")) {
+
+                        ++notvisited;
+
+                    } else if (jsonObject1.optString("qstate").equalsIgnoreCase("1")) {
+
+                        ++notanswered;
+
+                    } else if (jsonObject1.optString("qstate").equalsIgnoreCase("2")) {
+
+                        ++answered;
+
+                    } else if (jsonObject1.optString("qstate").equalsIgnoreCase("3")) {
+
+                        ++mfr;
+
+                    } else if (jsonObject1.optString("qstate").equalsIgnoreCase("4")) {
+
+                        ++amfr;
+
+                    }
+
+
+                }
+                tv_notvisitedcnt.setText(notvisited + "");
+
+                tv_notansweredcnt.setText(notanswered + "");
+
+                tv_answeredcnt.setText(answered + "");
+
+                tv_mfrcnt.setText(mfr + "");
+
+                tv_amfrcnt.setText(amfr + "");
+                return;
+            }
 
             JSONArray jsonArray = adapter.getItems();
 
@@ -763,17 +913,102 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
 //            decrypt("enc_"+jsonObject.optString("option_c"));
 //            decrypt("enc_"+jsonObject.optString("option_d"));
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("question_name"), iv_question);
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("question_name"), iv_question);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_a"), iv_option1);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_b"), iv_option2);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_c"), iv_option3);
+//
+//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_d"), iv_option4);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_a"), iv_option1);
+            try {
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_b"), iv_option2);
+                iv_question.setImageDrawable(null);
+                iv_option1.setImageDrawable(null);
+                iv_option2.setImageDrawable(null);
+                iv_option3.setImageDrawable(null);
+                iv_option4.setImageDrawable(null);
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_c"), iv_option3);
+                ImageLoader.getInstance().clearMemoryCache();
+                ImageLoader.getInstance().clearDiskCache();
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_d"), iv_option4);
+            } catch (Exception e) {
 
+                TraceUtils.logException(e);
 
+            }
+
+            String extFileDirPath = IMGPATH;
+
+            File externalFileDir = activity.getExternalFilesDir(null);
+
+            if (externalFileDir != null) {
+
+                extFileDirPath = externalFileDir.getAbsolutePath() + "/";
+
+            }
+
+            String encPath = IMGPATH + jsonObject.optString("question_name");
+
+            String plnPath = extFileDirPath + "question.PNG";
+
+            boolean isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_question);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_a");
+
+            plnPath = extFileDirPath + "option_a.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option1);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_b");
+
+            plnPath = extFileDirPath + "option_b.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option2);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_c");
+
+            plnPath = extFileDirPath + "option_c.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option3);
+
+            }
+
+            encPath = IMGPATH + jsonObject.optString("option_d");
+
+            plnPath = extFileDirPath + "option_d.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option4);
+
+            }
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
@@ -954,10 +1189,23 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
             }else if (requestId == 3) {
                 JSONObject obj = new JSONObject(results.toString());
                 if (obj.optString("statuscode").equalsIgnoreCase("200")) {
-                 //   activity.onKeyDown(4, null);
+                    // activity.onKeyDown(4, null);
 //                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='" + data.optInt("exam_id") + "'", "FILESDATA");
+                    File file = new File(path);
+                    file.delete();
+
+                    path = "";
+
                 } else {
-                    activity.onKeyDown(4, null);
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='" + data.optInt("exam_id") + "'", "FILESDATA");
+                    File file = new File(path);
+                    file.delete();
+
+                    path = "";
+                    //activity.onKeyDown(4, null);
                 }
             }
 
@@ -1128,10 +1376,10 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
 
             JSONObject STUDENTEXAMRESULT = new JSONObject();
             JSONObject backup_result = new JSONObject();
-
-            int student_exam_result_id = AppPreferences.getInstance(activity).getIntegerFromStore("student_exam_result_id");
-
-            AppPreferences.getInstance(activity).addIntegerToStore("student_exam_result_id", ++student_exam_result_id, false);
+            long student_exam_result_id = System.currentTimeMillis();
+//            int student_exam_result_id = AppPreferences.getInstance(activity).getIntegerFromStore("student_exam_result_id");
+//
+//            AppPreferences.getInstance(activity).addIntegerToStore("student_exam_result_id", ++student_exam_result_id, false);
 
             STUDENTEXAMRESULT.put("student_exam_result_id", student_exam_result_id);
             STUDENTEXAMRESULT.put("student_id", activity.getStudentDetails().optInt("student_id"));
@@ -1431,22 +1679,73 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
         }
 
     }
-    public  void decrypt(String imageName) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-        KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        byte[] keyBytes = "12345678".getBytes();
-        SecretKey skey = kgen.generateKey();
-        FileInputStream encfis = new FileInputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + "enc_"+ imageName);
-        FileOutputStream decfos = new FileOutputStream(Environment.getExternalStorageDirectory().toString() + "/SystemLogs/" + imageName);
+    private boolean decryptCipher(String localLogoPath, String tmpFilePath) {
 
-        Cipher decipher = Cipher.getInstance("AES");
-        decipher.init(Cipher.DECRYPT_MODE, skey);
+        FileInputStream fis = null;
 
-        CipherOutputStream cos = new CipherOutputStream(decfos, decipher);
-        int read;
-        while ((read = encfis.read()) != -1) {
-            cos.write(read);
-            cos.flush();
+        FileOutputStream fos = null;
+
+        CipherInputStream cis = null;
+
+        try {
+
+            fis = new FileInputStream(localLogoPath);
+
+            fos = new FileOutputStream(tmpFilePath);
+
+            Cipher cipher = Cipher.getInstance("ARC4");
+
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec("filepickerapp".getBytes(), "ARC4"));
+
+            cis = new CipherInputStream(fis, cipher);
+
+            int b;
+
+            int chunkSize = 1024;
+
+            byte[] d = new byte[chunkSize];
+
+            while ((b = cis.read(d)) != -1) {
+
+                fos.write(d, 0, b);
+
+            }
+
+            fos.flush();
+
+            fis.close();
+
+            fos.close();
+
+            cis.close();
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+            return false;
+
+        } finally {
+
+            try {
+                if (fis != null)
+                    fis.close();
+
+                if (fos != null)
+                    fos.close();
+
+                if (cis != null)
+                    cis.close();
+
+            } catch (Exception e) {
+
+                TraceUtils.logException(e);
+
+            }
+
         }
-        cos.close();
+
+        return true;
+
     }
 }

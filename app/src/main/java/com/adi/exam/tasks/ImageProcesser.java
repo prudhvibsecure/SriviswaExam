@@ -27,7 +27,7 @@ public class ImageProcesser {
 
     private String PATH = Environment.getExternalStorageDirectory().toString();
 
-    private final String IMGPATH = PATH + "/SystemLogs/Files/";
+    private final String IMGPATH = PATH + "/System/allimages";
 
     public ImageProcesser(Context aContext, IItemHandler callback) {
 
