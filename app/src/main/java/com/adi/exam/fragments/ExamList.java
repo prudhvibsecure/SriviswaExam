@@ -110,7 +110,27 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
         rv_content_list.setAdapter(adapterContent);
 
         if (isNetworkAvailable()) {
+
+            JSONArray jsonArray = getExams();
+
+            if (jsonArray.length() > 0) {
+
+                adapterContent.setItems(jsonArray);
+
+                adapterContent.notifyDataSetChanged();
+
+                progressBar.setVisibility(View.GONE);
+
+                //updateOtherDetails(adapterContent.getItems());
+
+            } else
+            {
+                checkQuestionPaper();
+            }
+
             checkQuestionPaper();
+
+
         } else {
             progressBar.setVisibility(View.GONE);
            /* PhoneComponent phncomp = new PhoneComponent(this, activity, 3);

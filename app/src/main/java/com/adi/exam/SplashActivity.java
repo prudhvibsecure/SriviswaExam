@@ -70,6 +70,8 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         setContentView(R.layout.activity_splashscreen);
+
+       // Settings.Secure.putInt(getContentResolver(),Settings.Secure.USB_MASS_STORAGE_ENABLED,0);
         PrefUtils.setKioskModeActive(false, getApplicationContext());
         String networkType = getNetWorkObject().execute("getConnectionInfo");
 

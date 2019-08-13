@@ -79,8 +79,8 @@ public class ApkFileDownloader extends IntentService {
         byte data[] = new byte[1024 * 4];
         long fileSize = body.contentLength();
         InputStream bis = new BufferedInputStream(body.byteStream(), 1024 * 8);
-        File outputFile = new File(Environment.getExternalStorageDirectory()
-                .toString(), f_name);
+        String externalDirectory= Environment.getExternalStorageDirectory().toString();
+        File outputFile = new File(externalDirectory, f_name);
         OutputStream output = new FileOutputStream(outputFile);
         long total = 0;
         long startTime = System.currentTimeMillis();

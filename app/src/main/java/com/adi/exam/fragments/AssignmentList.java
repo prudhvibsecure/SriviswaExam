@@ -729,7 +729,7 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
             if (database != null) {
 
                 //String cursor_q = "select * from EXAM";
-                String cursor_q = "SELECT * from assignment order by exam_date";
+                String cursor_q = "SELECT * from assignment order by from_time";
                 db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,

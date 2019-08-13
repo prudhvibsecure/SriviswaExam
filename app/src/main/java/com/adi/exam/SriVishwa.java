@@ -601,6 +601,33 @@ public class SriVishwa extends AppCompatActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         try {
+           /* if(keyCode == 3)
+            {
+                if (fragStack.size() > 1) {
+
+                    ParentFragment pf = fragStack.peek();
+                    if (pf.back())
+                        return true;
+
+                    fragStack.pop();
+
+                    FragmentTransaction trans = manager.beginTransaction();
+                    trans.remove(pf);
+
+                    if (fragStack.size() > 0) {
+                        ParentFragment pf1 = fragStack.get(fragStack.size() - 1);
+                        trans.show(pf1);
+                    } *//*else {
+                        swiftHomeFragments(null, fragHomeStack.peek());
+                    }*//*
+
+                    trans.commit();
+                    return true;
+
+                }
+                showExitDialog();
+                return false;
+            }*/
             if (keyCode == 4) {
 
                 if (fragStack.size() > 1) {
@@ -1309,8 +1336,8 @@ public class SriVishwa extends AppCompatActivity
     };
 
     private void questionFile(String a_name) {
-        File mediaStorage = new File(Environment.getExternalStorageDirectory()
-                .toString());
+        String externalDirectory= Environment.getExternalStorageDirectory().toString();
+        File mediaStorage = new File(externalDirectory);
         if (!mediaStorage.exists()) {
             mediaStorage.mkdirs();
         }

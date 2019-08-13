@@ -18,6 +18,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.spec.SecretKeySpec;
+
 public class AllQuestionsAdapter extends RecyclerView.Adapter<AllQuestionsAdapter.ContactViewHolder> {
 
     private JSONArray array = new JSONArray();
@@ -25,6 +33,10 @@ public class AllQuestionsAdapter extends RecyclerView.Adapter<AllQuestionsAdapte
     private ImageLoader imageLoader;
 
     private Context mContext;
+
+    private String PATH = Environment.getExternalStorageDirectory().toString();
+
+    private final String IMGPATH = PATH + "/System/allimages/";
 
     public AllQuestionsAdapter(Context context) {
 
@@ -48,7 +60,27 @@ public class AllQuestionsAdapter extends RecyclerView.Adapter<AllQuestionsAdapte
 
             contactViewHolder.tv_qnumber.setText(mContext.getString(R.string.qnumber, position+""));
 
-            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/allimages/" + jsonObject.optString("question_name"), contactViewHolder.iv_qimage);
+            String extFileDirPath = IMGPATH;
+
+            File externalFileDir = mContext.getExternalFilesDir(null);
+
+            if (externalFileDir != null) {
+
+                extFileDirPath = externalFileDir.getAbsolutePath() + "/";
+
+            }
+            String encPath = IMGPATH + jsonObject.optString("question_name");
+
+            String plnPath = extFileDirPath + "question.PNG";
+
+            boolean isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, contactViewHolder.iv_qimage);
+
+            }
+            //imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/System/allimages/" + jsonObject.optString("question_name"), contactViewHolder.iv_qimage);
 
         } catch (Exception e) {
 
@@ -112,6 +144,75 @@ public class AllQuestionsAdapter extends RecyclerView.Adapter<AllQuestionsAdapte
             iv_qimage = v.findViewById(R.id.iv_qimage);
 
         }
+
+    }
+    private boolean decryptCipher(String localLogoPath, String tmpFilePath) {
+
+        FileInputStream fis = null;
+
+        FileOutputStream fos = null;
+
+        CipherInputStream cis = null;
+
+        try {
+
+            fis = new FileInputStream(localLogoPath);
+
+            fos = new FileOutputStream(tmpFilePath);
+
+            Cipher cipher = Cipher.getInstance("ARC4");
+
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec("filepickerapp".getBytes(), "ARC4"));
+
+            cis = new CipherInputStream(fis, cipher);
+
+            int b;
+
+            int chunkSize = 1024;
+
+            byte[] d = new byte[chunkSize];
+
+            while ((b = cis.read(d)) != -1) {
+
+                fos.write(d, 0, b);
+
+            }
+
+            fos.flush();
+
+            fis.close();
+
+            fos.close();
+
+            cis.close();
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+            return false;
+
+        } finally {
+
+            try {
+                if (fis != null)
+                    fis.close();
+
+                if (fos != null)
+                    fos.close();
+
+                if (cis != null)
+                    cis.close();
+
+            } catch (Exception e) {
+
+                TraceUtils.logException(e);
+
+            }
+
+        }
+
+        return true;
 
     }
 

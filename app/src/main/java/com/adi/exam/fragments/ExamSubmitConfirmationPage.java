@@ -1,6 +1,7 @@
 package com.adi.exam.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -237,11 +238,12 @@ public class ExamSubmitConfirmationPage extends ParentFragment implements IItemH
 
         } else if (view.getId() == R.id.tv_no) {
 
-            activity.onKeyDown(4, null);
+           startActivity(new Intent(getActivity(),SriVishwa.class));
 
         }
 
     }
+
 
     @Override
     public void onOK(int requestId) {
