@@ -61,6 +61,8 @@ public class AppSettings {
 
             properties.setProperty("download_qs", BASE_PATH + "assets/upload/quest_uploads/");
 
+            properties.setProperty("download_img", BASE_PATH + "assets/upload/questions/");
+
             properties.setProperty("check_network", BASE_PATH + "check_network");
 
 

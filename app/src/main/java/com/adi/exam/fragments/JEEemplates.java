@@ -109,7 +109,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     private JSONObject json;
 
-    private int check = 0;
+    private int check = 0, clickcount = 0;
 
     private long questionStartTime = 0;
 
@@ -117,7 +117,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     private TabLayout tl_subjects;
 
-    private long timeTaken4Question = 0;
+    private long timeTaken4Question = 0, timeTaken = 0;
 
     private Date edate, sdate;
 
@@ -251,6 +251,34 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             TraceUtils.logException(e);
 
         }
+
+        ((RadioButton)layout.findViewById(R.id.rb_first)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
+
+        ((RadioButton)layout.findViewById(R.id.rb_second)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
+
+        ((RadioButton)layout.findViewById(R.id.rb_third)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
+
+        ((RadioButton)layout.findViewById(R.id.rb_fourth)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
 
         String subjectsArray[];
 
@@ -419,18 +447,27 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                 if (jsonArray.length() > 0) {
 
-                    long timeTaken = 0;
+                    //long timeTaken = 0;
+
+                    //int clickcount = 0;
 
                     JSONObject jsonObject1 = jsonArray.getJSONObject(jsonArray.length() - 1);
 
                     String question_time = jsonObject1.optString("question_time").trim();
+
+                    String clicks = jsonObject1.optString("no_of_clicks").trim();
 
                     if (question_time.length() > 0) {
 
                         timeTaken = Long.parseLong(question_time);
 
                     }
+                    if(clicks.length() > 0)
+                    {
+                        clickcount = Integer.parseInt(clicks);
+                    }
 
+                    clickcount = clickcount+check;
                     timeTaken = timeTaken + timeTaken4Question;
                     jsonObject1.put("question_time", timeTaken);
                     jsonObject1.put("given_option", jsonObject.optString("qanswer"));
@@ -447,13 +484,18 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                         res = "1";
                     }
                     jsonObject1.put("result", res);
-                    jsonObject1.put("question_time", timeTaken4Question + "");
-                    jsonObject1.put("no_of_clicks", check++);
+                    //jsonObject1.put("question_time", timeTaken4Question + "");
+                    jsonObject1.put("no_of_clicks", clickcount);
                     jsonObject1.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
 
                     table.updateRecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
+
+                    check = 0;
+                    clickcount = 0;
+                    timeTaken4Question = 0;
+                    timeTaken = 0;
 
                     return;
                 }
@@ -489,11 +531,13 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 }
                 questionTimeObject.put("result", res);
                 questionTimeObject.put("question_time", timeTaken4Question + "");
-                questionTimeObject.put("no_of_clicks", check++);
+                questionTimeObject.put("no_of_clicks", check);
                 questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                 table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
                 check = 0;
+                timeTaken4Question = 0;
+
                 // question_no++;
 
             }

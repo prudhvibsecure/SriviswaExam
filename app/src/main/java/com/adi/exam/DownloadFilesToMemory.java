@@ -16,17 +16,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class DownloadFilesToMemory extends AsyncTask {
-    HttpURLConnection connection = null;
-    Context context;
-    String down_url[];
-    URL useUrl;
+    private HttpURLConnection connection = null;
+    private Context context;
+    private String down_url[];
+    private URL useUrl;
+    private String PATH = Environment.getExternalStorageDirectory() + "/allimages/";
 
     public DownloadFilesToMemory(String[] urls, Context context) {
         this.down_url = urls;
@@ -47,7 +50,9 @@ public class DownloadFilesToMemory extends AsyncTask {
                     if (!dir.exists()) {
                         dir.mkdirs();
                     }
-                    File file = new File(dir, useUrl.getFile());
+                    String paths = useUrl.toString();
+                    String fileName = paths.substring(paths.lastIndexOf('/') + 1);
+                    File file = new File(dir, fileName);
 
                     URLConnection ucon = useUrl.openConnection();
                     InputStream is = ucon.getInputStream();
@@ -58,12 +63,7 @@ public class DownloadFilesToMemory extends AsyncTask {
                         fos.write(current);
                     }
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            processImages();
-                        }
-                    });
+                    processImages();
 
                     fos.close();
 
@@ -80,14 +80,14 @@ public class DownloadFilesToMemory extends AsyncTask {
     private void processImages() {
 
         try {
-            final String PATH = Environment.getExternalStorageDirectory() + "/allimages/";
+
             ImageProcesser imageProcesser = new ImageProcesser(context, new IItemHandler() {
 
                 @Override
                 public void onFinish(Object results, int requestId) {
 
                     Toast.makeText(context, "Completed", Toast.LENGTH_LONG).show();
-                    File ff=new File(PATH);
+                    File ff = new File(PATH);
                     ff.delete();
 
                 }
@@ -103,7 +103,6 @@ public class DownloadFilesToMemory extends AsyncTask {
                 }
 
             });
-
 
 
             imageProcesser.startProcess(1, PATH);

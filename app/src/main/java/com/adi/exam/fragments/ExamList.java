@@ -123,9 +123,6 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                 //updateOtherDetails(adapterContent.getItems());
 
-            } else
-            {
-                checkQuestionPaper();
             }
 
             checkQuestionPaper();

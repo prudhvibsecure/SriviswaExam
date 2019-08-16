@@ -1279,11 +1279,11 @@ public class SriVishwa extends AppCompatActivity
                                                 for (int i = 0; i < jsonArray.length(); i++) {
                                                     JSONObject oo = jsonArray.getJSONObject(i);
                                                     String d_urls[] = {
-                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("question_name"),
-                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_a"),
-                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_b"),
-                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_c"),
-                                                            AppSettings.getInstance().getPropertyValue("download_qs") + oo.optString("option_d"),
+                                                            AppSettings.getInstance().getPropertyValue("download_img") + oo.optString("question_name"),
+                                                            AppSettings.getInstance().getPropertyValue("download_img") + oo.optString("option_a"),
+                                                            AppSettings.getInstance().getPropertyValue("download_img") + oo.optString("option_b"),
+                                                            AppSettings.getInstance().getPropertyValue("download_img") + oo.optString("option_c"),
+                                                            AppSettings.getInstance().getPropertyValue("download_img") + oo.optString("option_d"),
                                                     };
                                                     new DownloadFilesToMemory(d_urls, getApplicationContext()).execute();
 

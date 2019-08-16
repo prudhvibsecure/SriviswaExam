@@ -104,6 +104,21 @@ public class AssignmentList extends ParentFragment implements View.OnClickListen
         rv_content_list.setAdapter(adapterContent);
 
         if (isNetworkAvailable()) {
+
+            JSONArray jsonArray = (JSONArray) getAssaignments();
+
+            if (jsonArray.length() > 0) {
+
+                adapterContent.setItems(jsonArray);
+
+                adapterContent.notifyDataSetChanged();
+
+                progressBar.setVisibility(View.GONE);
+
+                //updateOtherDetails(adapterContent.getItems());
+
+            }
+
             checkAssignment();
         }else{
             progressBar.setVisibility(View.GONE);
