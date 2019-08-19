@@ -315,10 +315,17 @@ Materials extends ParentFragment implements IItemHandler, View.OnClickListener, 
                 startActivity(in);
 
                 long folder_size = getFolderSize(file);
-                if (folder_size < 5000) {
+                if (folder_size < 5120000000L) {
                     filePDF(selectedJSON);
-                }else{
+                } else {
                     //delete file here
+                    File yourDir = new File(path);
+                    for (File f : yourDir.listFiles()) {
+                        int file_size = Integer.parseInt(String.valueOf(f.length() / 1024));
+                        if (file_size > 25) {
+                            f.delete();
+                        }
+                    }
                 }
             }
 
