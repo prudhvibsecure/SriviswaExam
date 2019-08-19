@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -38,6 +40,16 @@ import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.services.DownloadService;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
+import com.adi.exam.utils.Utils;
+import com.downloader.Error;
+import com.downloader.OnCancelListener;
+import com.downloader.OnDownloadListener;
+import com.downloader.OnPauseListener;
+import com.downloader.OnProgressListener;
+import com.downloader.OnStartOrResumeListener;
+import com.downloader.PRDownloader;
+import com.downloader.Progress;
+import com.downloader.Status;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -73,7 +85,11 @@ Materials extends ParentFragment implements IItemHandler, View.OnClickListener, 
 
     private boolean mIsBound;
 
-    private String url="";
+    private String url = "";
+
+    private int downloadID;
+
+    private String path = Environment.getExternalStorageDirectory().getPath() + "/Materials/";
 
 
     public Materials() {
@@ -274,16 +290,99 @@ Materials extends ParentFragment implements IItemHandler, View.OnClickListener, 
 
             }
 
-            Intent in = new Intent(getActivity(), ViewMaterial.class);
+          /*  Intent in = new Intent(getActivity(), ViewMaterial.class);
             in.putExtra("url", url);
             startActivity(in);
-            //initDownload(selectedJSON);
+*/
+
+            File file = new File(path);
+            if (!file.exists()) {
+                file.mkdir();
+            }
+            String full_path = path + jsonObject.optString("material_unique_name");
+            File filer = new File(full_path);
+            String type = Utils.getMimeType(jsonObject.optString("material_unique_name"));
+            if (filer.exists()) {
+
+                Uri path = Uri.fromFile(new File(full_path));
+                Intent launchIntent = new Intent(Intent.ACTION_VIEW);
+                launchIntent.setDataAndType(path, type);
+                launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(launchIntent);
+            } else {
+                Intent in = new Intent(getActivity(), ViewMaterial.class);
+                in.putExtra("url", url);
+                startActivity(in);
+
+                long folder_size = getFolderSize(file);
+                if (folder_size < 5000) {
+                    filePDF(selectedJSON);
+                }else{
+                    //delete file here
+                }
+            }
+
+            // initDownload(selectedJSON);
 
         } catch (Exception e) {
 
             TraceUtils.logException(e);
 
         }
+
+    }
+
+    private void filePDF(JSONObject jsonObject) {
+
+        if (Status.RUNNING == PRDownloader.getStatus(downloadID)) {
+            PRDownloader.pause(downloadID);
+            return;
+        }
+
+        if (Status.PAUSED == PRDownloader.getStatus(downloadID)) {
+            PRDownloader.resume(downloadID);
+            return;
+        }
+        downloadID = PRDownloader.download(jsonObject.optString("downloadurl"), path, jsonObject.optString("material_unique_name"))
+                .build()
+                .setOnStartOrResumeListener(new OnStartOrResumeListener() {
+                    @Override
+                    public void onStartOrResume() {
+
+                    }
+                })
+                .setOnPauseListener(new OnPauseListener() {
+                    @Override
+                    public void onPause() {
+
+                    }
+                })
+                .setOnCancelListener(new OnCancelListener() {
+                    @Override
+                    public void onCancel() {
+                        downloadID = 0;
+
+                    }
+                })
+                .setOnProgressListener(new OnProgressListener() {
+                    @Override
+                    public void onProgress(Progress progress) {
+                        long progressPercent = progress.currentBytes * 100 / progress.totalBytes;
+                    }
+                })
+                .start(new OnDownloadListener() {
+                    @Override
+                    public void onDownloadComplete() {
+                        Toast.makeText(mActivity, "Download completed", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Error error) {
+
+                        Toast.makeText(mActivity, error.toString(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
 
     }
 
@@ -737,5 +836,16 @@ Materials extends ParentFragment implements IItemHandler, View.OnClickListener, 
 
         getTracksListFromTable();
 
+    }
+
+    public long getFolderSize(File dir) {
+        long size = 0;
+        for (File file : dir.listFiles()) {
+            if (file.isFile()) {
+                size += file.length();
+            } else
+                size += getFolderSize(file);
+        }
+        return size;
     }
 }
