@@ -24,19 +24,21 @@
 
     <com.adi.exam.controls.CustomTextView
         android:id="@+id/tv_timer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_gravity="end"
         android:background="@drawable/button_bg_cancel_gray"
+        android:gravity="end"
         android:padding="@dimen/_5sdp"
+        android:text="Time:00:00:00"
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
-        android:text="Time:"
         app:fontType="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/template_pop_but_def_cancel_gray"
         android:baselineAligned="false"
         android:orientation="horizontal">
 
@@ -44,6 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@drawable/template_pop_but_def_cancel_gray"
             android:orientation="vertical"
             android:padding="@dimen/_5sdp">
 
@@ -52,11 +55,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <TextView
+                    android:id="@+id/vv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="Go To"
+                    android:textColor="@color/butblue"
+                    android:textSize="16dp" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_ques_nums"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_alignParentTop="true"
+                    android:layout_below="@+id/vv"
                     android:cacheColorHint="@android:color/transparent" />
 
 
@@ -74,19 +86,20 @@
                 android:id="@+id/tv_questionno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:background="@drawable/trapezium"
+                android:gravity="left|center"
+                android:paddingLeft="10dp"
                 android:text="@string/questionno"
                 android:textAllCaps="true"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="16sp"
                 app:fontType="2" />
 
             <View
                 android:id="@+id/v_topline"
                 android:layout_width="match_parent"
-                android:layout_height="0.5dp"
+                android:layout_height="1dp"
                 android:layout_below="@+id/tv_questionno"
-                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:background="@color/butblue" />
 
@@ -118,6 +131,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/template_pop_but_def_cancel_gray"
                         android:orientation="horizontal">
 
                         <com.adi.exam.controls.CustomTextView
@@ -146,6 +160,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/template_pop_but_def_cancel_gray"
                         android:orientation="horizontal">
 
                         <com.adi.exam.controls.CustomTextView
@@ -174,6 +189,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/template_pop_but_def_cancel_gray"
                         android:orientation="horizontal">
 
                         <com.adi.exam.controls.CustomTextView
@@ -202,6 +218,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/template_pop_but_def_cancel_gray"
                         android:orientation="horizontal">
 
                         <com.adi.exam.controls.CustomTextView
@@ -393,23 +410,30 @@
                             android:textAllCaps="true"
                             android:textColor="@android:color/white"
                             android:textSize="16sp"
+                            android:visibility="gone"
                             app:fontType="1" />
                     </RelativeLayout>
 
-                    <com.adi.exam.controls.CustomTextView
-                        android:id="@+id/tv_submit"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_gravity="center_vertical"
-                        android:background="@drawable/button_bg_submit_blue"
                         android:gravity="center"
-                        android:text="@string/sub_com"
-                        android:textAllCaps="true"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        app:fontType="1" />
+                        android:padding="5dp"
+                        android:layout_gravity="center">
+
+                        <com.adi.exam.controls.CustomTextView
+                            android:id="@+id/tv_submit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_bg_submit_blue"
+                            android:gravity="center"
+                            android:text="@string/sub_com"
+                            android:textAllCaps="true"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            app:fontType="1" />
+                    </LinearLayout>
                 </LinearLayout>
 
             </RelativeLayout>

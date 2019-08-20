@@ -137,6 +137,8 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
 
     private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
 
+    JSONObject studentDetails;
+
     private boolean isVisible=false;
     public KVPYTemplates() {
         // Required empty public constructor
@@ -165,7 +167,7 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
             try {
 
                 data = new JSONObject(getArguments().getString("data"));
-
+                studentDetails = new JSONObject(AppPreferences.getInstance(getActivity()).getFromStore("studentDetails"));
             } catch (Exception e) {
 
                 TraceUtils.logException(e);
@@ -218,7 +220,11 @@ public class KVPYTemplates extends ParentFragment implements View.OnClickListene
 
         layout.findViewById(R.id.tv_savennext).setOnClickListener(this);
 
-       // layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
+        layout.findViewById(R.id.profile).setVisibility(View.VISIBLE);
+
+        ((TextView) layout.findViewById(R.id.user_name)).setText(studentDetails.optString("student_name"));
+
+        // layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
 
         layout.findViewById(R.id.tv_clearresponse).setOnClickListener(this);
 

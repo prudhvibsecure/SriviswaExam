@@ -49,23 +49,16 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Locale;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class JEEemplates extends ParentFragment implements View.OnClickListener, IItemHandler, IFileUploadCallback {
+public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickListener, IItemHandler, IFileUploadCallback {
 
     private OnFragmentInteractionListener mFragListener;
 
@@ -132,13 +125,13 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     private final String IMGPATH = PATH + "/System/allimages/";
 
-    public JEEemplates() {
+    public JEEAdvanceTemplates() {
         // Required empty public constructor
     }
 
-    public static JEEemplates newInstance(String data) {
+    public static JEEAdvanceTemplates newInstance(String data) {
 
-        JEEemplates fragment = new JEEemplates();
+        JEEAdvanceTemplates fragment = new JEEAdvanceTemplates();
 
         Bundle args = new Bundle();
 

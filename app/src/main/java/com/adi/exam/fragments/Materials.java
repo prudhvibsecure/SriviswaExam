@@ -303,7 +303,6 @@ Materials extends ParentFragment implements IItemHandler, View.OnClickListener, 
             File filer = new File(full_path);
             String type = Utils.getMimeType(jsonObject.optString("material_unique_name"));
             if (filer.exists()) {
-
                 Uri path = Uri.fromFile(new File(full_path));
                 Intent launchIntent = new Intent(Intent.ACTION_VIEW);
                 launchIntent.setDataAndType(path, type);

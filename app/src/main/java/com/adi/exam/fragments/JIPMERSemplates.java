@@ -107,7 +107,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
     private JSONObject data = new JSONObject();
 
-    private JSONArray array=new JSONArray();
+    private JSONArray array = new JSONArray();
 
     private ImageLoader imageLoader;
 
@@ -129,7 +129,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
     AssetManager assetManager;
 
-    private static final String FILE_NAME = System.currentTimeMillis()+"_Result.txt";
+    private static final String FILE_NAME = System.currentTimeMillis() + "_Result.txt";
 
     String path;
 
@@ -137,7 +137,9 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
     private final String IMGPATH = PATH + "/System/allimages/";
 
-    private boolean isVisible=false;
+    private boolean isVisible = false;
+
+    JSONObject studentDetails;
 
     public JIPMERSemplates() {
         // Required empty public constructor
@@ -166,7 +168,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
             try {
 
                 data = new JSONObject(getArguments().getString("data"));
-
+                studentDetails = new JSONObject(AppPreferences.getInstance(getActivity()).getFromStore("studentDetails"));
             } catch (Exception e) {
 
                 TraceUtils.logException(e);
@@ -218,6 +220,12 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
         tv_amfrcnt = layout.findViewById(R.id.tv_amfrcnt);
 
         layout.findViewById(R.id.tv_savennext).setOnClickListener(this);
+
+        layout.findViewById(R.id.tv_savennext).setVisibility(View.GONE);
+
+        layout.findViewById(R.id.profile).setVisibility(View.VISIBLE);
+
+        ((TextView) layout.findViewById(R.id.user_name)).setText(studentDetails.optString("student_name"));
 
         // layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
 
@@ -406,8 +414,8 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
         edate = new Date();
 
-        Long minutes = ((edate.getTime()- sdate.getTime())/(60*1000)) * 60;
-        timeTaken4Question = minutes + (edate.getTime()- sdate.getTime())/1000;
+        Long minutes = ((edate.getTime() - sdate.getTime()) / (60 * 1000)) * 60;
+        timeTaken4Question = minutes + (edate.getTime() - sdate.getTime()) / 1000;
 
         sdate = edate;
         edate = null;
@@ -495,13 +503,13 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
                 } else {
                     res = "1";
                 }
-                questionTimeObject.put("result", res );
+                questionTimeObject.put("result", res);
                 questionTimeObject.put("question_time", timeTaken4Question + "");
                 questionTimeObject.put("no_of_clicks", check++);
                 questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                 table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
-                check=0;
+                check = 0;
 
             }
 
@@ -520,7 +528,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
         try {
             if (database != null) {
 
-                String cursor_q = "select * from TOPICS where topic_id="+ tid;
+                String cursor_q = "select * from TOPICS where topic_id=" + tid;
                 SQLiteDatabase db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,
@@ -743,7 +751,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
                     break;
 
                 case R.id.tv_submit:
-                  //  activity.onKeyDown(4,null);
+                    //  activity.onKeyDown(4,null);
                     showResults();
 
                     break;
@@ -1189,7 +1197,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
                 }
 
-            }else if (requestId == 3) {
+            } else if (requestId == 3) {
                 JSONObject obj = new JSONObject(results.toString());
                 if (obj.optString("statuscode").equalsIgnoreCase("200")) {
                     // activity.onKeyDown(4, null);
@@ -1400,7 +1408,6 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
             STUDENTEXAMRESULT.put("exam_type", "");
 
 
-
 //            backup_result.put("student_exam_result_id", student_exam_result_id);
 //            backup_result.put("student_id", activity.getStudentDetails().optInt("student_id"));
 //            backup_result.put("exam_id", data.optInt("exam_id"));
@@ -1417,7 +1424,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
             App_Table table = new App_Table(activity);
 
-            json=table.getExamsResult(data.optInt("exam_id"),activity.getStudentDetails().optInt("student_id"));
+            json = table.getExamsResult(data.optInt("exam_id"), activity.getStudentDetails().optInt("student_id"));
             json.put("student_exam_result_id", student_exam_result_id);
             json.put("student_id", activity.getStudentDetails().optInt("student_id"));
             json.put("exam_id", data.optInt("exam_id"));
@@ -1448,7 +1455,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
                 activity.showExamSubmitConfirmationPage(data, student_exam_result_id, 1);
 
-                startUploadBackUp(path,FILE_NAME);
+                startUploadBackUp(path, FILE_NAME);
 
                 return;
 
@@ -1464,9 +1471,9 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
     }
 
-    private void startUploadBackUp(String path,String file_name) {
+    private void startUploadBackUp(String path, String file_name) {
 
-        String url= AppSettings.getInstance().getPropertyValue("uploadfile_admin");
+        String url = AppSettings.getInstance().getPropertyValue("uploadfile_admin");
 
         FileUploader uploader = new FileUploader(getActivity(), this);
 
@@ -1546,7 +1553,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
     private void dataSendServer(String file_name) {
 
-        try{
+        try {
 
             JSONObject jsonObject = new JSONObject();
 
@@ -1560,22 +1567,21 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
 
             post.userRequest(getString(R.string.plwait), 2, "submit_exam_result", jsonObject.toString());
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
             TraceUtils.logException(e);
 
         }
     }
 
-    public JSONObject getQuestion(String qid)
-    {
+    public JSONObject getQuestion(String qid) {
         JSONObject obj = new JSONObject();
         try {
             Database database = new Database(activity);
             SQLiteDatabase db;
             if (database != null) {
 
-                String cursor_q = "select * from QUESTIONS where question_id="+ Integer.parseInt(qid);
+                String cursor_q = "select * from QUESTIONS where question_id=" + Integer.parseInt(qid);
 
                 db = database.getWritableDatabase();
                 Cursor cursor = db
@@ -1587,7 +1593,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
                             cursor.moveToFirst();
 
                             obj.put("question_id", cursor.getString(cursor.getColumnIndex("question_id")));
-                            obj.put("topic_id" , cursor.getString(cursor.getColumnIndex("topic_id")));
+                            obj.put("topic_id", cursor.getString(cursor.getColumnIndex("topic_id")));
                             obj.put("topic_name", cursor.getString(cursor.getColumnIndex("topic_name")));
                             obj.put("question_name", cursor.getString(cursor.getColumnIndex("question_name")));
                             obj.put("question_name1", cursor.getString(cursor.getColumnIndex("question_name1")));
@@ -1595,7 +1601,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
                             obj.put("question_name3", cursor.getString(cursor.getColumnIndex("question_name3")));
                             obj.put("option_a", cursor.getString(cursor.getColumnIndex("option_a")));
                             obj.put("option_b", cursor.getString(cursor.getColumnIndex("option_b")));
-                            obj.put("option_c",cursor.getString(cursor.getColumnIndex("option_c")));
+                            obj.put("option_c", cursor.getString(cursor.getColumnIndex("option_c")));
                             obj.put("option_d", cursor.getString(cursor.getColumnIndex("option_d")));
                             obj.put("answer", cursor.getString(cursor.getColumnIndex("answer")));
                             obj.put("solution1", cursor.getString(cursor.getColumnIndex("solution1")));
@@ -1619,8 +1625,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
         return obj;
     }
 
-    public void setData(JSONArray jsonArray)
-    {
+    public void setData(JSONArray jsonArray) {
         if (jsonArray.length() > 0) {
             int c = jsonArray.length();
             if (adapter.getItems().length() == 0) {
@@ -1683,6 +1688,7 @@ public class JIPMERSemplates extends ParentFragment implements View.OnClickListe
         }
 
     }
+
     private boolean decryptCipher(String localLogoPath, String tmpFilePath) {
 
         FileInputStream fis = null;
