@@ -127,7 +127,14 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     private boolean isVisible = false;
 
+    private String options = "";
+
+    private int opt1, opt2, opt3, opt4;
+
     String path;
+
+    String[] opt = new String[4];
+
     private String PATH = Environment.getExternalStorageDirectory().toString();
 
     private final String IMGPATH = PATH + "/System/allimages/";
@@ -482,10 +489,29 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                     } else {
                         res = "1";
                     }
-                    jsonObject1.put("result", res);
+
                     //jsonObject1.put("question_time", timeTaken4Question + "");
                     jsonObject1.put("no_of_clicks", clickcount);
-                    jsonObject1.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
+
+                    if(jsonObject.optInt("qstate") == 3 )
+                    {
+                        jsonObject1.put("marked_for_review",  "1");
+                        res = "2";
+                        jsonObject1.put("given_option", "");
+                    }
+                    else {
+                        jsonObject1.put("marked_for_review", "0");
+                    }
+
+                    if(jsonObject.optInt("qstate") == 4 )
+                    {
+                        jsonObject1.put("marked_for_review",  "1");
+                    }
+                    else {
+                        jsonObject1.put("marked_for_review", "0");
+                    }
+
+                    jsonObject1.put("result", res);
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
 
@@ -528,10 +554,33 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                 } else {
                     res = "1";
                 }
-                questionTimeObject.put("result", res);
+                //questionTimeObject.put("result", res);
                 questionTimeObject.put("question_time", timeTaken4Question + "");
                 questionTimeObject.put("no_of_clicks", check);
-                questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
+
+                questionTimeObject.put("question_time", timeTaken4Question + "");
+                questionTimeObject.put("no_of_clicks", check);
+
+                if(jsonObject.optInt("qstate") == 3 )
+                {
+                    questionTimeObject.put("marked_for_review",  "1");
+                    res = "2";
+                    questionTimeObject.put("given_option", "");
+                }
+                else {
+                    questionTimeObject.put("marked_for_review", "0");
+                }
+
+                if(jsonObject.optInt("qstate") == 4 )
+                {
+                    questionTimeObject.put("marked_for_review",  "1");
+                }
+                else {
+                    questionTimeObject.put("marked_for_review", "0");
+                }
+
+                questionTimeObject.put("result", res);
+                //questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                 table.insertSingleRecords(questionTimeObject, "STUDENTQUESTIONTIME");
                 check = 0;
@@ -667,7 +716,32 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                         jsonObject.put("qstate", 2);
 
-                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+                        String selected = (String) layout.findViewById(selRatioId).getTag();
+                        int index = options.indexOf(selected);
+                        String option = String.valueOf(opt[index]);
+                        String qans = "";
+                        if(jsonObject.optString("option_a").equalsIgnoreCase(option))
+                        {
+                            qans = "a";
+                        }
+
+                        if(jsonObject.optString("option_b").equalsIgnoreCase(option))
+                        {
+                            qans = "b";
+                        }
+
+                        if(jsonObject.optString("option_c").equalsIgnoreCase(option))
+                        {
+                            qans = "c";
+                        }
+
+                        if(jsonObject.optString("option_d").equalsIgnoreCase(option))
+                        {
+                            qans = "d";
+                        }
+
+                        jsonObject.put("qanswer",qans);
+                        //jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
 
                         adapter.notifyItemChanged(currentExamId);
 
@@ -707,7 +781,32 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                         jsonObject.put("qstate", 4);
 
-                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+                        String selected = (String) layout.findViewById(selRatioId).getTag();
+                        int index = options.indexOf(selected);
+                        String option = String.valueOf(opt[index]);
+                        String qans = "";
+                        if(jsonObject.optString("option_a").equalsIgnoreCase(option))
+                        {
+                            qans = "a";
+                        }
+
+                        if(jsonObject.optString("option_b").equalsIgnoreCase(option))
+                        {
+                            qans = "b";
+                        }
+
+                        if(jsonObject.optString("option_c").equalsIgnoreCase(option))
+                        {
+                            qans = "c";
+                        }
+
+                        if(jsonObject.optString("option_d").equalsIgnoreCase(option))
+                        {
+                            qans = "d";
+                        }
+
+                        jsonObject.put("qanswer",qans);
+                        //jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
 
                         adapter.notifyItemChanged(currentExamId);
 
@@ -997,6 +1096,8 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
             }
 
+
+
             String extFileDirPath = IMGPATH;
 
             File externalFileDir = activity.getExternalFilesDir(null);
@@ -1019,7 +1120,65 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
             }
 
-            encPath = IMGPATH + jsonObject.optString("option_a");
+            options = jsonObject.optString("options");
+            opt1 = Integer.parseInt(String.valueOf(options.charAt(0)));
+            opt2 = Integer.parseInt(String.valueOf(options.charAt(1)));
+            opt3 = Integer.parseInt(String.valueOf(options.charAt(2)));
+            opt4 = Integer.parseInt(String.valueOf(options.charAt(3)));
+
+            opt[0] = jsonObject.optString("option_a");
+            opt[1] = jsonObject.optString("option_b");
+            opt[2] = jsonObject.optString("option_c");
+            opt[3] = jsonObject.optString("option_d");
+
+            encPath = IMGPATH + opt[opt1-1];
+
+            plnPath = extFileDirPath + "option_a.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option1);
+
+            }
+
+            encPath = IMGPATH + opt[opt2-1];
+
+            plnPath = extFileDirPath + "option_b.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option2);
+
+            }
+
+            encPath = IMGPATH + opt[opt3-1];
+
+            plnPath = extFileDirPath + "option_c.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option3);
+
+            }
+
+            encPath = IMGPATH + opt[opt4-1];
+
+            plnPath = extFileDirPath + "option_d.PNG";
+
+            isValid = decryptCipher(encPath, plnPath);
+
+            if (isValid) {
+
+                imageLoader.displayImage("file://" + plnPath, iv_option4);
+
+            }
+            /*encPath = IMGPATH + jsonObject.optString("option_a");
 
             plnPath = extFileDirPath + "option_a.PNG";
 
@@ -1065,7 +1224,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                 imageLoader.displayImage("file://" + plnPath, iv_option4);
 
-            }
+            }*/
 
             if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
@@ -1185,7 +1344,9 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
                         String questions = student_question_paper_details.optString("questions");
 
-                        getQuestionsFromDBNShow(questions);
+                        String options = student_question_paper_details.optString("options");
+
+                        getQuestionsFromDBNShow(questions, options);
 
                     }
 
@@ -1279,7 +1440,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
     }
 
-    private void getQuestionsFromDBNShow(String questions) {
+    private void getQuestionsFromDBNShow(String questions, String options) {
 
         try {
 
@@ -1290,10 +1451,13 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
             if (questions.contains(",")) {
 
                 String[] temp = questions.split(",");
+
+                String[] opt = options.split(",");
+
                 JSONArray array = new JSONArray();
 
                 for (int i = 0; i < temp.length; i++) {
-                    array.put(getQuestion(temp[i]));
+                    array.put(getQuestion(temp[i], opt[i]));
 
                     // whereQuestions = whereQuestions + "'" + temp[i] + "',";
 
@@ -1624,7 +1788,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
         }
     }
 
-    public JSONObject getQuestion(String qid) {
+    public JSONObject getQuestion(String qid, String options) {
         JSONObject obj = new JSONObject();
         try {
             Database database = new Database(activity);
@@ -1649,6 +1813,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                             obj.put("question_name1", cursor.getString(cursor.getColumnIndex("question_name1")));
                             obj.put("question_name2", cursor.getString(cursor.getColumnIndex("question_name2")));
                             obj.put("question_name3", cursor.getString(cursor.getColumnIndex("question_name3")));
+
                             obj.put("option_a", cursor.getString(cursor.getColumnIndex("option_a")));
                             obj.put("option_b", cursor.getString(cursor.getColumnIndex("option_b")));
                             obj.put("option_c", cursor.getString(cursor.getColumnIndex("option_c")));
@@ -1660,6 +1825,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
                             obj.put("solution4", cursor.getString(cursor.getColumnIndex("solution4")));
                             obj.put("difficulty", cursor.getString(cursor.getColumnIndex("difficulty")));
                             obj.put("status", cursor.getString(cursor.getColumnIndex("status")));
+                            obj.put("options", options);
 
                         }
                     cursor.close();

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -51,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
     private NetworkInfoAPI network = null;
     CustomTextView sname, sclass, batch, stuid;
     CustomEditText user;
+    SharedPreferences sp;
 
     //private PhoneComponent phncomp;
 
@@ -61,6 +63,11 @@ public class LoginActivity extends AppCompatActivity implements IItemHandler {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_login);
+
+        sp = getSharedPreferences("time", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("time","");
+        editor.apply();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 0);

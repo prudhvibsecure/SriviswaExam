@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -104,6 +105,8 @@ public class SriVishwa extends AppCompatActivity
 
     ParentFragment tempFrag = null;
 
+    SharedPreferences sp;
+
     public int check = 0;
     public String myData = "";
     App_Table app_table;
@@ -128,6 +131,8 @@ public class SriVishwa extends AppCompatActivity
             getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         }
+
+        sp = getSharedPreferences("time", MODE_PRIVATE);
 
         /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -182,6 +187,8 @@ public class SriVishwa extends AppCompatActivity
         updateToken();
 
         checkAppUpdate();
+
+        getNewQuestions();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -1062,6 +1069,30 @@ public class SriVishwa extends AppCompatActivity
 
     }
 
+    private void getNewQuestions() {
+
+        try {
+
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("timestamp", sp.getString("time",""));
+
+            HTTPPostTask post = new HTTPPostTask(this, this);
+
+            post.disableProgress();
+
+            post.userRequest(getString(R.string.plwait), 123, "get_new_questions", jsonObject.toString());
+
+
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+    }
+
     @Override
     public void onFinish(Object results, int requestId) {
 
@@ -1107,6 +1138,25 @@ public class SriVishwa extends AppCompatActivity
 
                 }
 
+            } else if(requestId == 123) {
+
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("time", String.valueOf(System.currentTimeMillis()));
+                editor.apply();
+
+                JSONObject jsonObject = new JSONObject(results.toString());
+
+                if (jsonObject.optString("statuscode").equalsIgnoreCase("200")) {
+
+                    JSONArray array = jsonObject.getJSONArray("question_details");
+
+                    for(int i = 0; i<array.length();i++)
+                    {
+                        JSONObject obj = array.getJSONObject(i);
+                        String filename = obj.optString("file_name");
+                        questionFile(filename);
+                    }
+                }
             }
 
         } catch (Exception e) {

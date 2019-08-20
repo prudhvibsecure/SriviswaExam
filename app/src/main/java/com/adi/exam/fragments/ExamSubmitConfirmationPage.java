@@ -142,7 +142,12 @@ public class ExamSubmitConfirmationPage extends ParentFragment implements IItemH
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mFragListener.onFragmentInteraction(activity.getString(R.string.es), false);
+        if (data.optString("exam_name").trim().length() > 0) {
+            mFragListener.onFragmentInteraction(activity.getString(R.string.es), false);
+        }else
+        {
+            mFragListener.onFragmentInteraction(activity.getString(R.string.as), false);
+        }
 
     }
 
@@ -191,22 +196,29 @@ public class ExamSubmitConfirmationPage extends ParentFragment implements IItemH
 
         try {
 
-            if (data.optString("exam_name").trim().length() > 0)
+            if (data.optString("exam_name").trim().length() > 0) {
+
+                ((TextView) layout.findViewById(R.id.tv_sectionname)).setText("Exam Name");
+
                 ((TextView) layout.findViewById(R.id.tv_sectionnameval)).setText(data.optString("exam_name"));
-            else
+            }
+            else {
+                ((TextView) layout.findViewById(R.id.tv_sectionname)).setText("Assignment Name");
+
                 ((TextView) layout.findViewById(R.id.tv_sectionnameval)).setText(data.optString("assignment_name"));
 
-            ((TextView) layout.findViewById(R.id.tv_noofquestionsval)).setText(jsonObject.optString("total_questions"));
+                ((TextView) layout.findViewById(R.id.tv_noofquestionsval)).setText(jsonObject.optString("total_questions"));
 
-            ((TextView) layout.findViewById(R.id.tv_answeredval)).setText(jsonObject.optString("total_questions_attempted"));
+                ((TextView) layout.findViewById(R.id.tv_answeredval)).setText(jsonObject.optString("total_questions_attempted"));
 
-            ((TextView) layout.findViewById(R.id.tv_notansweredval)).setText(data.optString("total_not_answered"));
+                ((TextView) layout.findViewById(R.id.tv_notansweredval)).setText(data.optString("total_not_answered"));
 
-            ((TextView) layout.findViewById(R.id.tv_mfrval)).setText(data.optString("total_marked_for_review"));
+                ((TextView) layout.findViewById(R.id.tv_mfrval)).setText(data.optString("total_marked_for_review"));
 
-            ((TextView) layout.findViewById(R.id.tv_amfrval)).setText(data.optString("total_answered_and_marked_for_review"));
+                ((TextView) layout.findViewById(R.id.tv_amfrval)).setText(data.optString("total_answered_and_marked_for_review"));
 
-            ((TextView) layout.findViewById(R.id.tv_notvisitedval)).setText(data.optString("total_not_visited"));
+                ((TextView) layout.findViewById(R.id.tv_notvisitedval)).setText(data.optString("total_not_visited"));
+            }
 
             if (type == 2) {
 

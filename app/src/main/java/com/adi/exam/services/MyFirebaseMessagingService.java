@@ -74,12 +74,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String title_msg = object.optString("msg_det");
                 String arry_data[] = title_msg.split(",");
                 m_type = arry_data[0];
-                if (m_type.equalsIgnoreCase("QF")) {
+               /* if (m_type.equalsIgnoreCase("QF")) {
                     String file_name = arry_data[1];
                     Intent filedata=new Intent("com.file.data");
                     filedata.putExtra("filename",file_name);
                     sendBroadcast(filedata);
-                }
+                }*/
 
             }
         } catch (JSONException e) {

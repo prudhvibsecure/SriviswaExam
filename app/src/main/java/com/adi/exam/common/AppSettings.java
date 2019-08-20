@@ -30,8 +30,10 @@ public class AppSettings {
 
             properties = new Properties();
 
-            String BASE_PATH = "https://bsecuresoftechsolutions.com/viswa/";   //Local path
-            //String BASE_PATH="https://bsecuresoftechsolutions.com/viswa_dev/";  //live path
+            //String BASE_PATH = "https://bsecuresoftechsolutions.com/viswa/";   //Live path
+            String BASE_PATH="https://bsecuresoftechsolutions.com/viswa_dev/";  //local path
+
+            //String BASE_PATH = "https://bsecuresoftechsolutions.com/smc_api/";
 
             properties.setProperty("studentlogin", BASE_PATH + "student_login");
 
@@ -64,6 +66,8 @@ public class AppSettings {
             properties.setProperty("download_img", BASE_PATH + "assets/upload/questions/");
 
             properties.setProperty("check_network", BASE_PATH + "check_network");
+
+            properties.setProperty("get_new_questions", BASE_PATH + "get_new_questions");
 
 
 
