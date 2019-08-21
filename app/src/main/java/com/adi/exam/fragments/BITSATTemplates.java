@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +32,7 @@ import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.database.Database;
+import com.adi.exam.database.PhoneComponent;
 import com.adi.exam.tasks.FileUploader;
 import com.adi.exam.tasks.HTTPPostTask;
 import com.adi.exam.utils.TraceUtils;
@@ -124,19 +126,24 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
     private final String IMGPATH = PATH + "/System/allimages/";
 
     private boolean isVisible = false;
+
+    private String options = "";
+
+    private int opt1, opt2, opt3, opt4;
+
+    String[] opt = new String[4];
+
     public BITSATTemplates() {
         // Required empty public constructor
     }
 
-    public static BITSATTemplates newInstance(String examTypeId, String examName) {
+    public static BITSATTemplates newInstance(String data) {
 
         BITSATTemplates fragment = new BITSATTemplates();
 
         Bundle args = new Bundle();
 
-        args.putString("examTypeId", examTypeId);
-
-        args.putString("examName", examName);
+        args.putString("data", data);
 
         fragment.setArguments(args);
 
@@ -150,11 +157,21 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
 
         if (getArguments() != null) {
 
-            examTypeId = getArguments().getString("examTypeId");
+            try {
 
-            examName = getArguments().getString("examName");
+                data = new JSONObject(getArguments().getString("data"));
+
+            } catch (Exception e) {
+
+                TraceUtils.logException(e);
+
+            }
 
         }
+
+        imageLoader = ImageLoader.getInstance();
+
+        setHasOptionsMenu(true);
 
     }
 
@@ -162,13 +179,15 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        layout = inflater.inflate(R.layout.fragment_kvpyttemplates, container, false);
+        layout = inflater.inflate(R.layout.fragment_bitsat_template, container, false);
 
         rg_options = layout.findViewById(R.id.rg_options);
 
         iv_question = layout.findViewById(R.id.iv_question);
 
         iv_questionimg = layout.findViewById(R.id.iv_questionimg);
+
+        tv_timer = layout.findViewById(R.id.tv_timer);
 
         iv_option1 = layout.findViewById(R.id.iv_option1);
 
@@ -206,17 +225,143 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
 
         layout.findViewById(R.id.tv_submit).setOnClickListener(this);
 
+        tl_subjects = layout.findViewById(R.id.tl_subjects);
+
+        adapter = new QuestionNumberListingAdapter(activity);
+
+        adapter.setOnClickListener(this);
+
         rv_ques_nums = layout.findViewById(R.id.rv_ques_nums);
 
         rv_ques_nums.setLayoutManager(new GridLayoutManager(activity, 5));
 
-        adapter = new QuestionNumberListingAdapter(activity);
-
-        adapter.setItems(getQuestionNum());
-
         rv_ques_nums.setAdapter(adapter);
 
-        showNextQuestion(0);
+
+        try {
+
+            JSONObject question_details = data.getJSONObject("question_details");
+
+            PhoneComponent phncomp = new PhoneComponent(this, activity, 1);
+
+            phncomp.defineWhereClause("question_paper_id = '" + question_details.optString("question_paper_id") + "'");
+
+            phncomp.executeLocalDBInBackground("STUDENTQUESTIONPAPER");
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+        ((RadioButton) layout.findViewById(R.id.rb_first)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
+
+        ((RadioButton) layout.findViewById(R.id.rb_second)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
+
+        ((RadioButton) layout.findViewById(R.id.rb_third)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
+
+        ((RadioButton) layout.findViewById(R.id.rb_fourth)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check++;
+            }
+        });
+
+        String subjectsArray[];
+
+        String subjects = data.optString("subjects").trim();
+
+        if (subjects.contains(",")) {
+
+            subjectsArray = subjects.split(",");
+
+        } else {
+
+            subjectsArray = new String[]{subjects};
+
+        }
+
+        for (int i = 0; i < subjectsArray.length; i++) {
+
+            String subject = subjectsArray[i];
+
+            TextView textView = (TextView) View.inflate(activity, R.layout.tab_subjects, null);
+
+            textView.setText(subject);
+
+            tl_subjects.addTab(tl_subjects.newTab().setCustomView(textView));
+
+        }
+        tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                int tabPosition = tab.getPosition();
+
+                if (tabPosition == 0) {
+
+                    updateQuestionTime();
+
+                    showNextQuestion(0);
+
+                    return;
+
+                }
+
+                String noOfQuestions = data.optString("no_of_questions");
+
+                if (noOfQuestions.contains(",")) {
+
+                    String temp1[] = noOfQuestions.split(",");
+
+                    int questionIndex = 0;
+
+                    for (int i = 0; i < tabPosition; i++) {
+
+                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                    }
+
+                    updateQuestionTime();
+
+                    showNextQuestion(questionIndex);
+
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+        });
+//        String  dat=data.optString("duration").trim();
+//        long time = (long) Double.parseDouble(dat);
+        showTimer((data.optInt("duration_sec") * 1000));
+
+        sdate = new Date();
 
         return layout;
     }
@@ -235,15 +380,16 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
 
-        mFragListener.onFragmentInteraction(examName, false);
+        mFragListener.onFragmentInteraction(data.optString("exam_name"), false);
 
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mFragListener.onFragmentInteraction(examName, false);
+        mFragListener.onFragmentInteraction(data.optString("exam_name"), false);
 
     }
 
@@ -253,7 +399,41 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
         try {
 
             switch (v.getId()) {
+                case R.id.ll_questionno:
 
+                    int position = rv_ques_nums.getChildAdapterPosition(v);
+                    // question_no = position + 1;
+                    currentExamId = position;
+                    JSONObject jsonObject = adapter.getItems().getJSONObject(position);
+                    if (jsonObject.optString("qstate").equalsIgnoreCase("2")) {
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered));
+                        //  v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered));
+                    } else if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {
+                        rg_options.clearCheck();
+                        jsonObject.put("qstate", 1);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                        // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                    } else if (jsonObject.optString("qstate").equalsIgnoreCase("3")) {
+                        jsonObject.put("qstate", 3);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
+                        // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
+                    } else if (jsonObject.optString("qstate").equalsIgnoreCase("4")) {
+                        jsonObject.put("qstate", 4);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered_marked));
+                        // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered_marked));
+                    } else {
+                        rg_options.clearCheck();
+                        jsonObject.put("qstate", 1);
+                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                        //  v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
+                    }
+                    adapter.notifyItemChanged(position);
+
+                    // updateQuestionTime();
+
+                    showNextQuestion(position);
+
+                    break;
                 case R.id.tv_savennext:
 
                     if (currentExamId != -1) {
@@ -273,11 +453,36 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
                             return;
                         }
 
-                        JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                         jsonObject.put("qstate", 2);
 
-                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+                        String selected = (String) layout.findViewById(selRatioId).getTag();
+                        int index = options.indexOf(selected);
+                        String option = String.valueOf(opt[index]);
+                        String qans = "";
+                        if(jsonObject.optString("option_a").equalsIgnoreCase(option))
+                        {
+                            qans = "a";
+                        }
+
+                        if(jsonObject.optString("option_b").equalsIgnoreCase(option))
+                        {
+                            qans = "b";
+                        }
+
+                        if(jsonObject.optString("option_c").equalsIgnoreCase(option))
+                        {
+                            qans = "c";
+                        }
+
+                        if(jsonObject.optString("option_d").equalsIgnoreCase(option))
+                        {
+                            qans = "d";
+                        }
+
+                        jsonObject.put("qanswer",qans);
+                        //jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
 
                         adapter.notifyItemChanged(currentExamId);
 
@@ -298,13 +503,12 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
 
                     rg_options.clearCheck();
                     //  }
-                    JSONObject jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                    jsonObject = adapter.getItems().getJSONObject(currentExamId);
                     jsonObject.put("qstate", 1);
                     jsonObject.put("qanswer", "");
 
                     adapter.notifyItemChanged(currentExamId);
                     updateQuestionTime();
-
                     break;
 
                 case R.id.tv_mfrn:
@@ -1172,7 +1376,7 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
         }
     }
 
-    public JSONObject getQuestion(String qid) {
+    public JSONObject getQuestion(String qid, String options) {
         JSONObject obj = new JSONObject();
         try {
             Database database = new Database(activity);
@@ -1359,7 +1563,108 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
 
     @Override
     public void onFinish(Object results, int requestId) {
+        try {
 
+            if (requestId == 1) {
+
+                JSONArray jsonArray = (JSONArray) results;
+
+                if (jsonArray.length() > 0) {
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+
+                        JSONObject student_question_paper_details = jsonArray.getJSONObject(i);
+
+                        String questions = student_question_paper_details.optString("questions");
+
+                        String options = student_question_paper_details.optString("options");
+
+                        getQuestionsFromDBNShow(questions, options);
+
+                    }
+
+                }
+
+            } else if (requestId == 2) {
+
+                JSONArray jsonArray = (JSONArray) results;
+
+                if (jsonArray.length() > 0) {
+                    int c = jsonArray.length();
+                    if (adapter.getItems().length() == 0) {
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                            jsonObject.put("qstate", 0); //0 = not visited, 1 = not answered, 2 = answered, 3 = marked review, 4 = answered and marked for review, 5 = visited
+
+                            jsonObject.put("qanswer", "");
+
+                            jsonObject.put("sno", i + 1);
+
+                            if (i == 0) {
+
+                                jsonObject.put("qstate", 1);
+
+                            }
+
+                        }
+
+                        adapter.setItems(jsonArray);
+
+                    } else {
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                            jsonObject.put("qstate", 0); //0 = not visited, 1 = not answered, 2 = answered, 3 = marked review, 4 = answered and marked for review, 5 = visited
+
+                            jsonObject.put("qanswer", "");
+
+                            jsonObject.put("sno", adapter.getCount() + 1);
+
+                            adapter.getItems().put(jsonArray.getJSONObject(i));
+
+                        }
+
+                    }
+
+                    adapter.notifyDataSetChanged();
+
+                    showNextQuestion(0);
+
+                }
+
+            } else if (requestId == 3) {
+                JSONObject obj = new JSONObject(results.toString());
+                if (obj.optString("statuscode").equalsIgnoreCase("200")) {
+                    // activity.onKeyDown(4, null);
+//                    Toast.makeText(activity, "success", Toast.LENGTH_SHORT).show();
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='" + data.optInt("exam_id") + "'", "FILESDATA");
+                    File file = new File(path);
+                    file.delete();
+
+                    path = "";
+
+                } else {
+                    App_Table table = new App_Table(activity);
+                    table.deleteRecord("exam_id='" + data.optInt("exam_id") + "'", "FILESDATA");
+                    File file = new File(path);
+                    file.delete();
+
+                    path = "";
+                    //activity.onKeyDown(4, null);
+                }
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
     }
 
     @Override
@@ -1371,4 +1676,47 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
     public void onProgressChange(int requestId, Long... values) {
 
     }
+    private void getQuestionsFromDBNShow(String questions, String options) {
+
+        try {
+
+            PhoneComponent phncomp = new PhoneComponent(this, activity, 2);
+
+            String whereQuestions = "";
+
+            if (questions.contains(",")) {
+
+                String[] temp = questions.split(",");
+
+                String[] opt = options.split(",");
+
+                JSONArray array = new JSONArray();
+
+                for (int i = 0; i < temp.length; i++) {
+                    array.put(getQuestion(temp[i], opt[i]));
+
+                    // whereQuestions = whereQuestions + "'" + temp[i] + "',";
+
+                }
+
+                setData(array);
+
+               /* whereQuestions = whereQuestions.trim();
+
+                whereQuestions = whereQuestions.substring(0, whereQuestions.length() - 1);*/
+
+            }
+
+           /* phncomp.defineWhereClause("question_id IN (" + whereQuestions + ")");
+
+            phncomp.executeLocalDBInBackground("QUESTIONS");*/
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+    }
+
 }

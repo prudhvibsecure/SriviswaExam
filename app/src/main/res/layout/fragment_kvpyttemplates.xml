@@ -131,17 +131,19 @@
 
                     <ImageView
                         android:id="@+id/iv_question"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/app_name"
-                        android:padding="@dimen/_5sdp" />
+                        android:padding="@dimen/_5sdp"
+                        android:scaleType="fitXY" />
 
                     <ImageView
                         android:id="@+id/iv_questionimg"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/app_name"
-                        android:padding="@dimen/_5sdp" />
+                        android:padding="@dimen/_5sdp"
+                        android:scaleType="fitXY" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -162,7 +164,7 @@
 
                         <ImageView
                             android:id="@+id/iv_option1"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:contentDescription="@string/app_name"
@@ -190,7 +192,7 @@
 
                         <ImageView
                             android:id="@+id/iv_option2"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:contentDescription="@string/app_name"
@@ -218,7 +220,7 @@
 
                         <ImageView
                             android:id="@+id/iv_option3"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:contentDescription="@string/app_name"
@@ -246,7 +248,7 @@
 
                         <ImageView
                             android:id="@+id/iv_option4"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:contentDescription="@string/app_name"
@@ -361,58 +363,61 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_marginBottom="@dimen/_5sdp"
+
                     android:background="@android:color/black" />
 
-                <com.adi.exam.controls.CustomTextView
-                    android:id="@+id/tv_savennext"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/v_line"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="center_vertical"
-                    android:layout_margin="2dp"
-                    android:layout_marginEnd="0.3dp"
-                    android:background="@drawable/button_bg_submit_blue"
-                    android:gravity="center"
-                    android:text="@string/savenext"
-                    android:textAllCaps="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    app:fontType="1" />
+                    android:orientation="horizontal">
 
-                <com.adi.exam.controls.CustomTextView
-                    android:id="@+id/tv_mfrn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/v_line"
-                    android:layout_gravity="center_vertical"
-                    android:layout_margin="2dp"
-                    android:layout_marginEnd="0.3dp"
-                    android:background="@drawable/button_bg_cancel_gray"
-                    android:gravity="center"
-                    android:text="@string/mfrn"
-                    android:textAllCaps="true"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    app:fontType="1" />
+                    <com.adi.exam.controls.CustomTextView
+                        android:id="@+id/tv_savennext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
 
-                <com.adi.exam.controls.CustomTextView
-                    android:id="@+id/tv_clearresponse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/v_line"
-                    android:layout_gravity="center_vertical"
-                    android:layout_margin="2dp"
-                    android:layout_marginEnd="0.3dp"
-                    android:layout_toEndOf="@+id/tv_mfrn"
-                    android:background="@drawable/button_bg_cancel_gray"
-                    android:gravity="center"
-                    android:text="@string/clearresponse"
-                    android:textAllCaps="true"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    app:fontType="1" />
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="2dp"
+                        android:background="@drawable/button_bg_submit_blue"
+                        android:gravity="center"
+                        android:text="@string/savenext"
+                        android:textAllCaps="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        app:fontType="1" />
 
+                    <com.adi.exam.controls.CustomTextView
+                        android:id="@+id/tv_mfrn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="2dp"
+                        android:background="@drawable/button_bg_cancel_gray"
+                        android:gravity="center"
+                        android:text="@string/mfrn"
+                        android:textAllCaps="true"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        app:fontType="1" />
+
+                    <com.adi.exam.controls.CustomTextView
+                        android:id="@+id/tv_clearresponse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/v_line"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="2dp"
+                        android:layout_toEndOf="@+id/tv_mfrn"
+                        android:background="@drawable/button_bg_cancel_gray"
+                        android:gravity="center"
+                        android:text="@string/clearresponse"
+                        android:textAllCaps="true"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        app:fontType="1" />
+                </LinearLayout>
             </RelativeLayout>
 
         </RelativeLayout>
@@ -428,9 +433,10 @@
                 android:id="@+id/profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:background="@color/cardview_light_background"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="@dimen/_12sdp"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="100dp"
@@ -442,11 +448,11 @@
                     android:id="@+id/user_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/name"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:textSize="@dimen/_12sdp"
-                    android:textColor="@color/colorPrimary"/>
+                    android:text="@string/name"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/_12sdp" />
             </LinearLayout>
 
             <LinearLayout

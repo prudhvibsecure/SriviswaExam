@@ -239,7 +239,7 @@ public class JEEemplates extends ParentFragment implements View.OnClickListener,
 
         rv_ques_nums = layout.findViewById(R.id.rv_ques_nums);
 
-        rv_ques_nums.setLayoutManager(new GridLayoutManager(activity, 5));
+        rv_ques_nums.setLayoutManager(new GridLayoutManager(activity, 3));
 
         rv_ques_nums.setAdapter(adapter);
 

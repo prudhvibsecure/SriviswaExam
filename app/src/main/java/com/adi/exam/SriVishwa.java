@@ -46,6 +46,7 @@ import com.adi.exam.fragments.AssignResultsPage;
 import com.adi.exam.fragments.Assignment;
 import com.adi.exam.fragments.AssignmentHistory;
 import com.adi.exam.fragments.AssignmentList;
+import com.adi.exam.fragments.BITSATTemplates;
 import com.adi.exam.fragments.ChangePassword;
 import com.adi.exam.fragments.Dashboard;
 import com.adi.exam.fragments.ExamList;
@@ -528,9 +529,9 @@ public class SriVishwa extends AppCompatActivity
                 swiftFragments(JEEemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("3")) { //BITSAT
-                swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
+               // swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/BITSAT/bitsat0.html";
-                // swiftFragments(BITSATTemplates.newInstance(data), "examtemplate");
+                swiftFragments(BITSATTemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("4") || jsonObject.optString("course").equalsIgnoreCase("8")) { //EAMCET
                 swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
