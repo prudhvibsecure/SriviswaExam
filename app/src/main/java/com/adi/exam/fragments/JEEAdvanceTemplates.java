@@ -109,6 +109,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
     private FileOutputStream fos = null;
 
     private TabLayout tl_subjects;
+    private TabLayout tl_sections;
 
     private long timeTaken4Question = 0, timeTaken = 0;
 
@@ -171,7 +172,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        layout = inflater.inflate(R.layout.fragment_examtemplates, container, false);
+        layout = inflater.inflate(R.layout.jee_advance_template, container, false);
 
         activity.getSupportActionBar().setHomeButtonEnabled(false);
 
@@ -218,6 +219,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
         layout.findViewById(R.id.tv_next).setOnClickListener(this);
 
         tl_subjects = layout.findViewById(R.id.tl_subjects);
+
+        tl_sections = layout.findViewById(R.id.tl_sections);
 
         adapter = new QuestionNumberListingAdapter(activity);
 
@@ -276,6 +279,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
         String subjectsArray[];
 
         String subjects = data.optString("subjects").trim();
+        String type_id = data.optString("type_id").trim();
+        String section = data.optString("section").trim();
 
         if (subjects.contains(",")) {
 
@@ -464,25 +469,14 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     jsonObject1.put("question_time", timeTaken);
                     jsonObject1.put("given_option", jsonObject.optString("qanswer"));
                     jsonObject1.put("correct_option", jsonObject.optString("answer"));
-
-                    String res = "";
-
-
-                    if (TextUtils.isEmpty(jsonObject.optString("qanswer"))) {
-                        res = "2";
-                    } else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
-                        res = "0";
-                    } else {
-                        res = "1";
-                    }
-                    jsonObject1.put("result", res);
+                    jsonObject1.put("result", "");
                     //jsonObject1.put("question_time", timeTaken4Question + "");
                     jsonObject1.put("no_of_clicks", clickcount);
                     jsonObject1.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
                     iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
 
-                    table.updateRecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
+                    table.checkNInsertARecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
 
                     check = 0;
                     clickcount = 0;
@@ -511,17 +505,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                 questionTimeObject.put("subject", ((TextView) (tl_subjects.getTabAt(tl_subjects.getSelectedTabPosition()).getCustomView())).getText().toString());
                 questionTimeObject.put("given_option", jsonObject.optString("qanswer"));
                 questionTimeObject.put("correct_option", jsonObject.optString("answer"));
-                String res = "";
 
-
-                if (TextUtils.isEmpty(jsonObject.optString("qanswer"))) {
-                    res = "2";
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase(jsonObject.optString("answer"))) {
-                    res = "0";
-                } else {
-                    res = "1";
-                }
-                questionTimeObject.put("result", res);
+                questionTimeObject.put("result", "");
                 questionTimeObject.put("question_time", timeTaken4Question + "");
                 questionTimeObject.put("no_of_clicks", check);
                 questionTimeObject.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
@@ -894,85 +879,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             tv_questionno.setText(getString(R.string.questionno, jsonObject.optString("sno")));
 
             iv_question.setImageResource(jsonObject.optInt("qid"));
-           /* Picasso picasso = new Picasso.Builder(getActivity()).listener(new Picasso.Listener() {
-                @Override
-                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-
-                }
-            }).build();
-            picasso.load("file:///android_asset/allimages/"+jsonObject.optString("question_name"))
-                    .into(iv_question, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_a"))
-                    .into(iv_option1, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_b"))
-                    .into(iv_option2, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_c"))
-                    .into(iv_option3, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    }); picasso.load("file:///android_asset/allimages/"+jsonObject.optString("option_d"))
-                    .into(iv_option4, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });*/
-//            decrypt("enc_"+jsonObject.optString("question_name"));
-//            decrypt("enc_"+jsonObject.optString("option_a"));
-//            decrypt("enc_"+jsonObject.optString("option_b"));
-//            decrypt("enc_"+jsonObject.optString("option_c"));
-//            decrypt("enc_"+jsonObject.optString("option_d"));
-
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("question_name"), iv_question);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_a"), iv_option1);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_b"), iv_option2);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_c"), iv_option3);
-//
-//            imageLoader.displayImage("file://" + Environment.getExternalStorageDirectory() + "/SystemLogs/System/Files/" + jsonObject.optString("option_d"), iv_option4);
-//
-
             try {
 
                 iv_question.setImageDrawable(null);
@@ -1467,21 +1373,10 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
 
             json = table.getExamsResult(data.optInt("exam_id"), activity.getStudentDetails().optInt("student_id"));
-            json.put("student_exam_result_id", student_exam_result_id);
+            json.put("student_exam_result_id", "");
             json.put("student_id", activity.getStudentDetails().optInt("student_id"));
             json.put("exam_id", data.optInt("exam_id"));
             json.put("exam_name", data.optString("exam_name"));
-            json.put("exam_date", question_details.optString("exam_date"));
-            json.put("total_questions", adapter.getCount() + "");
-            json.put("total_questions_attempted", total_questions_attempted + "");
-            json.put("no_of_correct_answers", no_of_correct_answers + "");
-            json.put("score", score + "");
-            json.put("percentage", "");
-            json.put("accuracy", "");
-            json.put("exam_type", "");
-//            array.put(json);
-
-            //backup_result.put("student_question_time",array);
             FILE_NAME = System.currentTimeMillis() + "_Result.txt";
             fos = getActivity().openFileOutput(FILE_NAME, MODE_PRIVATE);
 

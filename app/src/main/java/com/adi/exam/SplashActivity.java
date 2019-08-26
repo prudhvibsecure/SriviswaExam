@@ -74,14 +74,6 @@ public class SplashActivity extends AppCompatActivity implements IDialogCallback
        // Settings.Secure.putInt(getContentResolver(),Settings.Secure.USB_MASS_STORAGE_ENABLED,0);
         PrefUtils.setKioskModeActive(false, getApplicationContext());
         String networkType = getNetWorkObject().execute("getConnectionInfo");
-
-//        String[] command = { "/system/bin/sh", "-c", "echo xxx > /sys/bus/usb/devices/usb3/power/level", };
-//        try {
-//            Runtime.getRuntime().exec(command);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        //  Settings.Secure.putInt(getContentResolver(),Settings.Secure.USB_MASS_STORAGE_ENABLED,0);
         /*if (networkType.equalsIgnoreCase("none")) {
 
             showokPopUp(R.drawable.pop_ic_info, getString(R.string.alert), getString(R.string.nipcyns), 1, this, false);

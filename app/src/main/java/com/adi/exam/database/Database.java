@@ -24,7 +24,7 @@ public class Database extends SQLiteOpenHelper {
 
     private String QUESTIONPAPER_TABLE = "CREATE TABLE QUESTIONPAPER(question_paper_id INTEGER, exam_id INTEGER, exam_date TEXT, from_time TEXT, to_time TEXT, subjects TEXT, topicids TEXT)";
 
-    private String STUDENTQUESTIONPAPER_TABLE = "CREATE TABLE STUDENTQUESTIONPAPER(student_question_paper_id INTEGER, question_paper_id INTEGER, subject TEXT, questions TEXT, options TEXT)";
+    private String STUDENTQUESTIONPAPER_TABLE = "CREATE TABLE STUDENTQUESTIONPAPER(student_question_paper_id INTEGER, question_paper_id INTEGER, subject TEXT, questions TEXT, options TEXT,section TEXT,type_id TEXT)";
 
     private String ASSIGNMENTS_TABLE = "CREATE TABLE ASSIGNMENTS(assignment_id INTEGER, assignment_name TEXT, no_of_questions TEXT, from_time TEXT, to_time TEXT, duration TEXT, class_name TEXT, subject TEXT, lessons TEXT, topics TEXT, questions TEXT,duration_sec TEXT)";
 
@@ -45,6 +45,8 @@ public class Database extends SQLiteOpenHelper {
     private final String DOWNLOAD_QUEUE = "CREATE TABLE IF NOT EXISTS DOWNLOADQUEUE(material_data_id INTEGER, material_original_name TEXT, material_unique_name TEXT, downloadurl TEXT, downloadstatus TEXT, savedpath TEXT, mimetype TEXT, errorMsg TEXT);";
 
     private final String FILES_DATA = "CREATE TABLE IF NOT EXISTS FILESDATA(assignment_id TEXT,exam_id TEXT,filename TEXT,path TEXT);";
+
+    private final String PARAGRAPS_TABLE = "CREATE TABLE  PARAGRAPS(paragraph_id TEXT,paragraph TEXT,topic_id TEXT,lesson_id TEXT,question_ids TEXT,status TEXT);";
 
     public Database(Context context) {
         super(context, APP_DATABASE_NAME, null, APP_DATABASE_VERSION);
@@ -70,6 +72,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(ASSIGNMENTRESULTS_TABLE);
         db.execSQL(ASSIGNMENTSTUDENTQUESTIONRESULTS_TABLE);
         db.execSQL(FILES_DATA);
+        db.execSQL(PARAGRAPS_TABLE);
 
     }
 
