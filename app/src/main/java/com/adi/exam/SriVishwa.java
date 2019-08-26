@@ -53,6 +53,7 @@ import com.adi.exam.fragments.ExamList;
 import com.adi.exam.fragments.ExamSubmitConfirmationPage;
 import com.adi.exam.fragments.ExamTemplates;
 import com.adi.exam.fragments.Instructions;
+import com.adi.exam.fragments.JEEAdvanceTemplates;
 import com.adi.exam.fragments.JEEemplates;
 import com.adi.exam.fragments.JIPMERSemplates;
 import com.adi.exam.fragments.KVPYTemplates;
@@ -553,6 +554,8 @@ public class SriVishwa extends AppCompatActivity
                 swiftFragments(KVPYTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/KVPY/kvpy.html";
 
+            }else{
+                swiftFragments(JEEAdvanceTemplates.newInstance(data), "examtemplate");
             }
 
         } catch (Exception e) {
