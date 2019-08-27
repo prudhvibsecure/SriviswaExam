@@ -33,6 +33,7 @@ import com.adi.exam.callbacks.IFileUploadCallback;
 import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
+import com.adi.exam.controls.CustomCheckBox;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.database.Database;
 import com.adi.exam.database.PhoneComponent;
@@ -91,6 +92,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
     private int question_no = 0;
 
     private RadioGroup rg_options;
+
+    private CustomCheckBox checkBox1, checkBox2, checkBox3, checkBox4;
 
     private JSONObject data = new JSONObject();
 
@@ -203,6 +206,13 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         iv_option4 = layout.findViewById(R.id.iv_option4);
 
+
+        checkBox1 = layout.findViewById(R.id.ch_first);
+        checkBox2 = layout.findViewById(R.id.ch_second);
+        checkBox3 = layout.findViewById(R.id.ch_third);
+        checkBox4 = layout.findViewById(R.id.ch_four);
+
+
         tv_questionno = layout.findViewById(R.id.tv_questionno);
 
         tv_notvisitedcnt = layout.findViewById(R.id.tv_notvisitedcnt);
@@ -217,7 +227,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         layout.findViewById(R.id.tv_savennext).setOnClickListener(this);
 
-     //   layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
+        //   layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
 
         layout.findViewById(R.id.tv_clearresponse).setOnClickListener(this);
 
@@ -226,7 +236,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         layout.findViewById(R.id.tv_submit).setOnClickListener(this);
 
-        layout.findViewById(R.id.tv_next).setOnClickListener(this);
+        //    layout.findViewById(R.id.tv_next).setOnClickListener(this);
 
         tl_subjects = layout.findViewById(R.id.tl_subjects);
 
@@ -311,7 +321,67 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             tl_subjects.addTab(tl_subjects.newTab().setCustomView(textView));
 
         }
+        for (int i = 0; i < 3; i++) {
+
+
+            TextView textView = (TextView) View.inflate(activity, R.layout.tab_subjects, null);
+
+            textView.setText("Section-" + i);
+
+            tl_sections.addTab(tl_sections.newTab().setCustomView(textView));
+
+        }
         tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                int tabPosition = tab.getPosition();
+
+                if (tabPosition == 0) {
+
+                    updateQuestionTime();
+
+                    showNextQuestion(0);
+
+                    return;
+
+                }
+
+                String noOfQuestions = data.optString("no_of_questions");
+
+                if (noOfQuestions.contains(",")) {
+
+                    String temp1[] = noOfQuestions.split(",");
+
+                    int questionIndex = 0;
+
+                    for (int i = 0; i < tabPosition; i++) {
+
+                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                    }
+
+                    updateQuestionTime();
+
+                    showNextQuestion(questionIndex);
+
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+        });
+        tl_sections.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -973,23 +1043,59 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                 imageLoader.displayImage("file://" + plnPath, iv_option4);
 
             }
+            if (type_ID.equalsIgnoreCase("1")) {
+                layout.findViewById(R.id.opt_four).setVisibility(View.GONE);
+                layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
+                layout.findViewById(R.id.rg_options).setVisibility(View.VISIBLE);
 
-            if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
-                ((RadioButton) rg_options.findViewById(R.id.rb_first)).setChecked(true);
+                    ((RadioButton) rg_options.findViewById(R.id.rb_first)).setChecked(true);
 
-            } else if (jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
 
-                ((RadioButton) rg_options.findViewById(R.id.rb_second)).setChecked(true);
+                    ((RadioButton) rg_options.findViewById(R.id.rb_second)).setChecked(true);
 
-            } else if (jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
 
-                ((RadioButton) rg_options.findViewById(R.id.rb_third)).setChecked(true);
+                    ((RadioButton) rg_options.findViewById(R.id.rb_third)).setChecked(true);
 
-            } else if (jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
 
-                ((RadioButton) rg_options.findViewById(R.id.rb_fourth)).setChecked(true);
+                    ((RadioButton) rg_options.findViewById(R.id.rb_fourth)).setChecked(true);
 
+                }
+            } else if (type_ID.equalsIgnoreCase("2")) {
+                layout.findViewById(R.id.mult_ll).setVisibility(View.VISIBLE);
+                layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
+                layout.findViewById(R.id.opt_four).setVisibility(View.GONE);
+
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
+
+                    checkBox1.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
+
+                    checkBox2.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
+
+                    checkBox3.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
+
+                    checkBox4.setChecked(true);
+
+                }
+            } else if (type_ID.equalsIgnoreCase("3")) {
+                layout.findViewById(R.id.mult_ll).setVisibility(View.VISIBLE);
+                layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
+                layout.findViewById(R.id.opt_four).setVisibility(View.GONE);
+
+            } else if (type_ID.equalsIgnoreCase("4")) {
+                layout.findViewById(R.id.mult_ll).setVisibility(View.GONE);
+                layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
+                layout.findViewById(R.id.opt_four).setVisibility(View.VISIBLE);
             }
 
             /*if (jsonObject.optInt("qanswer") == 1) {

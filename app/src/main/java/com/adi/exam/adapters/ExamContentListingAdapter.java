@@ -142,8 +142,8 @@ public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentL
                         .concat(question_details.optString("to_time").trim()
                 );
                 DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
-                Date date1 = (Date)formatter.parse(timestamp);
-                Date date2 = (Date)formatter.parse(timestamp1);
+                Date date1 = formatter.parse(timestamp);
+                Date date2 = formatter.parse(timestamp1);
 
                 long time = System.currentTimeMillis();//current time
                 long tkl = date1.getTime();// from time
@@ -161,12 +161,12 @@ public class ExamContentListingAdapter extends RecyclerView.Adapter<ExamContentL
                         contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit));
                     }else{
                         contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
-                      //  contactViewHolder.tv_startexam.setEnabled(false);
+                        contactViewHolder.tv_startexam.setEnabled(false);
                         contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit_disable));
                     }
                 }else {
                     contactViewHolder.tv_startexam.setVisibility(View.VISIBLE);
-                  //  contactViewHolder.tv_startexam.setEnabled(false);
+                    contactViewHolder.tv_startexam.setEnabled(false);
                     contactViewHolder.tv_startexam.setBackground(ContextCompat.getDrawable(mContext, R.drawable.button_bg_submit_disable));
                    // contactViewHolder.tv_startexam.setEnabled(false);
                 }

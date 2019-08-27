@@ -70,6 +70,10 @@ public class MaterialsAdapter extends RecyclerView.Adapter<MaterialsAdapter.Cont
 
                 contactViewHolder.iv_icon.setImageResource(R.drawable.image);
 
+            } else if (jsonObject.optString("material_original_name").endsWith(".mp4")) {
+
+                contactViewHolder.iv_icon.setImageResource(R.mipmap.ic_video_ff);
+
             }
 
             if (jsonObject.optString("downloadstatus").equalsIgnoreCase("C")) {

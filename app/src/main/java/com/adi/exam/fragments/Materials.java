@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adi.exam.Material_Videos;
 import com.adi.exam.R;
 import com.adi.exam.SriVishwa;
 import com.adi.exam.ViewMaterial;
@@ -295,37 +296,44 @@ Materials extends ParentFragment implements IItemHandler, View.OnClickListener, 
             startActivity(in);
 */
 
-            File file = new File(path);
-            if (!file.exists()) {
-                file.mkdir();
-            }
-            String full_path = path + jsonObject.optString("material_unique_name");
-            File filer = new File(full_path);
-            String type = Utils.getMimeType(jsonObject.optString("material_unique_name"));
-            if (filer.exists()) {
-                Uri path = Uri.fromFile(new File(full_path));
-                Intent launchIntent = new Intent(Intent.ACTION_VIEW);
-                launchIntent.setDataAndType(path, type);
-                launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(launchIntent);
-            } else {
-                Intent in = new Intent(getActivity(), ViewMaterial.class);
-                in.putExtra("url", url);
-                startActivity(in);
-
-                long folder_size = getFolderSize(file);
-                if (folder_size < 5120000000L) {
-                    filePDF(selectedJSON);
+            String mymi_type = Utils.getMimeType(jsonObject.optString("material_unique_name"));
+            if (mymi_type.startsWith("application/")) {
+                File file = new File(path);
+                if (!file.exists()) {
+                    file.mkdir();
+                }
+                String full_path = path + jsonObject.optString("material_unique_name");
+                File filer = new File(full_path);
+                String type = Utils.getMimeType(jsonObject.optString("material_unique_name"));
+                if (filer.exists()) {
+                    Uri path = Uri.fromFile(new File(full_path));
+                    Intent launchIntent = new Intent(Intent.ACTION_VIEW);
+                    launchIntent.setDataAndType(path, type);
+                    launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(launchIntent);
                 } else {
-                    //delete file here
-                    File yourDir = new File(path);
-                    for (File f : yourDir.listFiles()) {
-                        int file_size = Integer.parseInt(String.valueOf(f.length() / 1024));
-                        if (file_size > 25) {
-                            f.delete();
+                    Intent in = new Intent(getActivity(), ViewMaterial.class);
+                    in.putExtra("url", url);
+                    startActivity(in);
+
+                    long folder_size = getFolderSize(file);
+                    if (folder_size < 5120000000L) {
+                        filePDF(selectedJSON);
+                    } else {
+                        //delete file here
+                        File yourDir = new File(path);
+                        for (File f : yourDir.listFiles()) {
+                            int file_size = Integer.parseInt(String.valueOf(f.length() / 1024));
+                            if (file_size > 25) {
+                                f.delete();
+                            }
                         }
                     }
                 }
+            } else {
+                Intent in = new Intent(getActivity(), Material_Videos.class);
+                in.putExtra("url", url);
+                startActivity(in);
             }
 
             // initDownload(selectedJSON);

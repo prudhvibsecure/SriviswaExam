@@ -213,9 +213,9 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
 
         tv_answeredcnt = layout.findViewById(R.id.tv_answeredcnt);
 
-        tv_mfrcnt = layout.findViewById(R.id.tv_mfrcnt);
+       /* tv_mfrcnt = layout.findViewById(R.id.tv_mfrcnt);
 
-        tv_amfrcnt = layout.findViewById(R.id.tv_amfrcnt);
+        tv_amfrcnt = layout.findViewById(R.id.tv_amfrcnt);*/
 
         layout.findViewById(R.id.tv_savennext).setOnClickListener(this);
 
@@ -233,7 +233,7 @@ public class BITSATTemplates extends ParentFragment implements View.OnClickListe
 
         rv_ques_nums = layout.findViewById(R.id.rv_ques_nums);
 
-        rv_ques_nums.setLayoutManager(new GridLayoutManager(activity, 5));
+        rv_ques_nums.setLayoutManager(new GridLayoutManager(activity, 2));
 
         rv_ques_nums.setAdapter(adapter);
 
