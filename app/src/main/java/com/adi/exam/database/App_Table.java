@@ -752,6 +752,7 @@ public class App_Table {
         return jsonObject;
 
     }
+
     public String getFileName(String name) {
         String exam_id = "";
         try {
@@ -779,5 +780,36 @@ public class App_Table {
             e.printStackTrace();
         }
         return exam_id;
+    }
+
+    public String getTypeID(String question_paper_id) {
+        String id = "";
+        String section = "";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id+"'";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            section = cursor.getString(cursor.getColumnIndex("section"));
+                            id = cursor.getString(cursor.getColumnIndex("type_id"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id + "," + section;
     }
 }

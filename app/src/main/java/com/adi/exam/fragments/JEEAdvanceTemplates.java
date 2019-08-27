@@ -121,6 +121,10 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     private boolean isVisible = false;
 
+    private String section, type_ID, db_fields;
+
+    App_Table table;
+
     String path;
     private String PATH = Environment.getExternalStorageDirectory().toString();
 
@@ -151,8 +155,14 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
         if (getArguments() != null) {
 
             try {
-
+                table = new App_Table(activity);
                 data = new JSONObject(getArguments().getString("data"));
+
+                JSONObject question_details = data.getJSONObject("question_details");
+                db_fields = table.getTypeID(question_details.optString("question_paper_id"));
+                String[] dd = db_fields.split(",");
+                section = dd[0];
+                type_ID = dd[1];
 
             } catch (Exception e) {
 
@@ -173,6 +183,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                              Bundle savedInstanceState) {
 
         layout = inflater.inflate(R.layout.jee_advance_template, container, false);
+
 
         activity.getSupportActionBar().setHomeButtonEnabled(false);
 
@@ -206,13 +217,12 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         layout.findViewById(R.id.tv_savennext).setOnClickListener(this);
 
-        layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
+     //   layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
 
         layout.findViewById(R.id.tv_clearresponse).setOnClickListener(this);
 
         layout.findViewById(R.id.tv_mfrn).setOnClickListener(this);
 
-        layout.findViewById(R.id.tv_back).setOnClickListener(this);
 
         layout.findViewById(R.id.tv_submit).setOnClickListener(this);
 
@@ -279,8 +289,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
         String subjectsArray[];
 
         String subjects = data.optString("subjects").trim();
-        String type_id = data.optString("type_id").trim();
-        String section = data.optString("section").trim();
 
         if (subjects.contains(",")) {
 

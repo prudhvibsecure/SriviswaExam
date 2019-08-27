@@ -22,7 +22,7 @@ public class Database extends SQLiteOpenHelper {
 
     private String EXAM_TABLE = "CREATE TABLE EXAM(exam_id INTEGER, exam_name TEXT, course TEXT, subjects TEXT, no_of_questions TEXT, marks_per_question TEXT, negative_marks TEXT, duration TEXT,duration_sec TEXT)";//,from_timestamp TEXT,to_imestamp TEXT
 
-    private String QUESTIONPAPER_TABLE = "CREATE TABLE QUESTIONPAPER(question_paper_id INTEGER, exam_id INTEGER, exam_date TEXT, from_time TEXT, to_time TEXT, subjects TEXT, topicids TEXT)";
+    private String QUESTIONPAPER_TABLE = "CREATE TABLE QUESTIONPAPER(question_paper_id INTEGER, exam_id INTEGER, exam_date TEXT, from_time TEXT, to_time TEXT, subjects TEXT, topicids TEXT,paper TEXT,year TEXT)";
 
     private String STUDENTQUESTIONPAPER_TABLE = "CREATE TABLE STUDENTQUESTIONPAPER(student_question_paper_id INTEGER, question_paper_id INTEGER, subject TEXT, questions TEXT, options TEXT,section TEXT,type_id TEXT)";
 

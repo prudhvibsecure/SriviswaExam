@@ -41,6 +41,8 @@ public class AppSettings {
 
             properties.setProperty("getquestionpaper", BASE_PATH + "admin/get_question_paper");
 
+            properties.setProperty("getquestionpaper_jadvance", BASE_PATH + "jee_advanced/get_question_paper");
+
             properties.setProperty("updatedevice", BASE_PATH + "admin/update_device");
 
             properties.setProperty("checkversion", BASE_PATH + "admin/check_version");

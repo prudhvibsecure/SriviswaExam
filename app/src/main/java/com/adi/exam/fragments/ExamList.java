@@ -63,7 +63,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
     private long time = 0;
 
-    private  long left_over_time=0;
+    private long left_over_time = 0;
 
     public ExamList() {
         // Required empty public constructor
@@ -144,8 +144,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                 //updateOtherDetails(adapterContent.getItems());
 
-            } else
-            {
+            } else {
                 Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
             }
 
@@ -230,7 +229,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 //                        String []time_array1=dateString2.split(":");
 //                        long tt2=Integer.parseInt(time_array1[0])*3600+Integer.parseInt(time_array1[1])*60;
 
-                        left_over_time=duration_secs-(left_time/1000);
+                        left_over_time = duration_secs - (left_time / 1000);
 
 
                     }
@@ -477,24 +476,34 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                                 JSONObject reqObject = new JSONObject();
+                                if (jsonObject1.optString("jee_adv").equalsIgnoreCase("0")) {
 
-                                reqObject.put("student_id", activity.getStudentDetails().optString("student_id"));
+                                    reqObject.put("student_id", activity.getStudentDetails().optString("student_id"));
 
-                                reqObject.put("question_paper_id", jsonObject1.optString("question_paper_id"));
+                                    reqObject.put("question_paper_id", jsonObject1.optString("question_paper_id"));
 
-                                HTTPPostTask post = new HTTPPostTask(activity, this);
+                                    HTTPPostTask post = new HTTPPostTask(activity, this);
 
-                                post.disableProgress();
+                                    post.disableProgress();
 
-                                post.userRequest(getString(R.string.plwait), 2, "getquestionpaper", reqObject.toString());
+                                    post.userRequest(getString(R.string.plwait), 2, "getquestionpaper", reqObject.toString());
+                                } else {
+                                    reqObject.put("student_id", activity.getStudentDetails().optString("student_id"));
+
+                                    reqObject.put("question_paper_id", jsonObject1.optString("question_paper_id"));
+
+                                    HTTPPostTask post = new HTTPPostTask(activity, this);
+
+                                    post.disableProgress();
+
+                                    post.userRequest(getString(R.string.plwait), 2, "getquestionpaper_jadvance", reqObject.toString());
+                                }
 
                             }
 
                             return;
 
-                        }
-                        else
-                        {
+                        } else {
                             Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                         }
 
@@ -585,8 +594,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                             //updateOtherDetails(adapterContent.getItems());
 
-                        } else
-                        {
+                        } else {
                             Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
                         }
 
@@ -780,7 +788,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
             if (database != null) {
 
                 //String cursor_q = "select * from EXAM";
-                String cursor_q = "SELECT exam.exam_id,exam.exam_name,exam.course,exam.no_of_questions,exam.subjects,exam.marks_per_question,exam.negative_marks,exam.duration,exam.duration_sec,questionpaper.from_time,questionpaper.to_time,questionpaper.exam_date,questionpaper.question_paper_id,questionpaper.exam_id,questionpaper.subjects,questionpaper.topicids" +
+                String cursor_q = "SELECT exam.exam_id,exam.exam_name,exam.course,exam.no_of_questions,exam.subjects,exam.marks_per_question,exam.negative_marks,exam.duration,exam.duration_sec,questionpaper.from_time,questionpaper.to_time,questionpaper.exam_date,questionpaper.question_paper_id,questionpaper.exam_id,questionpaper.subjects,questionpaper.topicids,questionpaper.year,questionpaper.paper,questionpaper.paper" +
                         " from exam inner join questionpaper on exam.exam_id = questionpaper.exam_id order by questionpaper.exam_date,questionpaper.from_time";
                 db = database.getWritableDatabase();
                 Cursor cursor = db
@@ -810,6 +818,8 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                                     obj1.put("exam_id", cursor.getString(cursor.getColumnIndex("exam_id")));
                                     obj1.put("subjects", cursor.getString(cursor.getColumnIndex("subjects")));
                                     obj1.put("topicids", cursor.getString(cursor.getColumnIndex("topicids")));
+                                    obj1.put("year", cursor.getString(cursor.getColumnIndex("year")));
+                                    obj1.put("paper", cursor.getString(cursor.getColumnIndex("paper")));
                                     obj.put("question_details", obj1);
 
                                     String dateTime = cursor.getString(cursor.getColumnIndex("exam_date")).trim() + " " + cursor.getString(cursor.getColumnIndex("to_time")).trim();

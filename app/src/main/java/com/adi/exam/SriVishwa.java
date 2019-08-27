@@ -525,12 +525,12 @@ public class SriVishwa extends AppCompatActivity
 
             JSONObject jsonObject = new JSONObject(data);
 
-            if (jsonObject.optString("course").equalsIgnoreCase("1") || jsonObject.optString("course").equalsIgnoreCase("2")) { //JEE
+            if (jsonObject.optString("course").equalsIgnoreCase("1")) { //JEE
 
                 swiftFragments(JEEemplates.newInstance(data), "examtemplate");
 
             } else if (jsonObject.optString("course").equalsIgnoreCase("3")) { //BITSAT
-               // swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
+                // swiftFragments(ExamTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/BITSAT/bitsat0.html";
                 swiftFragments(BITSATTemplates.newInstance(data), "examtemplate");
 
@@ -554,7 +554,7 @@ public class SriVishwa extends AppCompatActivity
                 swiftFragments(KVPYTemplates.newInstance(data), "examtemplate");
                 //localPath = "file:///android_asset/KVPY/kvpy.html";
 
-            }else{
+            } else if (jsonObject.optString("course").equalsIgnoreCase("2")) {
                 swiftFragments(JEEAdvanceTemplates.newInstance(data), "examtemplate");
             }
 
@@ -1079,14 +1079,13 @@ public class SriVishwa extends AppCompatActivity
 
             JSONObject jsonObject = new JSONObject();
 
-            jsonObject.put("timestamp", sp.getString("time",""));
+            jsonObject.put("timestamp", sp.getString("time", ""));
 
             HTTPPostTask post = new HTTPPostTask(this, this);
 
             post.disableProgress();
 
             post.userRequest(getString(R.string.plwait), 123, "get_new_questions", jsonObject.toString());
-
 
 
         } catch (Exception e) {
@@ -1142,7 +1141,7 @@ public class SriVishwa extends AppCompatActivity
 
                 }
 
-            } else if(requestId == 123) {
+            } else if (requestId == 123) {
 
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString("time", String.valueOf(System.currentTimeMillis()));
@@ -1154,8 +1153,7 @@ public class SriVishwa extends AppCompatActivity
 
                     JSONArray array = jsonObject.getJSONArray("question_details");
 
-                    for(int i = 0; i<array.length();i++)
-                    {
+                    for (int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
                         String filename = obj.optString("file_name");
                         questionFile(filename);
@@ -1390,7 +1388,7 @@ public class SriVishwa extends AppCompatActivity
     };
 
     private void questionFile(String a_name) {
-        String externalDirectory= Environment.getExternalStorageDirectory().toString();
+        String externalDirectory = Environment.getExternalStorageDirectory().toString();
         File mediaStorage = new File(externalDirectory);
         if (!mediaStorage.exists()) {
             mediaStorage.mkdirs();
