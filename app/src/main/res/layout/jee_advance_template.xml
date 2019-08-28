@@ -152,7 +152,7 @@
 
                     <ImageView
                         android:id="@+id/iv_question"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/app_name"
                         android:padding="@dimen/_5sdp"
@@ -160,7 +160,7 @@
 
                     <ImageView
                         android:id="@+id/iv_questionimg"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/app_name"
                         android:padding="@dimen/_5sdp"
@@ -410,7 +410,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:inputType="number"
-                            android:background="@drawable/dialog_background"
+                            android:background="@drawable/button_bg_cancel"
                             android:hint="Answer"
                             android:padding="8dp" />
                     </LinearLayout>
@@ -510,8 +510,8 @@
                 android:padding="@dimen/_12sdp">
 
                 <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_gravity="center"
                     android:src="@mipmap/ic_add_m" />
 

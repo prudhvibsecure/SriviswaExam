@@ -105,6 +105,10 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     private JSONObject json;
 
+    private String subjects;
+
+    private String subjectsArray[];
+
     private int check = 0, clickcount = 0;
 
     private long questionStartTime = 0;
@@ -124,7 +128,9 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     private boolean isVisible = false;
 
-    private String section, type_ID, db_fields;
+    int tabPosition_sub = 0;
+
+    private String section = "", type_ID = "", db_fields = "";
 
     App_Table table;
 
@@ -132,6 +138,12 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
     private String PATH = Environment.getExternalStorageDirectory().toString();
 
     private final String IMGPATH = PATH + "/System/allimages/";
+
+    JSONObject studentDetails, question_details;
+
+    private String First, Second, Third, Fourth;
+
+    private String Total = "";
 
     public JEEAdvanceTemplates() {
         // Required empty public constructor
@@ -160,13 +172,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             try {
                 table = new App_Table(activity);
                 data = new JSONObject(getArguments().getString("data"));
-
-                JSONObject question_details = data.getJSONObject("question_details");
-                db_fields = table.getTypeID(question_details.optString("question_paper_id"));
-                String[] dd = db_fields.split(",");
-                section = dd[0];
-                type_ID = dd[1];
-
+                studentDetails = new JSONObject(AppPreferences.getInstance(getActivity()).getFromStore("studentDetails"));
             } catch (Exception e) {
 
                 TraceUtils.logException(e);
@@ -227,6 +233,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         layout.findViewById(R.id.tv_savennext).setOnClickListener(this);
 
+        ((TextView) layout.findViewById(R.id.user_name)).setText(studentDetails.optString("student_name"));
         //   layout.findViewById(R.id.tv_savenmarkforreview).setOnClickListener(this);
 
         layout.findViewById(R.id.tv_clearresponse).setOnClickListener(this);
@@ -296,9 +303,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             }
         });
 
-        String subjectsArray[];
 
-        String subjects = data.optString("subjects").trim();
+        subjects = data.optString("subjects").trim();
 
         if (subjects.contains(",")) {
 
@@ -308,6 +314,12 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
             subjectsArray = new String[]{subjects};
 
+        }
+        try {
+            question_details = data.getJSONObject("question_details");
+            type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[0]);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         for (int i = 0; i < subjectsArray.length; i++) {
@@ -321,53 +333,23 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             tl_subjects.addTab(tl_subjects.newTab().setCustomView(textView));
 
         }
-        for (int i = 0; i < 3; i++) {
 
-
+        for (int k = 1; k < 4; k++) {
             TextView textView = (TextView) View.inflate(activity, R.layout.tab_subjects, null);
 
-            textView.setText("Section-" + i);
+            textView.setText("Section-" + k);
 
             tl_sections.addTab(tl_sections.newTab().setCustomView(textView));
-
         }
         tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                int tabPosition = tab.getPosition();
+                tabPosition_sub = tab.getPosition();
 
-                if (tabPosition == 0) {
-
-                    updateQuestionTime();
-
-                    showNextQuestion(0);
-
-                    return;
-
-                }
-
-                String noOfQuestions = data.optString("no_of_questions");
-
-                if (noOfQuestions.contains(",")) {
-
-                    String temp1[] = noOfQuestions.split(",");
-
-                    int questionIndex = 0;
-
-                    for (int i = 0; i < tabPosition; i++) {
-
-                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
-
-                    }
-
-                    updateQuestionTime();
-
-                    showNextQuestion(questionIndex);
-
-                }
-
+                String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+                getQuestionsFromDBNShow(noOfQuestions);
             }
 
             @Override
@@ -386,38 +368,79 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                int tabPosition = tab.getPosition();
+                try {
+                    int tabPosition = tab.getPosition();
 
-                if (tabPosition == 0) {
+                    if (tabPosition == 0) {
 
-                    updateQuestionTime();
+                        JSONObject question_details = data.getJSONObject("question_details");
+                        type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
 
-                    showNextQuestion(0);
+                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+                        getQuestionsFromDBNShow(noOfQuestions);
 
-                    return;
+                        return;
 
-                }
+                    }
+                    if (tabPosition == 1) {
+                        JSONObject question_details = data.getJSONObject("question_details");
+                        type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+                       /* if (noOfQuestions.contains(",")) {
 
-                String noOfQuestions = data.optString("no_of_questions");
+                            String temp1[] = noOfQuestions.split(",");
 
-                if (noOfQuestions.contains(",")) {
+                            int questionIndex = 0;
 
-                    String temp1[] = noOfQuestions.split(",");
+                            for (int i = 0; i < tabPosition; i++) {
 
-                    int questionIndex = 0;
+                                questionIndex = questionIndex + Integer.parseInt(temp1[i]);
 
-                    for (int i = 0; i < tabPosition; i++) {
+                            }
 
-                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+                            updateQuestionTime();
+
+                            showNextQuestion(questionIndex);
+
+                        }
+*/
+                        getQuestionsFromDBNShow(noOfQuestions);
+
+                        return;
+
+                    }
+                    if (tabPosition == 2) {
+                        JSONObject question_details = data.getJSONObject("question_details");
+                        type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+
+                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+                        getQuestionsFromDBNShow(noOfQuestions);
+                       /* if (noOfQuestions.contains(",")) {
+
+                            String temp1[] = noOfQuestions.split(",");
+
+                            int questionIndex = 0;
+
+                            for (int i = 0; i < tabPosition; i++) {
+
+                                questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                            }
+
+                            updateQuestionTime();
+
+                            showNextQuestion(questionIndex);
+
+                        }
+
+*/
+                        return;
 
                     }
 
-                    updateQuestionTime();
-
-                    showNextQuestion(questionIndex);
-
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
             }
 
             @Override
@@ -720,10 +743,27 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         }
 
                         jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                        if (type_ID.equalsIgnoreCase("1")) {
 
-                        jsonObject.put("qstate", 2);
+                            jsonObject.put("qstate", 2);
 
-                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+                            jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+                        } else if (type_ID.equalsIgnoreCase("2")) {
+
+                            jsonObject.put("qstate", 2);
+
+                            jsonObject.put("qanswer", "");
+                        } else if (type_ID.equalsIgnoreCase("3")) {
+
+                            jsonObject.put("qstate", 2);
+
+                            jsonObject.put("qanswer", "");
+                        } else {
+
+                            jsonObject.put("qstate", 2);
+
+                            jsonObject.put("qanswer", "");
+                        }
 
                         adapter.notifyItemChanged(currentExamId);
 
@@ -742,40 +782,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                     break;
 
-                case R.id.tv_savenmarkforreview:
-
-                    if (currentExamId == adapter.getCount()) {
-                        Toast.makeText(activity, "Are you finished your exam..", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (currentExamId != -1) {
-                        question_no++;
-                        int selRatioId = rg_options.getCheckedRadioButtonId();
-
-                        if (selRatioId == -1) {
-
-                            activity.showokPopUp(R.drawable.pop_ic_info, activity.getString(R.string.alert), activity.getString(R.string.psao));
-
-                            return;
-                        }
-
-                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
-
-                        jsonObject.put("qstate", 4);
-
-                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
-
-                        adapter.notifyItemChanged(currentExamId);
-
-                        rg_options.clearCheck();
-
-                        updateQuestionTime();
-
-                        showNextQuestion(currentExamId + 1);
-
-                    }
-
-                    break;
 
                 case R.id.tv_clearresponse:
                     //  if (currentExamId<=adapter.getItemCount()) {
@@ -798,18 +804,36 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     if (currentExamId != -1) {
 
                         //question_no++;
-                        int selRatioId = rg_options.getCheckedRadioButtonId();
+                        if (type_ID.equalsIgnoreCase("1")) {
+                            int selRatioId = rg_options.getCheckedRadioButtonId();
 
-                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
-                        jsonObject.put("qstate", 3);
+                            jsonObject.put("qstate", 3);
 
-                        jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+                            jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+                        } else if (type_ID.equalsIgnoreCase("2")) {
+                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
+
+                            jsonObject.put("qstate", 3);
+
+                            jsonObject.put("qanswer", "");
+                        } else if (type_ID.equalsIgnoreCase("3")) {
+                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
+
+                            jsonObject.put("qstate", 3);
+
+                            jsonObject.put("qanswer", "");
+                        } else {
+                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
+
+                            jsonObject.put("qstate", 3);
+
+                            jsonObject.put("qanswer", "");
+                        }
 
                         adapter.notifyItemChanged(currentExamId);
-//                        if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
-//                            rg_options.clearCheck();
-//                        }
+
                         rg_options.clearCheck();
 
                         updateQuestionTime();
@@ -820,58 +844,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                     break;
 
-                case R.id.tv_back:
-
-                    if (currentExamId == -1)
-                        return;
-                    jsonObject = adapter.getItems().getJSONObject(currentExamId);
-
-                    if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
-                        rg_options.clearCheck();
-                        jsonObject.put("qstate", 1);
-                        jsonObject.put("qanswer", "");
-                    }
-                    question_no--;
-                    adapter.notifyItemChanged(currentExamId);
-                    updateQuestionTime();
-
-                    showNextQuestion(currentExamId - 1);
-                    if (currentExamId == 0) {
-                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
-                        if (jsonObject.optString("qstate").equalsIgnoreCase("1")) {
-                            rg_options.clearCheck();
-
-                            jsonObject.put("qstate", 1);
-                            jsonObject.put("qanswer", "");
-                            currentExamId = 0;//this one
-                        }
-                    }
-
-                    break;
-
                 case R.id.tv_submit:
                     showResults();
-
-                    break;
-
-                case R.id.tv_next:
-
-//                    if (currentExamId == adapter.getCount())
-//                        return;
-                    question_no++;
-                    jsonObject = adapter.getItems().getJSONObject(currentExamId);
-
-                    if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {
-
-                        jsonObject.put("qstate", 1);
-
-                    }
-
-                    adapter.notifyItemChanged(currentExamId);
-                    rg_options.clearCheck();
-                    updateQuestionTime();
-
-                    showNextQuestion(currentExamId + 1);
 
                     break;
 
@@ -1045,7 +1019,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             }
             if (type_ID.equalsIgnoreCase("1")) {
                 layout.findViewById(R.id.opt_four).setVisibility(View.GONE);
-                layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
+                layout.findViewById(R.id.mult_ll).setVisibility(View.GONE);
                 layout.findViewById(R.id.rg_options).setVisibility(View.VISIBLE);
 
                 if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
@@ -1073,29 +1047,34 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                 if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
                     checkBox1.setChecked(true);
+                    Total = First;
 
                 } else if (jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
-
+                    Total = Second;
                     checkBox2.setChecked(true);
 
                 } else if (jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
-
+                    Total = Third;
                     checkBox3.setChecked(true);
 
                 } else if (jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
+                    Total = Fourth;
+                    checkBox4.setChecked(true);
 
+                }else if (jsonObject.optString("qanswer").equalsIgnoreCase("a")||jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
+                    Total = First;
                     checkBox4.setChecked(true);
 
                 }
             } else if (type_ID.equalsIgnoreCase("3")) {
-                layout.findViewById(R.id.mult_ll).setVisibility(View.VISIBLE);
+                layout.findViewById(R.id.mult_ll).setVisibility(View.GONE);
                 layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
-                layout.findViewById(R.id.opt_four).setVisibility(View.GONE);
+                layout.findViewById(R.id.opt_four).setVisibility(View.VISIBLE);
 
             } else if (type_ID.equalsIgnoreCase("4")) {
                 layout.findViewById(R.id.mult_ll).setVisibility(View.GONE);
                 layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
-                layout.findViewById(R.id.opt_four).setVisibility(View.VISIBLE);
+                layout.findViewById(R.id.opt_four).setVisibility(View.GONE);
             }
 
             /*if (jsonObject.optInt("qanswer") == 1) {

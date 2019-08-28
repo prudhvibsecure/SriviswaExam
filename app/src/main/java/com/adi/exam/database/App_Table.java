@@ -782,13 +782,12 @@ public class App_Table {
         return exam_id;
     }
 
-    public String getTypeID(String question_paper_id) {
+    public String getTypeID(String question_paper_id, int section_type, String subject) {
         String id = "";
-        String section = "";
         try {
             if (database != null) {
 
-                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id+"'";
+                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='"+subject+"'";
                 SQLiteDatabase db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,
@@ -797,7 +796,6 @@ public class App_Table {
                     if (null != cursor)
                         if (cursor.getCount() > 0) {
                             cursor.moveToFirst();
-                            section = cursor.getString(cursor.getColumnIndex("section"));
                             id = cursor.getString(cursor.getColumnIndex("type_id"));
                         }
                     cursor.close();
@@ -810,6 +808,33 @@ public class App_Table {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return id + "," + section;
+        return id;
+    }public String getNumberofQuestions(String question_paper_id, int section_type, String subject) {
+        String questions = "";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='"+subject+"'";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            questions = cursor.getString(cursor.getColumnIndex("questions"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return questions;
     }
 }
