@@ -34,6 +34,7 @@ import com.adi.exam.callbacks.IItemHandler;
 import com.adi.exam.common.AppPreferences;
 import com.adi.exam.common.AppSettings;
 import com.adi.exam.controls.CustomCheckBox;
+import com.adi.exam.controls.CustomEditText;
 import com.adi.exam.database.App_Table;
 import com.adi.exam.database.Database;
 import com.adi.exam.database.PhoneComponent;
@@ -145,6 +146,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     private String Total = "";
 
+    private CustomEditText ed_texx = null;
+
     public JEEAdvanceTemplates() {
         // Required empty public constructor
     }
@@ -217,6 +220,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
         checkBox2 = layout.findViewById(R.id.ch_second);
         checkBox3 = layout.findViewById(R.id.ch_third);
         checkBox4 = layout.findViewById(R.id.ch_four);
+        ed_texx = layout.findViewById(R.id.ed_texx);
 
 
         tv_questionno = layout.findViewById(R.id.tv_questionno);
@@ -374,9 +378,9 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     if (tabPosition == 0) {
 
                         JSONObject question_details = data.getJSONObject("question_details");
-                        type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+                        type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
 
-                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
                         getQuestionsFromDBNShow(noOfQuestions);
 
                         return;
@@ -413,7 +417,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         JSONObject question_details = data.getJSONObject("question_details");
                         type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
 
-                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
                         getQuestionsFromDBNShow(noOfQuestions);
                        /* if (noOfQuestions.contains(",")) {
 
@@ -752,12 +756,12 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                             jsonObject.put("qstate", 2);
 
-                            jsonObject.put("qanswer", "");
+                            jsonObject.put("qanswer", Total);
                         } else if (type_ID.equalsIgnoreCase("3")) {
 
                             jsonObject.put("qstate", 2);
 
-                            jsonObject.put("qanswer", "");
+                            jsonObject.put("qanswer", ed_texx.getText().toString().trim());
                         } else {
 
                             jsonObject.put("qstate", 2);
@@ -817,13 +821,13 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                             jsonObject.put("qstate", 3);
 
-                            jsonObject.put("qanswer", "");
+                            jsonObject.put("qanswer", Total);
                         } else if (type_ID.equalsIgnoreCase("3")) {
                             jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                             jsonObject.put("qstate", 3);
 
-                            jsonObject.put("qanswer", "");
+                            jsonObject.put("qanswer", ed_texx.getText().toString().trim());
                         } else {
                             jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
@@ -1061,8 +1065,32 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     Total = Fourth;
                     checkBox4.setChecked(true);
 
-                }else if (jsonObject.optString("qanswer").equalsIgnoreCase("a")||jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
-                    Total = First;
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
+                    Total = First + "," + Second;
+                    checkBox4.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
+                    Total = First + "," + Third;
+                    checkBox4.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
+                    Total = First + "," + Fourth;
+                    checkBox4.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("c") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
+                    Total = First + "," + Second + "," + Third + "," + Fourth;
+                    checkBox4.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
+                    Total = First + "," + Second + "," + Third;
+                    checkBox4.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
+                    Total = First + "," + Second + "," + Fourth;
+                    checkBox4.setChecked(true);
+
+                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("c") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
+                    Total = Third + "," + Second + "," + Fourth;
                     checkBox4.setChecked(true);
 
                 }
@@ -1070,6 +1098,13 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                 layout.findViewById(R.id.mult_ll).setVisibility(View.GONE);
                 layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
                 layout.findViewById(R.id.opt_four).setVisibility(View.VISIBLE);
+                String txt = ed_texx.getText().toString().trim();
+                if (!TextUtils.isEmpty(ed_texx.getText().toString().trim())) {
+                    ed_texx.setText(txt);
+                } else {
+                    ed_texx.setText("");
+                }
+
 
             } else if (type_ID.equalsIgnoreCase("4")) {
                 layout.findViewById(R.id.mult_ll).setVisibility(View.GONE);
@@ -1712,9 +1747,10 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
             }
 
-            adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
 
-            showNextQuestion(0);
+                showNextQuestion(0);
+
 
         }
 

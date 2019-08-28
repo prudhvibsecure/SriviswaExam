@@ -407,6 +407,7 @@
                         android:padding="@dimen/_5sdp">
 
                         <com.adi.exam.controls.CustomEditText
+                            android:id="@+id/ed_texx"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:inputType="number"
@@ -506,7 +507,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/cardview_light_background"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:padding="@dimen/_12sdp">
 
                 <ImageView
@@ -523,7 +524,7 @@
                     android:gravity="center"
                     android:text="@string/username"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/_12sdp" />
+                    android:textSize="14dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -678,7 +679,7 @@
                     app:fontType="1" />
 
                 <com.adi.exam.controls.CustomTextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="@dimen/_5sdp"
