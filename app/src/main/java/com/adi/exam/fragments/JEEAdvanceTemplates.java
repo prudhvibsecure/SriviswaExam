@@ -685,6 +685,22 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                 case R.id.ll_questionno:
 
                     int position = rv_ques_nums.getChildAdapterPosition(v);
+
+                    String noOfQuestions = data.optString("no_of_questions");
+                  /*  if (noOfQuestions.contains(",")){
+                        String temp1[] = noOfQuestions.split(",");
+
+                        int questionIndex = 0;
+
+                        for (int i = 0; i < tabPosition_sub; i++) {
+
+                            questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                        }
+
+
+                    }*/
+
                     // question_no = position + 1;
                     currentExamId = position;
                     JSONObject jsonObject = adapter.getItems().getJSONObject(position);
@@ -700,10 +716,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         jsonObject.put("qstate", 3);
                         v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
                         // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
-                    } else if (jsonObject.optString("qstate").equalsIgnoreCase("4")) {
-                        jsonObject.put("qstate", 4);
-                        v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered_marked));
-                        // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered_marked));
                     } else {
                         rg_options.clearCheck();
                         jsonObject.put("qstate", 1);
@@ -723,6 +735,57 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     if (currentExamId != -1) {
                         //  question_no++;
 
+                        switch (tabPosition_sub) {
+                            case 1:
+
+                                if (tabPosition == 0) {
+
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 1) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 2) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+
+                                }
+                                break;
+                            case 2:
+                                if (tabPosition == 0) {
+
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 1) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 2) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+
+                                }
+                                break;
+                            case 3:
+                                if (tabPosition == 0) {
+
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 1) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 2) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+
+                                }
+                                break;
+                        }
                         if (currentExamId == adapter.getCount()) {
 
                             return;
@@ -743,11 +806,13 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                             jsonObject.put("qstate", 2);
 
                             jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
+
                         } else if (type_ID.equalsIgnoreCase("2")) {
 
                             jsonObject.put("qstate", 2);
 
                             jsonObject.put("qanswer", Total);
+
                         } else if (type_ID.equalsIgnoreCase("3")) {
 
                             jsonObject.put("qstate", 2);
