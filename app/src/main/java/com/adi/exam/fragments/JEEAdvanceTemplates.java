@@ -134,7 +134,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     private boolean isVisible = false;
 
-    int tabPosition_sub = 0;
+    int tabPosition_sub = 0, tabPosition = 0;
 
     private String section = "", type_ID = "", db_fields = "";
 
@@ -406,7 +406,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             public void onTabSelected(TabLayout.Tab tab) {
 
                 try {
-                    int tabPosition = tab.getPosition();
+                    tabPosition = tab.getPosition();
 
                     if (tabPosition == 0) {
 
@@ -590,7 +590,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     jsonObject1.put("no_of_clicks", clickcount);
                     jsonObject1.put("marked_for_review", jsonObject.optInt("qstate") == 3 ? "1" : "0");
 
-                    iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "' AND student_question_time_id = '" + jsonObject1.optInt("student_question_time_id") + "'";
+                    iwhereClause = "exam_id = '" + data.optString("exam_id") + "' AND question_id = '" + jsonObject.optInt("question_id") + "'";
 
                     table.checkNInsertARecord(jsonObject1, "STUDENTQUESTIONTIME", iwhereClause);
 
@@ -719,26 +719,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     break;
 
                 case R.id.tv_savennext:
-                    /*if (currentExamId+1 == adapter.getCount()) {
-
-                      if(currentExamId+1 < adapter.getCount()) {
-                          Toast.makeText(activity, "All question Attempted Please submit your exam", Toast.LENGTH_SHORT).show();
-                          return;
-                      }
-                      int nvc = Integer.parseInt(tv_notvisitedcnt.getText().toString());
-                      nvc = nvc-1;
-                      tv_notvisitedcnt.setText(nvc+"");
-                    //tv_answeredcnt.setText(currentExamId);//increment or decrement value ga check cheddam
-
-                      int ans = Integer.parseInt(tv_answeredcnt.getText().toString());
-                      ans = ans+1;
-                      tv_answeredcnt.setText(ans + "");
-                      currentExamId++;
-
-                      Toast.makeText(activity, "All question Attempted Please submit your exam", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-*/
 
                     if (currentExamId != -1) {
                         //  question_no++;
