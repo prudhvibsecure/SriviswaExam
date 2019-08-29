@@ -787,7 +787,7 @@ public class App_Table {
         try {
             if (database != null) {
 
-                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='"+subject+"'";
+                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='" + subject + "'";
                 SQLiteDatabase db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,
@@ -809,12 +809,41 @@ public class App_Table {
             e.printStackTrace();
         }
         return id;
-    }public String getNumberofQuestions(String question_paper_id, int section_type, String subject) {
+    } public String getQuestions(String question_paper_id, int section_type, String subject) {
+        String qs = "";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='" + subject + "'";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            qs = cursor.getString(cursor.getColumnIndex("no_of_questions"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return qs;
+    }
+
+    public String getNumberofQuestions(String question_paper_id, int section_type, String subject) {
         String questions = "";
         try {
             if (database != null) {
 
-                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='"+subject+"'";
+                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='" + subject + "'";
                 SQLiteDatabase db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,
@@ -837,4 +866,5 @@ public class App_Table {
         }
         return questions;
     }
+
 }

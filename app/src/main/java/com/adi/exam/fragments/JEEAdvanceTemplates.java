@@ -51,6 +51,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -106,7 +109,9 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     private JSONObject json;
 
-    private String subjects;
+    private String subjects, no_of_questions;
+
+    StringBuilder maths, physics, chemistry;
 
     private String subjectsArray[];
 
@@ -351,9 +356,37 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             public void onTabSelected(TabLayout.Tab tab) {
 
                 tabPosition_sub = tab.getPosition();
+                if (tabPosition_sub == 0) {
 
-                String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
-                getQuestionsFromDBNShow(noOfQuestions);
+                    updateQuestionTime();
+
+                    showNextQuestion(0);
+
+                    return;
+
+                }
+
+                String noOfQuestions = data.optString("no_of_questions");
+
+                if (noOfQuestions.contains(",")) {
+
+                    String temp1[] = noOfQuestions.split(",");
+
+                    int questionIndex = 0;
+
+                    for (int i = 0; i < tabPosition_sub; i++) {
+
+                        questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                    }
+
+                    updateQuestionTime();
+
+                    showNextQuestion(questionIndex);
+
+                }
+
+                // getQuestionsFromDBNShow(noOfQuestions);
             }
 
             @Override
@@ -380,67 +413,46 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         JSONObject question_details = data.getJSONObject("question_details");
                         type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
 
-                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
-                        getQuestionsFromDBNShow(noOfQuestions);
-
-                        return;
-
-                    }
-                    if (tabPosition == 1) {
+                    } else if (tabPosition == 1) {
                         JSONObject question_details = data.getJSONObject("question_details");
                         type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
-                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
-                       /* if (noOfQuestions.contains(",")) {
 
-                            String temp1[] = noOfQuestions.split(",");
-
-                            int questionIndex = 0;
-
-                            for (int i = 0; i < tabPosition; i++) {
-
-                                questionIndex = questionIndex + Integer.parseInt(temp1[i]);
-
-                            }
-
-                            updateQuestionTime();
-
-                            showNextQuestion(questionIndex);
-
-                        }
-*/
-                        getQuestionsFromDBNShow(noOfQuestions);
-
-                        return;
-
-                    }
-                    if (tabPosition == 2) {
+                    } else if (tabPosition == 2) {
                         JSONObject question_details = data.getJSONObject("question_details");
                         type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
 
-                        String noOfQuestions = table.getNumberofQuestions(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
-                        getQuestionsFromDBNShow(noOfQuestions);
-                       /* if (noOfQuestions.contains(",")) {
+                    }
 
-                            String temp1[] = noOfQuestions.split(",");
+                    if (tabPosition == 0) {
 
-                            int questionIndex = 0;
+                        updateQuestionTime();
 
-                            for (int i = 0; i < tabPosition; i++) {
+                        showNextQuestion(0);
 
-                                questionIndex = questionIndex + Integer.parseInt(temp1[i]);
-
-                            }
-
-                            updateQuestionTime();
-
-                            showNextQuestion(questionIndex);
-
-                        }
-
-*/
                         return;
 
                     }
+
+                    String noOfQuestions = table.getQuestions(question_details.optString("question_paper_id"), tabPosition + 1, subjectsArray[tabPosition_sub]);
+
+                    if (noOfQuestions.contains(",")) {
+
+                        String temp1[] = noOfQuestions.split(",");
+
+                        int questionIndex = 0;
+
+                        for (int i = 0; i < tabPosition; i++) {
+
+                            questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                        }
+
+                        updateQuestionTime();
+
+                        showNextQuestion(questionIndex);
+
+                    }
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -458,9 +470,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             }
 
         });
-//        String  dat=data.optString("duration").trim();
-//        long time = (long) Double.parseDouble(dat);
-        showTimer((data.optInt("duration_sec") * 1000));
+
+        //   showTimer((data.optInt("duration_sec") * 1000));
 
         sdate = new Date();
 
@@ -1212,7 +1223,12 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                         String questions = student_question_paper_details.optString("questions");
 
-                        getQuestionsFromDBNShow(questions);
+                        if (type_ID.equalsIgnoreCase("4")) {
+
+                        } else {
+
+                            getQuestionsFromDBNShow(questions);
+                        }
 
                     }
 
@@ -1747,9 +1763,9 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
             }
 
-                adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
 
-                showNextQuestion(0);
+            showNextQuestion(0);
 
 
         }
