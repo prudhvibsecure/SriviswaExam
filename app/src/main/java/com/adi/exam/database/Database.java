@@ -22,7 +22,7 @@ public class Database extends SQLiteOpenHelper {
 
     private String EXAM_TABLE = "CREATE TABLE EXAM(exam_id INTEGER, exam_name TEXT, course TEXT, subjects TEXT, no_of_questions TEXT, marks_per_question TEXT, negative_marks TEXT, duration TEXT,duration_sec TEXT)";//,from_timestamp TEXT,to_imestamp TEXT
 
-    private String QUESTIONPAPER_TABLE = "CREATE TABLE QUESTIONPAPER(question_paper_id INTEGER, exam_id INTEGER, exam_date TEXT, from_time TEXT, to_time TEXT, subjects TEXT, topicids TEXT,paper TEXT,year TEXT)";
+    private String QUESTIONPAPER_TABLE = "CREATE TABLE QUESTIONPAPER(question_paper_id INTEGER, exam_id INTEGER, exam_date TEXT, from_time TEXT, to_time TEXT, subjects TEXT, topicids TEXT,paper TEXT,year TEXT,jeeQs TEXT)";
 
     private String STUDENTQUESTIONPAPER_TABLE = "CREATE TABLE STUDENTQUESTIONPAPER(student_question_paper_id INTEGER, question_paper_id INTEGER, subject TEXT, questions TEXT, options TEXT,section TEXT,type_id TEXT,no_of_questions TEXT)";
 
@@ -46,7 +46,9 @@ public class Database extends SQLiteOpenHelper {
 
     private final String FILES_DATA = "CREATE TABLE IF NOT EXISTS FILESDATA(assignment_id TEXT,exam_id TEXT,filename TEXT,path TEXT);";
 
-    private final String PARAGRAPS_TABLE = "CREATE TABLE  PARAGRAPS(paragraph_id TEXT,paragraph TEXT,topic_id TEXT,lesson_id TEXT,question_ids TEXT,status TEXT);";
+    private final String PARAGRAPS_TABLE = "CREATE TABLE  PARAGRAPS(paragraph_id  TEXT,paragraph TEXT,topic_id TEXT,lesson_id TEXT,question_ids TEXT,status TEXT);";
+
+    private final String ALlQuesTable = "CREATE TABLE  JEEQS(exam_id TEXT,questions TEXT);";
 
     public Database(Context context) {
         super(context, APP_DATABASE_NAME, null, APP_DATABASE_VERSION);
@@ -73,6 +75,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(ASSIGNMENTSTUDENTQUESTIONRESULTS_TABLE);
         db.execSQL(FILES_DATA);
         db.execSQL(PARAGRAPS_TABLE);
+        db.execSQL(ALlQuesTable);
 
     }
 

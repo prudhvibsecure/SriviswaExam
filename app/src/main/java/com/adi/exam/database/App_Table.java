@@ -867,4 +867,34 @@ public class App_Table {
         return questions;
     }
 
+    public String getAllQuestionView(int exam_id) {
+
+        String qs="";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from JEEQS where exam_id='" + exam_id +"'";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            qs = cursor.getString(cursor.getColumnIndex("questions"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return qs;
+    }
 }

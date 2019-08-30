@@ -350,6 +350,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
             tl_sections.addTab(tl_sections.newTab().setCustomView(textView));
         }
+
+
         tl_subjects.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
@@ -471,7 +473,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         });
 
-        //   showTimer((data.optInt("duration_sec") * 1000));
+        showTimer((data.optInt("duration_sec") * 1000));
 
         sdate = new Date();
 
@@ -686,22 +688,16 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                     int position = rv_ques_nums.getChildAdapterPosition(v);
 
-                    String noOfQuestions = data.optString("no_of_questions");
-                  /*  if (noOfQuestions.contains(",")){
-                        String temp1[] = noOfQuestions.split(",");
-
-                        int questionIndex = 0;
-
-                        for (int i = 0; i < tabPosition_sub; i++) {
-
-                            questionIndex = questionIndex + Integer.parseInt(temp1[i]);
-
+                    String allquestions = table.getAllQuestionView(data.optInt("exam_id"));
+                    JSONObject ood = new JSONObject(allquestions);
+                    if (ood.has("question_ids")) {
+                        JSONArray aa = ood.getJSONArray("question_ids");
+                        for (int i = position; i < aa.length(); i++) {
+                            JSONObject ass = aa.getJSONObject(i);
+                            type_ID=ass.getString("type_id");
                         }
+                    }
 
-
-                    }*/
-
-                    // question_no = position + 1;
                     currentExamId = position;
                     JSONObject jsonObject = adapter.getItems().getJSONObject(position);
                     if (jsonObject.optString("qstate").equalsIgnoreCase("2")) {

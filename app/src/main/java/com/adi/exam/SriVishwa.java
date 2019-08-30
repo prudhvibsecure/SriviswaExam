@@ -81,6 +81,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,6 +193,8 @@ public class SriVishwa extends AppCompatActivity
 
         getNewQuestions();
 
+        getParagraph();
+
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         navigationView.setNavigationItemSelectedListener(this);
@@ -207,6 +210,40 @@ public class SriVishwa extends AppCompatActivity
         IntentFilter apk = new IntentFilter("com.attach.apk");
         apk.setPriority(1);
         registerReceiver(mBroadcastReceiverAttach, apk);
+    }
+
+    private String getParagraph() {
+
+        String json = null;
+        try {
+
+            InputStream is = getAssets().open("paragraph.json");
+
+            int size = is.available();
+
+            byte[] buffer = new byte[size];
+
+            is.read(buffer);
+
+            is.close();
+
+            json = new String(buffer, "UTF-8");
+
+            JSONObject oo = new JSONObject(json);
+            if (oo.has("pri_paragraph")) {
+
+                String where_clause = "paragraph_id='" + oo.optString("paragraph_id") + "'";
+
+                app_table.checkNInsertARecord(oo, "PARAGRAPS", where_clause);
+            }
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+
     }
 
     public JSONObject getStudentDetails() {

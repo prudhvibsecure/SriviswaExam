@@ -496,7 +496,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                                     post.disableProgress();
 
-                                    post.userRequest(getString(R.string.plwait), 2, "getquestionpaper_jadvance", reqObject.toString());
+                                    post.userRequest(getString(R.string.plwait), 4, "getquestionpaper_jadvance", reqObject.toString());
                                 }
 
                             }
@@ -568,6 +568,109 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
                             table.checkNInsertARecord(jsonObject1, "STUDENTQUESTIONPAPER", iwhereClause);
 
                         }
+
+                    }
+
+                    --mCount;
+
+                    if (mCount == 0) {
+
+                        progressBar.setVisibility(View.GONE);
+
+                       /* PhoneComponent phncomp = new PhoneComponent(this, activity, 3);
+                       // phncomp.defineWhereClause("");
+                        phncomp.executeLocalDBInBackground("EXAM");*/
+
+
+                        JSONArray jsonArray = getExams();
+
+                        if (jsonArray.length() > 0) {
+
+                            adapterContent.setItems(jsonArray);
+
+                            adapterContent.notifyDataSetChanged();
+
+                            progressBar.setVisibility(View.GONE);
+
+                            //updateOtherDetails(adapterContent.getItems());
+
+                        } else {
+                            Toast.makeText(activity, "No Data Found", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                    return;
+
+                }
+
+                progressBar.setVisibility(View.GONE);
+
+                tv_content_txt.setVisibility(View.VISIBLE);
+
+            } else if (requestId == 4) {
+
+                JSONObject jsonObject = new JSONObject(results.toString());
+
+                if (jsonObject.optString("statuscode").equalsIgnoreCase("200")) {
+
+                    App_Table table = new App_Table(activity);
+
+                    if (jsonObject.has("exam_details")) {
+
+                        JSONArray exam_details = jsonObject.getJSONArray("exam_details");
+
+                        for (int i = 0; i < exam_details.length(); i++) {
+
+                            JSONObject jsonObject1 = exam_details.getJSONObject(i);
+
+                            String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") + "'";
+
+                            table.checkNInsertARecord(jsonObject1, "EXAM", iwhereClause);
+
+                        }
+
+                    }
+
+                    if (jsonObject.has("question_details")) {
+
+                        JSONArray question_details = jsonObject.getJSONArray("question_details");
+
+                        for (int i = 0; i < question_details.length(); i++) {
+
+                            JSONObject jsonObject1 = question_details.getJSONObject(i);
+
+                            String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") + "' AND question_paper_id = '" + jsonObject1.optString("question_paper_id") + "'";
+
+                            table.checkNInsertARecord(jsonObject1, "QUESTIONPAPER", iwhereClause);
+
+                        }
+
+                    }
+
+                    if (jsonObject.has("student_question_paper_details")) {
+
+                        JSONArray student_question_paper_details = jsonObject.getJSONArray("student_question_paper_details");
+
+                        for (int i = 0; i < student_question_paper_details.length(); i++) {
+
+                            JSONObject jsonObject1 = student_question_paper_details.getJSONObject(i);
+
+                            String iwhereClause = "student_question_paper_id = '" + jsonObject1.optString("student_question_paper_id") + "' AND question_paper_id = '" + jsonObject1.optString("question_paper_id") + "'";
+
+                            table.checkNInsertARecord(jsonObject1, "STUDENTQUESTIONPAPER", iwhereClause);
+
+                        }
+
+                    }
+                    if (jsonObject.has("question_ids")) {
+                        JSONArray exam_details = jsonObject.getJSONArray("exam_details");
+
+                        JSONArray question_ids = jsonObject.getJSONArray("question_ids");
+
+                        JSONObject jsonObject1 = exam_details.getJSONObject(0);
+                        String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") +  "'";
+                        table.checkNInsertARecord(question_ids.toJSONObject(question_ids), "JEEQS", iwhereClause);
 
                     }
 
