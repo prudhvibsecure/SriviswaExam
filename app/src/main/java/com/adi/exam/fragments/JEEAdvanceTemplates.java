@@ -109,9 +109,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     private JSONObject json;
 
-    private String subjects, no_of_questions;
-
-    StringBuilder maths, physics, chemistry;
+    private String subjects, no_of_questions, noOfQuestions = null;
 
     private String subjectsArray[];
 
@@ -122,6 +120,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
     private FileOutputStream fos = null;
 
     private TabLayout tl_subjects;
+
     private TabLayout tl_sections;
 
     private long timeTaken4Question = 0, timeTaken = 0;
@@ -284,35 +283,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         }
 
-        ((RadioButton) layout.findViewById(R.id.rb_first)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                check++;
-            }
-        });
-
-        ((RadioButton) layout.findViewById(R.id.rb_second)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                check++;
-            }
-        });
-
-        ((RadioButton) layout.findViewById(R.id.rb_third)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                check++;
-            }
-        });
-
-        ((RadioButton) layout.findViewById(R.id.rb_fourth)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                check++;
-            }
-        });
-
-
         subjects = data.optString("subjects").trim();
 
         if (subjects.contains(",")) {
@@ -368,7 +338,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                 }
 
-                String noOfQuestions = data.optString("no_of_questions");
+                noOfQuestions = data.optString("no_of_questions");
 
                 if (noOfQuestions.contains(",")) {
 
@@ -427,28 +397,64 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                     if (tabPosition == 0) {
 
-                        updateQuestionTime();
+                        if (tabPosition_sub == 0) {
 
-                        showNextQuestion(0);
+                            updateQuestionTime();
+
+                            showNextQuestion(0);
+                        } else {
+                            int questionIndex = 0;
+
+                            String temp2[] = noOfQuestions.split(",");
+
+                            for (int i = 0; i < tabPosition_sub; i++) {
+
+                                questionIndex = questionIndex + Integer.parseInt(temp2[i]);
+
+                            }
+                            updateQuestionTime();
+
+                            showNextQuestion(questionIndex);
+                        }
 
                         return;
 
                     }
 
-                    String noOfQuestions = table.getQuestions(question_details.optString("question_paper_id"), tabPosition + 1, subjectsArray[tabPosition_sub]);
+                    String no_OfQuestions = table.getQuestions(question_details.optString("question_paper_id"), tabPosition + 1, subjectsArray[tabPosition_sub]);
 
-                    if (noOfQuestions.contains(",")) {
+                    if (no_OfQuestions.contains(",")) {
 
-                        String temp1[] = noOfQuestions.split(",");
-
+                        String temp1[] = no_OfQuestions.split(",");
                         int questionIndex = 0;
+                        if (noOfQuestions != null) {
 
-                        for (int i = 0; i < tabPosition; i++) {
+                            String temp2[] = noOfQuestions.split(",");
+                            if (tabPosition_sub == 1) {
+                                if (tabPosition == 1) {
 
-                            questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+                                    questionIndex = questionIndex + Integer.parseInt(temp2[tabPosition]) + Integer.parseInt(temp1[tabPosition]);
+                                } else {
+                                    questionIndex = questionIndex + Integer.parseInt(temp2[0]) + Integer.parseInt(temp1[1]) + Integer.parseInt(temp1[tabPosition]);
+                                }
+                            } else {
+                                if (tabPosition == 1) {
 
+                                    questionIndex = questionIndex + Integer.parseInt(temp2[0]) + Integer.parseInt(temp1[0]) + Integer.parseInt(temp2[1]);
+                                } else {
+                                    questionIndex = questionIndex + Integer.parseInt(temp2[0]) + Integer.parseInt(temp1[0]) + Integer.parseInt(temp1[1]) + Integer.parseInt(temp2[1]);
+                                }
+                            }
+
+
+                        } else {
+
+                            for (int i = 0; i < tabPosition; i++) {
+
+                                questionIndex = questionIndex + Integer.parseInt(temp1[i]);
+
+                            }
                         }
-
                         updateQuestionTime();
 
                         showNextQuestion(questionIndex);
@@ -473,7 +479,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
         });
 
-        showTimer((data.optInt("duration_sec") * 1000));
+        //  showTimer((data.optInt("duration_sec") * 1000));
 
         sdate = new Date();
 
@@ -689,22 +695,29 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                     int position = rv_ques_nums.getChildAdapterPosition(v);
 
                     String allquestions = table.getAllQuestionView(data.optInt("exam_id"));
-                    JSONObject ood = new JSONObject(allquestions);
-                    if (ood.has("question_ids")) {
-                        JSONArray aa = ood.getJSONArray("question_ids");
-                        for (int i = position; i < aa.length(); i++) {
-                            JSONObject ass = aa.getJSONObject(i);
-                            type_ID=ass.getString("type_id");
+                    JSONArray jsonArray = new JSONArray(allquestions);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject ood = jsonArray.getJSONObject(i);
+                        if (position == i) {
+                            type_ID = ood.optString("type_id");
                         }
                     }
-
                     currentExamId = position;
                     JSONObject jsonObject = adapter.getItems().getJSONObject(position);
                     if (jsonObject.optString("qstate").equalsIgnoreCase("2")) {
                         v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered));
                         //  v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_answered));
                     } else if (jsonObject.optString("qstate").equalsIgnoreCase("0")) {
-                        rg_options.clearCheck();
+                        if (type_ID.equalsIgnoreCase("1")) {
+                            rg_options.clearCheck();
+                        } else if (type_ID.equalsIgnoreCase("2")) {
+                            checkBox1.setChecked(false);
+                            checkBox2.setChecked(false);
+                            checkBox3.setChecked(false);
+                            checkBox4.setChecked(false);
+                        } else if (type_ID.equalsIgnoreCase("3")) {
+                            ed_texx.setText("");
+                        }
                         jsonObject.put("qstate", 1);
                         v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
                         // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
@@ -713,14 +726,21 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
                         // v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_marked_for_review));
                     } else {
-                        rg_options.clearCheck();
+                        if (type_ID.equalsIgnoreCase("1")) {
+                            rg_options.clearCheck();
+                        } else if (type_ID.equalsIgnoreCase("2")) {
+                            checkBox1.setChecked(false);
+                            checkBox2.setChecked(false);
+                            checkBox3.setChecked(false);
+                            checkBox4.setChecked(false);
+                        } else if (type_ID.equalsIgnoreCase("3")) {
+                            ed_texx.setText("");
+                        }
                         jsonObject.put("qstate", 1);
                         v.findViewById(R.id.tv_questionno).setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
                         //  v.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_not_answered));
                     }
                     adapter.notifyItemChanged(position);
-
-                    // updateQuestionTime();
 
                     showNextQuestion(position);
 
@@ -730,7 +750,14 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                     if (currentExamId != -1) {
                         //  question_no++;
-
+                        allquestions = table.getAllQuestionView(data.optInt("exam_id"));
+                        jsonArray = new JSONArray(allquestions);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject ood = jsonArray.getJSONObject(i);
+                            if (currentExamId == i) {
+                                type_ID = ood.optString("type_id");
+                            }
+                        }
                         switch (tabPosition_sub) {
                             case 1:
 
@@ -787,17 +814,19 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                             return;
 
                         }
-                        int selRatioId = rg_options.getCheckedRadioButtonId();
 
-                        if (selRatioId == -1) {
-
-                            activity.showokPopUp(R.drawable.pop_ic_info, activity.getString(R.string.alert), activity.getString(R.string.psao));
-
-                            return;
-                        }
 
                         jsonObject = adapter.getItems().getJSONObject(currentExamId);
                         if (type_ID.equalsIgnoreCase("1")) {
+
+                            int selRatioId = rg_options.getCheckedRadioButtonId();
+
+                            if (selRatioId == -1) {
+
+                                activity.showokPopUp(R.drawable.pop_ic_info, activity.getString(R.string.alert), activity.getString(R.string.psao));
+
+                                return;
+                            }
 
                             jsonObject.put("qstate", 2);
 
@@ -805,6 +834,76 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                         } else if (type_ID.equalsIgnoreCase("2")) {
 
+                            if (checkBox1.isChecked()) {
+                                Total = "a";
+                            }
+                            if (checkBox2.isChecked()) {
+                                Total = "b";
+                            }
+                            if (checkBox3.isChecked()) {
+                                Total = "c";
+                            }
+                            if (checkBox4.isChecked()) {
+                                Total = "d";
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b";
+
+
+                            }
+                            if (checkBox1.isChecked() && checkBox3.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "c";
+
+
+                            }
+                            if (checkBox1.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "d";
+
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked() && checkBox3.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b" + "," + "c" + "," + "d";
+
+
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked() && checkBox3.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b" + "," + "3";
+
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b" + "," + "4";
+
+
+                            }
+                            if (checkBox2.isChecked() && checkBox3.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "c" + "," + "b" + "," + "d";
+
+
+                            }
+                            if (checkBox2.isChecked() && checkBox3.isChecked()) {
+                                Total = "";
+                                Total = "b" + "," + "c";
+
+
+                            }
+                            if (checkBox2.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "b" + "," + "d";
+
+
+                            }
+                            if (checkBox3.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "c" + "," + "d";
+
+
+                            }
                             jsonObject.put("qstate", 2);
 
                             jsonObject.put("qanswer", Total);
@@ -824,7 +923,16 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         adapter.notifyItemChanged(currentExamId);
 
                         if (jsonObject.optInt("sno") < adapter.getItemCount()) {
-                            rg_options.clearCheck();
+                            if (type_ID.equalsIgnoreCase("1")) {
+                                rg_options.clearCheck();
+                            } else if (type_ID.equalsIgnoreCase("2")) {
+                                checkBox1.setChecked(false);
+                                checkBox2.setChecked(false);
+                                checkBox3.setChecked(false);
+                                checkBox4.setChecked(false);
+                            } else if (type_ID.equalsIgnoreCase("3")) {
+                                ed_texx.setText("");
+                            }
 
                         }
 
@@ -840,9 +948,19 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
 
                 case R.id.tv_clearresponse:
-                    //  if (currentExamId<=adapter.getItemCount()) {
-                    rg_options.clearCheck();
-                    //  }
+                    if (type_ID.equalsIgnoreCase("1")) {
+                        rg_options.clearCheck();
+                    } else if (type_ID.equalsIgnoreCase("2")) {
+                        checkBox1.setChecked(false);
+                        checkBox2.setChecked(false);
+                        checkBox3.setChecked(false);
+                        checkBox4.setChecked(false);
+                    } else if (type_ID.equalsIgnoreCase("3")) {
+                        ed_texx.setText("");
+                    } else {
+
+                    }
+
                     jsonObject = adapter.getItems().getJSONObject(currentExamId);
                     jsonObject.put("qstate", 1);
                     jsonObject.put("qanswer", "");
@@ -858,30 +976,153 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         return;
                     }
                     if (currentExamId != -1) {
+                        allquestions = table.getAllQuestionView(data.optInt("exam_id"));
+                        jsonArray = new JSONArray(allquestions);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject ood = jsonArray.getJSONObject(i);
+                            if (currentExamId == i) {
+                                type_ID = ood.optString("type_id");
+                            }
+                        }
+                        switch (tabPosition_sub) {
+                            case 1:
 
-                        //question_no++;
+                                if (tabPosition == 0) {
+
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 1) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 2) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+
+                                }
+                                break;
+                            case 2:
+                                if (tabPosition == 0) {
+
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 1) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 2) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+
+                                }
+                                break;
+                            case 3:
+                                if (tabPosition == 0) {
+
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 1, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 1) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 2, subjectsArray[tabPosition_sub]);
+
+                                } else if (tabPosition == 2) {
+                                    JSONObject question_details = data.getJSONObject("question_details");
+                                    type_ID = table.getTypeID(question_details.optString("question_paper_id"), 3, subjectsArray[tabPosition_sub]);
+
+                                }
+                                break;
+                        }
+                        jsonObject = adapter.getItems().getJSONObject(currentExamId);
                         if (type_ID.equalsIgnoreCase("1")) {
                             int selRatioId = rg_options.getCheckedRadioButtonId();
 
-                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                             jsonObject.put("qstate", 3);
 
                             jsonObject.put("qanswer", layout.findViewById(selRatioId).getTag());
                         } else if (type_ID.equalsIgnoreCase("2")) {
-                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
+                            if (checkBox1.isChecked()) {
+                                Total = "a";
+                            }
+                            if (checkBox2.isChecked()) {
+                                Total = "b";
+                            }
+                            if (checkBox3.isChecked()) {
+                                Total = "c";
+                            }
+                            if (checkBox4.isChecked()) {
+                                Total = "d";
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b";
 
+
+                            }
+                            if (checkBox1.isChecked() && checkBox3.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "c";
+
+
+                            }
+                            if (checkBox1.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "d";
+
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked() && checkBox3.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b" + "," + "c" + "," + "d";
+
+
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked() && checkBox3.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b" + "," + "c";
+
+                            }
+                            if (checkBox1.isChecked() && checkBox2.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "a" + "," + "b" + "," + "d";
+
+
+                            }
+                            if (checkBox2.isChecked() && checkBox3.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "b" + "," + "c" + "," + "d";
+
+
+                            }
+                            if (checkBox2.isChecked() && checkBox3.isChecked()) {
+                                Total = "";
+                                Total = "b" + "," + "c";
+
+
+                            }
+                            if (checkBox2.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "b" + "," + "d";
+
+
+                            }
+                            if (checkBox3.isChecked() && checkBox4.isChecked()) {
+                                Total = "";
+                                Total = "c" + "," + "d";
+
+
+                            }
                             jsonObject.put("qstate", 3);
 
                             jsonObject.put("qanswer", Total);
                         } else if (type_ID.equalsIgnoreCase("3")) {
-                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                             jsonObject.put("qstate", 3);
 
                             jsonObject.put("qanswer", ed_texx.getText().toString().trim());
                         } else {
-                            jsonObject = adapter.getItems().getJSONObject(currentExamId);
 
                             jsonObject.put("qstate", 3);
 
@@ -890,7 +1131,18 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                         adapter.notifyItemChanged(currentExamId);
 
-                        rg_options.clearCheck();
+                        if (type_ID.equalsIgnoreCase("1")) {
+                            rg_options.clearCheck();
+                        } else if (type_ID.equalsIgnoreCase("2")) {
+                            checkBox1.setChecked(false);
+                            checkBox2.setChecked(false);
+                            checkBox3.setChecked(false);
+                            checkBox4.setChecked(false);
+                        } else if (type_ID.equalsIgnoreCase("3")) {
+                            ed_texx.setText("");
+                        } else {
+
+                        }
 
                         updateQuestionTime();
 
@@ -918,7 +1170,14 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
     private void showNextQuestion(int position) {
 
         try {
-
+            String allquestions = table.getAllQuestionView(data.optInt("exam_id"));
+            JSONArray jsonArray_f = new JSONArray(allquestions);
+            for (int i = 0; i < jsonArray_f.length(); i++) {
+                JSONObject ood = jsonArray_f.getJSONObject(i);
+                if (position == i) {
+                    type_ID = ood.optString("type_id");
+                }
+            }
             questionStartTime = System.currentTimeMillis();
 
             currentExamId = position;
@@ -984,7 +1243,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
             adapter.notifyDataSetChanged();
 
-            tv_questionno.setText(getString(R.string.questionno, jsonObject.optString("sno")));
+            tv_questionno.setText(jsonObject.optString("sno"));
 
             iv_question.setImageResource(jsonObject.optInt("qid"));
             try {
@@ -1103,47 +1362,106 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                 if (jsonObject.optString("qanswer").equalsIgnoreCase("a")) {
 
                     checkBox1.setChecked(true);
+                    checkBox2.setChecked(false);
+                    checkBox3.setChecked(false);
+                    checkBox4.setChecked(false);
                     Total = First;
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
-                    Total = Second;
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
+
                     checkBox2.setChecked(true);
+                    checkBox1.setChecked(false);
+                    checkBox3.setChecked(false);
+                    checkBox4.setChecked(false);
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
-                    Total = Third;
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
+
                     checkBox3.setChecked(true);
+                    checkBox1.setChecked(false);
+                    checkBox2.setChecked(false);
+                    checkBox4.setChecked(false);
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
-                    Total = Fourth;
-                    checkBox4.setChecked(true);
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b")) {
-                    Total = First + "," + Second;
                     checkBox4.setChecked(true);
+                    checkBox2.setChecked(false);
+                    checkBox1.setChecked(false);
+                    checkBox3.setChecked(false);
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
-                    Total = First + "," + Third;
-                    checkBox4.setChecked(true);
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a,b")) {
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
-                    Total = First + "," + Fourth;
                     checkBox4.setChecked(true);
+                    checkBox2.setChecked(true);
+                    checkBox1.setChecked(false);
+                    checkBox3.setChecked(false);
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("c") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
-                    Total = First + "," + Second + "," + Third + "," + Fourth;
-                    checkBox4.setChecked(true);
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a,c")) {
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("c")) {
-                    Total = First + "," + Second + "," + Third;
                     checkBox4.setChecked(true);
+                    checkBox3.setChecked(true);
+                    checkBox2.setChecked(false);
+                    checkBox1.setChecked(false);
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("a") || jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
-                    Total = First + "," + Second + "," + Fourth;
-                    checkBox4.setChecked(true);
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a,d")) {
 
-                } else if (jsonObject.optString("qanswer").equalsIgnoreCase("b") || jsonObject.optString("qanswer").equalsIgnoreCase("c") || jsonObject.optString("qanswer").equalsIgnoreCase("d")) {
-                    Total = Third + "," + Second + "," + Fourth;
                     checkBox4.setChecked(true);
+                    checkBox1.setChecked(true);
+                    checkBox2.setChecked(false);
+                    checkBox3.setChecked(false);
+
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a,b,c,d")) {
+
+                    checkBox4.setChecked(true);
+                    checkBox2.setChecked(true);
+                    checkBox3.setChecked(true);
+                    checkBox1.setChecked(true);
+
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a,b,c")) {
+
+                    checkBox1.setChecked(true);
+                    checkBox2.setChecked(true);
+                    checkBox3.setChecked(true);
+                    checkBox4.setChecked(false);
+
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("a,b,d")) {
+
+                    checkBox1.setChecked(true);
+                    checkBox2.setChecked(true);
+                    checkBox4.setChecked(true);
+                    checkBox3.setChecked(false);
+
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("b,c,d")) {
+
+                    checkBox4.setChecked(true);
+                    checkBox2.setChecked(true);
+                    checkBox3.setChecked(true);
+                    checkBox1.setChecked(false);
+
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("b,c")) {
+
+                    checkBox4.setChecked(false);
+                    checkBox2.setChecked(true);
+                    checkBox3.setChecked(true);
+                    checkBox1.setChecked(false);
+
+                }
+                if (jsonObject.optString("qanswer").equalsIgnoreCase("b,d")) {
+
+                    checkBox4.setChecked(false);
+                    checkBox2.setChecked(true);
+                    checkBox3.setChecked(false);
+                    checkBox1.setChecked(true);
 
                 }
             } else if (type_ID.equalsIgnoreCase("3")) {
@@ -1163,24 +1481,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                 layout.findViewById(R.id.rg_options).setVisibility(View.GONE);
                 layout.findViewById(R.id.opt_four).setVisibility(View.GONE);
             }
-
-            /*if (jsonObject.optInt("qanswer") == 1) {
-
-                ((RadioButton) rg_options.findViewById(R.id.rb_first)).setChecked(true);
-
-            } else if (jsonObject.optInt("qanswer") == 2) {
-
-                ((RadioButton) rg_options.findViewById(R.id.rb_second)).setChecked(true);
-
-            } else if (jsonObject.optInt("qanswer") == 3) {
-
-                ((RadioButton) rg_options.findViewById(R.id.rb_third)).setChecked(true);
-
-            } else if (jsonObject.optInt("qanswer") == 4) {
-
-                ((RadioButton) rg_options.findViewById(R.id.rb_fourth)).setChecked(true);
-
-            }*/
 
             int notvisited = 0;
 
@@ -1265,6 +1565,8 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         String questions = student_question_paper_details.optString("questions");
 
                         if (type_ID.equalsIgnoreCase("4")) {
+
+                            getParagraphQuestion(questions);
 
                         } else {
 
@@ -1363,13 +1665,22 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
     }
 
+    private void getParagraphQuestion(String pargagraph_ids) {
+        try {
+            if (pargagraph_ids.contains(",")) {
+                String[] temp = pargagraph_ids.split(",");
+                for (int i = 0; i < temp.length; i++) {
+                   String para_image= table.getparagrahs(temp[i]);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void getQuestionsFromDBNShow(String questions) {
 
         try {
-
-            PhoneComponent phncomp = new PhoneComponent(this, activity, 2);
-
-            String whereQuestions = "";
 
             if (questions.contains(",")) {
 
@@ -1378,21 +1689,16 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
                 for (int i = 0; i < temp.length; i++) {
                     array.put(getQuestion(temp[i]));
-
-                    // whereQuestions = whereQuestions + "'" + temp[i] + "',";
-
                 }
 
                 setData(array);
 
                /* whereQuestions = whereQuestions.trim();
-
                 whereQuestions = whereQuestions.substring(0, whereQuestions.length() - 1);*/
 
             }
 
            /* phncomp.defineWhereClause("question_id IN (" + whereQuestions + ")");
-
             phncomp.executeLocalDBInBackground("QUESTIONS");*/
 
         } catch (Exception e) {
@@ -1432,23 +1738,6 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-//                json= new JSONObject();
-//                json.put("student_question_time_id","");
-//                json.put("student_id",activity.getStudentDetails().optInt("student_id"));
-//                json.put("exam_id", data.optInt("exam_id"));
-//                json.put("question_no",jsonObject.optString("sno"));
-//                json.put("question_id",jsonObject.optString("question_id"));
-//                json.put("topic_id",jsonObject.optString("topic_id"));
-//                json.put("lesson_id","");
-//                json.put("subject","");
-//                json.put("given_option",jsonObject.optString("qstate"));
-//                json.put("correct_option",jsonObject.optString("answer"));
-//                json.put("result",jsonObject.optString("answer"));
-//                json.put("question_time",60);
-//                json.put("no_of_clicks","");
-//                json.put("marked_for_review",jsonObject.optString("qstate"));
-//                array.put(json);
 
                 //qstate = //0 = not visited, 1 = not answered, 2 = answered, 3 = marked for review, 4 = answered and marked for review
                 if (jsonObject.optString("qstate").equalsIgnoreCase("3")) {
@@ -1520,39 +1809,15 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
 
             //double x = System.currentTimeMillis();
             long student_exam_result_id = System.currentTimeMillis();
-
-                   /* AppPreferences.getInstance(activity).getIntegerFromStore("student_exam_result_id");
-
-            AppPreferences.getInstance(activity).addIntegerToStore("student_exam_result_id", ++student_exam_result_id, false);
-*/
             STUDENTEXAMRESULT.put("student_exam_result_id", student_exam_result_id);
             STUDENTEXAMRESULT.put("student_id", activity.getStudentDetails().optInt("student_id"));
             STUDENTEXAMRESULT.put("exam_id", data.optInt("exam_id"));
             STUDENTEXAMRESULT.put("exam_name", data.optString("exam_name"));
             STUDENTEXAMRESULT.put("exam_date", question_details.optString("exam_date"));
-            //STUDENTEXAMRESULT.put("total_questions", data.optString("no_of_questions"));
             STUDENTEXAMRESULT.put("total_questions", adapter.getCount() + "");
             STUDENTEXAMRESULT.put("total_questions_attempted", total_questions_attempted + "");
             STUDENTEXAMRESULT.put("no_of_correct_answers", no_of_correct_answers + "");
             STUDENTEXAMRESULT.put("score", score + "");
-            STUDENTEXAMRESULT.put("percentage", "");
-            STUDENTEXAMRESULT.put("accuracy", "");
-            STUDENTEXAMRESULT.put("exam_type", "");
-
-
-//            backup_result.put("student_exam_result_id", student_exam_result_id);
-//            backup_result.put("student_id", activity.getStudentDetails().optInt("student_id"));
-//            backup_result.put("exam_id", data.optInt("exam_id"));
-//            backup_result.put("exam_name", data.optString("exam_name"));
-//            backup_result.put("exam_date", question_details.optString("exam_date"));
-//            backup_result.put("total_questions", adapter.getCount() + "");
-//            backup_result.put("total_questions_attempted", total_questions_attempted + "");
-//            backup_result.put("no_of_correct_answers", no_of_correct_answers + "");
-//            backup_result.put("score", score + "");
-//            backup_result.put("percentage", "");
-//            backup_result.put("accuracy", "");
-//            backup_result.put("exam_type", "");
-
 
             App_Table table = new App_Table(activity);
 

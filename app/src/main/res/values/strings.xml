@@ -141,7 +141,7 @@
 
     <string name="patacbp">Please accept terms and conditions before proceeding.</string>
 
-    <string name="questionno">Question: %1$s</string>
+    <string name="questionno">Question:</string>
 
     <string name="psao">Please select any options</string>
 

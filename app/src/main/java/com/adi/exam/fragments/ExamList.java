@@ -670,7 +670,7 @@ public class ExamList extends ParentFragment implements View.OnClickListener, II
 
                         JSONObject jsonObject1 = exam_details.getJSONObject(0);
                         String iwhereClause = "exam_id = '" + jsonObject1.optString("exam_id") +  "'";
-                        table.checkNInsertARecord(question_ids.toJSONObject(question_ids), "JEEQS", iwhereClause);
+                        table.checkNInsertARecord_vv(question_ids.toString(), "JEEQS", iwhereClause,jsonObject1.optString("exam_id"));
 
                     }
 

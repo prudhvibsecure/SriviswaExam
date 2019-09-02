@@ -1400,20 +1400,6 @@ public class ExamTemplates extends ParentFragment implements View.OnClickListene
             STUDENTEXAMRESULT.put("exam_type", "");
 
 
-//            backup_result.put("student_exam_result_id", student_exam_result_id);
-//            backup_result.put("student_id", activity.getStudentDetails().optInt("student_id"));
-//            backup_result.put("exam_id", data.optInt("exam_id"));
-//            backup_result.put("exam_name", data.optString("exam_name"));
-//            backup_result.put("exam_date", question_details.optString("exam_date"));
-//            backup_result.put("total_questions", adapter.getCount() + "");
-//            backup_result.put("total_questions_attempted", total_questions_attempted + "");
-//            backup_result.put("no_of_correct_answers", no_of_correct_answers + "");
-//            backup_result.put("score", score + "");
-//            backup_result.put("percentage", "");
-//            backup_result.put("accuracy", "");
-//            backup_result.put("exam_type", "");
-
-
             App_Table table = new App_Table(activity);
 
             json = table.getExamsResult(data.optInt("exam_id"), activity.getStudentDetails().optInt("student_id"));

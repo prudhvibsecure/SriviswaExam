@@ -231,10 +231,13 @@ public class SriVishwa extends AppCompatActivity
 
             JSONObject oo = new JSONObject(json);
             if (oo.has("pri_paragraph")) {
+                JSONArray mmArray=oo.getJSONArray("pri_paragraph");
+                for (int i=0;i<mmArray.length();i++) {
 
-                String where_clause = "paragraph_id='" + oo.optString("paragraph_id") + "'";
-
-                app_table.checkNInsertARecord(oo, "PARAGRAPS", where_clause);
+                    JSONObject object=mmArray.getJSONObject(i);
+                    String where_clause = "paragraph_id='" + object.optString("paragraph_id") + "'";
+                    app_table.checkNInsertARecord(object, "PARAGRAPS", where_clause);
+                }
             }
 
 
