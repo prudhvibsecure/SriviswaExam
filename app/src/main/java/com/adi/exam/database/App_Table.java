@@ -809,7 +809,9 @@ public class App_Table {
             e.printStackTrace();
         }
         return id;
-    } public String getQuestions(String question_paper_id, int section_type, String subject) {
+    }
+
+    public String getQuestions(String question_paper_id, int section_type, String subject) {
         String qs = "";
         try {
             if (database != null) {
@@ -869,11 +871,11 @@ public class App_Table {
 
     public String getAllQuestionView(int exam_id) {
 
-        String qs="";
+        String qs = "";
         try {
             if (database != null) {
 
-                String cursor_q = "select * from JEEQS where exam_id='" + exam_id +"'";
+                String cursor_q = "select * from JEEQS where exam_id='" + exam_id + "'";
                 SQLiteDatabase db = database.getWritableDatabase();
                 Cursor cursor = db
                         .rawQuery(cursor_q,
@@ -896,5 +898,119 @@ public class App_Table {
         }
 
         return qs;
+    }
+
+    public void checkNInsertARecord_vv(String jsonObject, String tableName, String iwhereClause, String exam_id) {
+        try {
+
+            boolean isRecordAvailable = isRecordExits(iwhereClause, tableName);
+
+            if (isRecordAvailable) {
+
+                int rowId = deleteRecord(iwhereClause, tableName);
+
+                if (rowId > 0) {
+
+                    insertSingleRecords_vv(jsonObject, tableName, exam_id);
+
+                }
+
+            } else {
+
+                insertSingleRecords_vv(jsonObject, tableName, exam_id);
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+    }
+
+    public long insertSingleRecords_vv(String jsonObject, String tableName, String exam_id) {
+
+        try {
+
+            if (database != null) {
+
+                SQLiteDatabase db = database.getWritableDatabase();
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("exam_id", exam_id);
+                contentValues.put("questions", jsonObject);
+
+                return db.insert(tableName, null, contentValues);
+
+            }
+
+        } catch (Exception e) {
+
+            TraceUtils.logException(e);
+
+        }
+
+        return -1;
+
+    }
+
+    public String getQuestionsLen(String question_paper_id, int section_type, String subject) {
+        String id = "";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from STUDENTQUESTIONPAPER where question_paper_id='" + question_paper_id + "' and section='" + section_type + "' and subject='" + subject + "'";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            id = cursor.getString(cursor.getColumnIndex("question_size"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    public String getparagrahs(String id) {
+
+        String ph_id = "";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from PARAGRAPS where paragraph_id='" + id + "";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            ph_id = cursor.getString(cursor.getColumnIndex("paragraph"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ph_id;
     }
 }
