@@ -1563,6 +1563,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
                         JSONObject student_question_paper_details = jsonArray.getJSONObject(i);
 
                         String questions = student_question_paper_details.optString("questions");
+                        String type_ID = student_question_paper_details.optString("type_id");
 
                         if (type_ID.equalsIgnoreCase("4")) {
 
@@ -1670,8 +1671,18 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             if (pargagraph_ids.contains(",")) {
                 String[] temp = pargagraph_ids.split(",");
                 for (int i = 0; i < temp.length; i++) {
-                   String para_image= table.getparagrahs(temp[i]);
+                    table.getparagrahs(temp[i]);
+                   String questions=table.getparagrahQuestions(temp[i]);
+                    if (questions.contains(",")) {
+                        JSONArray array = new JSONArray();
+                        String[] temp_q = questions.split(",");
+                        for (int j = 0; j < temp_q.length; j++) {
+                            array.put(getQuestion(temp_q[j]));
+                        }
+                        setData(array);
+                    }
                 }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1685,7 +1696,7 @@ public class JEEAdvanceTemplates extends ParentFragment implements View.OnClickL
             if (questions.contains(",")) {
 
                 String[] temp = questions.split(",");
-                JSONArray array = new JSONArray();
+                  JSONArray array = new JSONArray();
 
                 for (int i = 0; i < temp.length; i++) {
                     array.put(getQuestion(temp[i]));

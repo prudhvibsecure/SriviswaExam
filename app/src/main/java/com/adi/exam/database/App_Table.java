@@ -986,6 +986,34 @@ public class App_Table {
 
     public String getparagrahs(String id) {
 
+        String ph_image = "";
+        try {
+            if (database != null) {
+
+                String cursor_q = "select * from PARAGRAPS where paragraph_id='" + id + "";
+                SQLiteDatabase db = database.getWritableDatabase();
+                Cursor cursor = db
+                        .rawQuery(cursor_q,
+                                null);
+                try {
+                    if (null != cursor)
+                        if (cursor.getCount() > 0) {
+                            cursor.moveToFirst();
+                            ph_image = cursor.getString(cursor.getColumnIndex("paragraph"));
+                        }
+                    cursor.close();
+                    db.close();
+                } finally {
+                    db.close();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ph_image;
+    } public String getparagrahQuestions(String id) {
+
         String ph_id = "";
         try {
             if (database != null) {
@@ -999,7 +1027,7 @@ public class App_Table {
                     if (null != cursor)
                         if (cursor.getCount() > 0) {
                             cursor.moveToFirst();
-                            ph_id = cursor.getString(cursor.getColumnIndex("paragraph"));
+                            ph_id = cursor.getString(cursor.getColumnIndex("question_ids"));
                         }
                     cursor.close();
                     db.close();
